@@ -5,9 +5,9 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_login_pwd_24.xml" value="0.11388888888888889" />
         <entry key="app/src/main/res/drawable/ic_phone_icon_24.xml" value="0.11388888888888889" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/fragment_sign_up.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_sign_up.xml" value="0.375" />
       </map>
     </option>
   </component>

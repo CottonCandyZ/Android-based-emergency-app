@@ -9,4 +9,5 @@
     <string name="sign_up_enter_code_hint">验证码</string>
     <string name="sign_up_get_code_button">获取验证码</string>
     <string name="sign_up_next_button">下一步</string>
+    <string name="confirm_pwd_hint">确认密码</string>
 </resources>
