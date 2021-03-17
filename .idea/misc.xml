@@ -5,9 +5,14 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_login_pwd_24.xml" value="0.11388888888888889" />
         <entry key="app/src/main/res/drawable/ic_phone_icon_24.xml" value="0.11388888888888889" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.36041666666666666" />
+        <entry key="app/src/main/res/layout/add_emergency_person.xml" value="0.31362467866323906" />
+        <entry key="app/src/main/res/layout/fragment_information.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_sign_up.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/switch_item.xml" value="0.2015625" />
+        <entry key="app/src/main/res/menu/blood_type.xml" value="0.36041666666666666" />
+        <entry key="app/src/main/res/menu/info_menu.xml" value="0.36041666666666666" />
       </map>
     </option>
   </component>

@@ -10,4 +10,25 @@
     <string name="sign_up_get_code_button">获取验证码</string>
     <string name="sign_up_next_button">下一步</string>
     <string name="confirm_pwd_hint">确认密码</string>
+    <string name="scrollView_description_info">完善个人信息</string>
+    <string name="login_top_bar_title">欢迎</string>
+    <string name="sign_up_top_bar_title">注册</string>
+    <string name="info_top_bar_title">添加个人信息</string>
+    <string name="info_add_real_name_hint">真实姓名</string>
+    <string name="info_add_birth_hint">出生年月</string>
+    <string name="info_sex_chose_male">男</string>
+    <string name="info_sex_chose_female">女</string>
+    <string name="info_add_sex_hint">性别</string>
+    <string name="info_personal_info_icon">个人信息icon</string>
+    <string name="info_add_phone_hint">手机号</string>
+    <string name="info_add_weight_hint">体重</string>
+    <string name="info_add_blood_type_hint">血型</string>
+    <string name="info_add_relationship">关系</string>
+    <string name="info_add_family_phone_hint">手机号</string>
+    <string name="info_top_bar_button_skip">跳过</string>
+    <string name="info_add_medical_conditions_hint">医疗状况</string>
+    <string name="info_add_medical_notes_hint">病例备注</string>
+    <string name="info_add_allergy_hint">过敏反应</string>
+    <string name="info_add_medications_hint">用药</string>
+    <string name="info_top_bar_button_save">save</string>
 </resources>

@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
+    android:label="完善个人信息"
     app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.emergency.ui.LoginFragment"
-        android:label="欢迎"
-        tools:layout="@layout/fragment_login" >
+        android:label="@string/login_top_bar_title"
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
@@ -17,6 +18,15 @@
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.emergency.ui.SignUpFragment"
-        android:label="注册"
-        tools:layout="@layout/fragment_sign_up" />
+        android:label="@string/sign_up_top_bar_title"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_signUpFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/informationFragment"
+        android:name="com.example.emergency.ui.InformationFragment"
+        android:label="@string/info_top_bar_title"
+        tools:layout="@layout/fragment_information" />
 </navigation>

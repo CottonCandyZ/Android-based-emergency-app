@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentSignUpBinding
 
@@ -38,8 +39,12 @@ class SignUpFragment : Fragment() {
                     binding.signUpCode.visibility = View.GONE
                     binding.buttonGetCode.visibility = View.GONE
                     binding.signUpPhone.visibility = View.GONE
+                    binding.signUpUsername.visibility = View.VISIBLE
                     binding.signUpPasswordFirst.visibility = View.VISIBLE
                     binding.signUpPasswordSecond.visibility = View.VISIBLE
+                }
+                2 -> {
+                    findNavController().navigate(R.id.action_signUpFragment_to_informationFragment)
                 }
             }
             times++
