@@ -7,6 +7,7 @@
     tools:context=".ui.LoginFragment">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginPhoneNumber"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="60dp"
@@ -19,7 +20,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/login_phone_hint"
+            android:hint="@string/enter_phone_hint"
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,7 +68,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
 
-        android:id="@+id/textInputLayout"
+        android:id="@+id/loginPassword"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="60dp"
@@ -81,7 +82,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/login_pwd_hint"
+            android:hint="@string/enter_pwd_hint"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,7 +90,7 @@
         android:id="@+id/buttonSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/login_sigin_up_button"
+        android:text="@string/login_sign_up_button"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
@@ -107,7 +108,7 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonSignUp"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/loginPassword" />
 
     <ImageView
         android:id="@+id/imageView"
