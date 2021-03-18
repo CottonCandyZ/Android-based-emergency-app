@@ -16,8 +16,6 @@
     <string name="info_top_bar_title">添加个人信息</string>
     <string name="info_add_real_name_hint">真实姓名</string>
     <string name="info_add_birth_hint">出生年月</string>
-    <string name="info_sex_chose_male">男</string>
-    <string name="info_sex_chose_female">女</string>
     <string name="info_add_sex_hint">性别</string>
     <string name="info_personal_info_icon">个人信息icon</string>
     <string name="info_add_phone_hint">手机号</string>
@@ -30,6 +28,13 @@
     <string name="info_add_medical_notes_hint">病例备注</string>
     <string name="info_add_allergy_hint">过敏反应</string>
     <string name="info_add_medications_hint">用药</string>
-    <string name="info_top_bar_button_save">save</string>
+    <string name="info_top_bar_button_save">保存</string>
     <string name="signUp_user_name_hint">用户名</string>
+    <string name="user_avatar">用户头像</string>
+    <string name="my_page_icon">菜单图标</string>
+    <string name="my_page_can_touch_hint">可点击提示</string>
+    <string name="home_bottom_bar_history">历史</string>
+    <string name="home_bottom_bar_emergency">呼救</string>
+    <string name="home_bottom_bar_my_page">我的</string>
+    <string name="emergency_page_cancel_hint">取消</string>
 </resources>

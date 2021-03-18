@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentInformationBinding
 
@@ -33,14 +34,13 @@ class InformationFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.skip -> {
-
+                findNavController().navigate(R.id.action_informationFragment_to_homeFragment)
             }
             R.id.save -> {
 
             }
         }
         return super.onOptionsItemSelected(item)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
