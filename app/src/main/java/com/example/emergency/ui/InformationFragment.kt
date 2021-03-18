@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
@@ -17,7 +16,6 @@ import com.example.emergency.databinding.FragmentInformationBinding
 class InformationFragment : Fragment() {
     private var _binding: FragmentInformationBinding? = null
     private val binding get() = _binding!!
-    private lateinit var topBarButton: Button
 
 
     override fun onCreateView(
