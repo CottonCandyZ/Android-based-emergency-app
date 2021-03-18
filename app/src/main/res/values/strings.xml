@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Emergency</string>
+    <string name="app_name">紧急呼救</string>
     <string name="enter_phone_hint">手机号</string>
     <string name="enter_pwd_hint">密码</string>
     <string name="login_sign_up_button">注册或忘记密码</string>
