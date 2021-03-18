@@ -2,6 +2,8 @@ package com.example.emergency.ui
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -53,5 +55,19 @@ class InformationFragment : Fragment() {
         list.add(addNumber)
         binding.emergencyPerson.addView(addNumber)
 
+
+        // 创建两个下拉选框
+        createSpinner(binding.sexTextView, listOf("男", "女"))
+        createSpinner(
+            binding.bloodTypeTextView,
+            listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+        )
+
+
+    }
+
+    private fun createSpinner(view: AutoCompleteTextView, list: List<String>) {
+        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, list)
+        view.setAdapter(adapter)
     }
 }

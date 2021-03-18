@@ -19,7 +19,7 @@
     <string name="info_add_sex_hint">性别</string>
     <string name="info_personal_info_icon">个人信息icon</string>
     <string name="info_add_phone_hint">手机号</string>
-    <string name="info_add_weight_hint">体重</string>
+    <string name="info_add_weight_hint">体重(kg)</string>
     <string name="info_add_blood_type_hint">血型</string>
     <string name="info_add_relationship">关系</string>
     <string name="info_add_family_phone_hint">手机号</string>

@@ -20,7 +20,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@+id/guideline11"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/sex"
             app:layout_constraintStart_toStartOf="@+id/guideline5"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -31,6 +32,24 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sex"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/guideline11"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/sexTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/info_add_sex_hint"
+                android:inputType="none"
+                android:textSize="16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputBirthDate"
@@ -92,56 +111,41 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/sex"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/bood_type"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/bood_type">
-
-            <AutoCompleteTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/info_add_sex_hint"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout3"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/bood_type"
-            app:layout_constraintEnd_toStartOf="@+id/bood_type"
-            app:layout_constraintStart_toEndOf="@+id/sex"
-            app:layout_constraintTop_toTopOf="@+id/bood_type">
+            app:layout_constraintBottom_toBottomOf="@+id/blood_type"
+            app:layout_constraintEnd_toStartOf="@+id/blood_type"
+            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintTop_toTopOf="@+id/blood_type">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/info_add_weight_hint"
-                android:inputType="number" />
+                android:inputType="number"
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/bood_type"
+            android:id="@+id/blood_type"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toStartOf="@+id/guideline11"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
 
             <AutoCompleteTextView
-                android:layout_width="wrap_content"
+                android:id="@+id/bloodTypeTextView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/info_add_blood_type_hint"
-                android:inputType="none" />
+                android:inputType="none"
+                android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
