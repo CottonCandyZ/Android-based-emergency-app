@@ -5,11 +5,12 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentEmergencyBinding
+import kotlinx.coroutines.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class EmergencyFragment : Fragment() {
+class EmergencyFragment : Fragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentEmergencyBinding? = null
     private val binding get() = _binding!!
 
@@ -35,11 +36,20 @@ class EmergencyFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
 
         super.onActivityCreated(savedInstanceState)
+
         binding.buttonEmergency.setOnClickListener {
-            setHasOptionsMenu(true)
+            launch {
+                wait()
+                setHasOptionsMenu(true)
+            }
         }
+    }
+
+    private suspend fun wait() = withContext(Dispatchers.IO) {
+        Thread.sleep(5000)
     }
 }

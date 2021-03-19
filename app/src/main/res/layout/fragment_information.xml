@@ -38,8 +38,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputName"
             app:layout_constraintEnd_toStartOf="@+id/guideline11"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@+id/textInputName">
 
             <AutoCompleteTextView
                 android:id="@+id/sexTextView"

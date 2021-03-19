@@ -43,7 +43,6 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.emergency.ui.HomeFragment"
-        android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
 
 
