@@ -41,7 +41,6 @@ class HomeFragment : Fragment() {
             barConfiguration
         )
         NavigationUI.setupWithNavController(binding.bottomNavigationView, controller)
-        binding.bottomNavigationView
     }
 
 }

@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentLoginBinding
+import com.example.emergency.util.showError
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
@@ -42,6 +43,9 @@ class LoginFragment : Fragment() {
 
 
         with(binding) {
+            buttonSignUp.setOnClickListener {
+                findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
+            }
             progressBar.visibility = View.INVISIBLE
             buttonLogin.isEnabled = false
             with(loginPhoneNumberText) {
@@ -50,7 +54,7 @@ class LoginFragment : Fragment() {
                     if (!hasFocus) {
                         if (text.toString().length != 11)
                             binding.loginPhoneLayout
-                                .error = "请输入正确的手机号"
+                                .error = getString(R.string.phone_number_len_not_correct_hint)
                     }
                 }
             }
@@ -59,22 +63,23 @@ class LoginFragment : Fragment() {
                 progressBar.visibility = VISIBLE
                 val phone = loginPhoneNumberText.text.toString().trim()
                 val pwd = loginPasswordText.text.toString().trim()
-                AVUser.logIn("+86$phone", pwd).subscribe(object : Observer<AVUser> {
-                    override fun onSubscribe(d: Disposable) {}
 
-                    override fun onNext(t: AVUser) {
-                        Toast.makeText(requireContext(), "登陆成功", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                AVUser.logIn("+86$phone", pwd)
+                    .subscribe(object : Observer<AVUser> {
+                        override fun onSubscribe(d: Disposable) {}
 
-                    }
+                        override fun onNext(t: AVUser) {
+                            Toast.makeText(requireContext(), "欢迎回来", Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                        }
 
-                    override fun onError(e: Throwable) {
+                        override fun onError(e: Throwable) {
+                            progressBar.visibility = View.INVISIBLE
+                            showError(e, requireContext())
+                        }
 
-                    }
-
-                    override fun onComplete() {}
-
-                })
+                        override fun onComplete() {}
+                    })
 
             }
         }
@@ -94,4 +99,6 @@ class LoginFragment : Fragment() {
 
         override fun afterTextChanged(p0: Editable?) {}
     }
+
+
 }

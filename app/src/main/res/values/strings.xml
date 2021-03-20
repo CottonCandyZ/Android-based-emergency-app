@@ -2,7 +2,7 @@
     <string name="app_name">紧急呼救</string>
     <string name="enter_phone_hint">手机号</string>
     <string name="enter_pwd_hint">密码</string>
-    <string name="login_sign_up_button">注册或忘记密码</string>
+    <string name="login_sign_up_button">注册或使用验证码登陆</string>
     <string name="login_login_button">登录</string>
     <string name="login_image_description">welcome icon</string>
     <string name="sign_up_title">用手机号码注册或登录</string>
@@ -38,4 +38,7 @@
     <string name="home_bottom_bar_my_page">我的</string>
     <string name="emergency_page_cancel_hint">取消</string>
     <string name="info_add_address_hint">常住地</string>
+    <string name="phone_number_len_not_correct_hint">请输入正确的手机号</string>
+    <string name="code_len_not_correct_hint">请输入正确验证码</string>
+    <string name="password_not_unanimous">输入密码不一致</string>
 </resources>
