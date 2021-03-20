@@ -31,14 +31,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.95" />
 
     <com.google.android.material.textfield.TextInputLayout
 
@@ -64,7 +64,7 @@
 
     <Button
         android:id="@+id/buttonSignUp"
-        android:layout_width="329dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/login_sign_up_button"
@@ -76,7 +76,7 @@
     <Button
         android:id="@+id/buttonLogin"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="329dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-medium"

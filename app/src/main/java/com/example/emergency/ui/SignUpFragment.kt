@@ -3,7 +3,6 @@ package com.example.emergency.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -251,7 +250,7 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
 
-    // 检测登陆或注册验证码是否可用
+    // 检测登陆或注册验证码是否正确
     private suspend fun checkCodeToSignUpOrLogin(phone: String, code: String) =
         withContext(Dispatchers.IO) {
             try {
@@ -262,6 +261,11 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
 
+    // 保存用户
+//    private suspend fun saveUser(phone:String) = withContext(Dispatchers.IO) {
+//        TODO()
+//    }
+
 
     // 为用户设置密码
     private suspend fun setUserPassword(pwd: String) =
@@ -271,7 +275,6 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
 
             try {
                 user.save()
-                Log.d("hello", "setUserPassword: ${user.password}")
             } catch (e: Throwable) {
                 throw e
             }
