@@ -36,9 +36,7 @@ class LoginFragment : Fragment() {
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        if (AVUser.currentUser() != null) {
-            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-        }
+
         super.onActivityCreated(savedInstanceState)
 
 

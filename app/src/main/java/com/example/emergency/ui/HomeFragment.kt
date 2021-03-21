@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentHomeBinding
 
@@ -30,9 +32,14 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val navHostFragment =
+        if (AVUser.currentUser() == null) {
+            findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+        }
+
+
+        val host =
             childFragmentManager.findFragmentById(R.id.fragmentContainerView2) as NavHostFragment
-        val controller = navHostFragment.navController
+        val controller = host.navController
         val barConfiguration =
             AppBarConfiguration.Builder(binding.bottomNavigationView.menu).build()
         NavigationUI.setupActionBarWithNavController(

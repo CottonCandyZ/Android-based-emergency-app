@@ -28,6 +28,8 @@ class MyPageFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         binding.button.setOnClickListener {
             AVUser.logOut()
+
+
         }
 //        TODO()
     }
