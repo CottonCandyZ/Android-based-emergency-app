@@ -18,6 +18,7 @@ import cn.leancloud.sms.AVSMSOption
 import cn.leancloud.types.AVNull
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentSignUpBinding
+import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showError
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -27,7 +28,8 @@ import kotlinx.coroutines.*
 /**
  * A simple [Fragment] subclass.
  */
-class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
+class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
+    override var bottomNavigationViewVisibility = false
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
     private var step = 0
@@ -92,9 +94,10 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
                                             "已注册，登陆成功",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
+                                        findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                     } else { // 新用户
                                         checkCodeToSignUpOrLogin(phone, code)
+                                        saveUser(phone)
                                         Toast.makeText(
                                             requireContext(),
                                             "注册成功",
@@ -280,6 +283,19 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
 
+    // 保存用户
+    private suspend fun saveUser(phone: String) =
+        withContext(Dispatchers.IO) {
+            val newUser = AVObject("UserSignUp")
+            newUser.put("phone", phone)
+            try {
+                newUser.save()
+            } catch (e: Throwable) {
+                throw e
+            }
+        }
+
+    // 设置密码界面
     private fun changeViewToSetPwd() {
         with(binding) {
             titleTextView.text = "请设定一个密码"

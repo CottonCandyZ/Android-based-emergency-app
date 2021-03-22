@@ -36,5 +36,7 @@ class MyPageFragment : BaseFragment() {
             AVUser.logOut()
             findNavController().navigate(R.id.action_user_to_loginFragment)
         }
+        val myPageAdapter = MyPageAdapter()
+        binding.myPageRecyclerView.adapter = myPageAdapter
     }
 }
