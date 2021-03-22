@@ -9,11 +9,13 @@ import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentLoginBinding
+import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showError
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -22,7 +24,9 @@ import io.reactivex.disposables.Disposable
 /**
  * A simple [Fragment] subclass.
  */
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment() {
+
+    override var bottomNavigationViewVisibility = false
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -31,6 +35,7 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -38,7 +43,6 @@ class LoginFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
 
         super.onActivityCreated(savedInstanceState)
-
 
         with(binding) {
             buttonSignUp.setOnClickListener {
@@ -68,7 +72,7 @@ class LoginFragment : Fragment() {
 
                         override fun onNext(t: AVUser) {
                             Toast.makeText(requireContext(), "欢迎回来", Toast.LENGTH_SHORT).show()
-                            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                            findNavController().navigate(R.id.action_loginFragment_to_emergency)
                         }
 
                         override fun onError(e: Throwable) {

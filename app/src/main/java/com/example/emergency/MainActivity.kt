@@ -8,23 +8,50 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.example.emergency.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        // enable dataBinding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        supportActionBar
+
+
         val host =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        val navController = host.navController
+        navController = host.navController
+
+        setUpBottomNavigation()
 
 
+        // 设置返回按钮
         NavigationUI.setupActionBarWithNavController(this, navController)
     }
 
 
+    private fun setUpBottomNavigation() {
+        val barConfiguration =
+            AppBarConfiguration.Builder(binding.bottomNavigationView.menu).build()
+        NavigationUI.setupActionBarWithNavController(
+            this,
+            navController,
+            barConfiguration
+        )
+        NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
+    }
+
+
+    // 点击屏幕外侧以取消焦点
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val v: View? = currentFocus
@@ -40,5 +67,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(event)
+    }
+
+
+    // 改变底部导航栏是否可见
+    fun setBottomNavigationVisibility(visible: Boolean) {
+        with(binding.bottomNavigationView) {
+            visibility = if (visible) View.VISIBLE else View.GONE
+        }
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController.navigateUp()
+        return super.onSupportNavigateUp()
     }
 }

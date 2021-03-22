@@ -79,7 +79,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:errorEnabled="true"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -157,8 +156,8 @@
             android:text="@string/sign_up_get_code_button"
             android:textSize="@dimen/button_text"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/signUpCodeLayout"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <Button
             android:id="@+id/buttonNextStep"

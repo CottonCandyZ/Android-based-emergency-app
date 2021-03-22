@@ -8,12 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentInformationBinding
+import com.example.emergency.util.BaseFragment
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class InformationFragment : Fragment() {
+class InformationFragment : BaseFragment() {
+    override var bottomNavigationViewVisibility = false
     private var _binding: FragmentInformationBinding? = null
     private val binding get() = _binding!!
 
@@ -34,7 +36,7 @@ class InformationFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.skip -> {
-                findNavController().navigate(R.id.action_informationFragment_to_homeFragment)
+                findNavController().navigate(R.id.action_informationFragment_to_emergency)
             }
             R.id.save -> {
 
