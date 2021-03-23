@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentMyPageBinding
@@ -32,11 +33,22 @@ class MyPageFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        binding.button.setOnClickListener {
-            AVUser.logOut()
-            findNavController().navigate(R.id.action_user_to_loginFragment)
+        with(binding) {
+            button.setOnClickListener {
+                AVUser.logOut()
+                findNavController().navigate(R.id.action_user_to_loginFragment)
+            }
+            val myPageAdapter = MyPageAdapter(arrayOf())
+            with(myPageRecyclerView) {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = myPageAdapter
+            }
+
+            addInformation.setOnClickListener {
+                findNavController().navigate(R.id.action_user_to_informationFragment)
+            }
         }
-        val myPageAdapter = MyPageAdapter()
-        binding.myPageRecyclerView.adapter = myPageAdapter
+
+
     }
 }

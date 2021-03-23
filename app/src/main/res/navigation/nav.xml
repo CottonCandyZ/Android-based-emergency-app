@@ -32,13 +32,6 @@
         android:label="@string/sign_up_top_bar_title"
         tools:layout="@layout/fragment_sign_up">
         <action
-            android:id="@+id/action_signUpFragment_to_informationFragment"
-            app:destination="@id/informationFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
-        <action
             android:id="@+id/action_signUpFragment_to_emergency"
             app:destination="@id/emergency"
             app:popUpTo="@id/loginFragment"
@@ -50,15 +43,7 @@
         android:id="@+id/informationFragment"
         android:name="com.example.emergency.ui.InformationFragment"
         android:label="@string/info_top_bar_title"
-        tools:layout="@layout/fragment_information">
-        <action
-            android:id="@+id/action_informationFragment_to_emergency"
-            app:destination="@id/emergency"
-            app:popUpTo="@id/informationFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
-    </fragment>
+        tools:layout="@layout/fragment_information" />
 
 
     <fragment
@@ -71,6 +56,9 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/emergency"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_emergency_to_informationFragment"
+            app:destination="@id/informationFragment" />
     </fragment>
     <fragment
         android:id="@+id/history"
@@ -89,6 +77,9 @@
             app:popUpToInclusive="true"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/action_user_to_informationFragment"
+            app:destination="@id/informationFragment" />
     </fragment>
 
 

@@ -127,7 +127,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                     setUserPassword(pwd)
                                     Toast.makeText(requireContext(), "设置密码成功", Toast.LENGTH_SHORT)
                                         .show()
-                                    findNavController().navigate(R.id.action_signUpFragment_to_informationFragment)
+                                    findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                 } catch (e: Throwable) {
                                     binding.progressBar2.visibility = View.INVISIBLE
                                     binding.buttonNextStep.isEnabled = true

@@ -3,17 +3,17 @@ package com.example.emergency.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
 
 
-class MyPageAdapter : RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
+class MyPageAdapter(private val dataSet: Array<String>) :
+    RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.myPageItemIcon)
-        val textView: TextView = itemView.findViewById(R.id.myPageItemText)
+        val textViewName: TextView = itemView.findViewById(R.id.myPagePersonalName)
+        val textViewPhone: TextView = itemView.findViewById(R.id.myPagePersonalPhone)
     }
 
 
@@ -23,7 +23,7 @@ class MyPageAdapter : RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.my_page_item, parent, false)
+            .inflate(R.layout.my_page_personal_info_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -34,11 +34,8 @@ class MyPageAdapter : RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
      * 例如，如果 [RecyclerView] 显示的是一个名称列表，该方法可能会在列表中查找适当的名称，并填充 ViewHolder 的 TextView 微件。
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        when (position) {
-            0 -> holder.textView.text = "修改密码"
-        }
     }
 
-    override fun getItemCount() = 1
+    override fun getItemCount() = dataSet.size
 }
 

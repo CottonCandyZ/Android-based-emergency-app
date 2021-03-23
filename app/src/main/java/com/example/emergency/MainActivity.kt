@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
 
         // 设置返回按钮
-        NavigationUI.setupActionBarWithNavController(this, navController)
     }
 
 
