@@ -79,7 +79,11 @@
             app:exitAnim="@anim/slide_out_left" />
         <action
             android:id="@+id/action_user_to_informationFragment"
-            app:destination="@id/informationFragment" />
+            app:destination="@id/informationFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
     </fragment>
 
 

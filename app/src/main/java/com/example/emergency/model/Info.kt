@@ -1,9 +1,8 @@
 package com.example.emergency.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.sql.Date
+
 
 
 @Entity(tableName = "personal_info")
@@ -28,4 +27,14 @@ data class EmergencyContact(
     @ColumnInfo(name = "info_id") val infoId: Int, // 这里和唯一的 info id 绑定
     @ColumnInfo(name = "relationship") val relationship: String,
     @ColumnInfo(name = "phone") val phone: String,
+)
+
+// 一对多关系
+data class InfoWithEmergencyContact(
+    @Embedded val info: Info,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "infoId"
+    )
+    val emergencyContacts: List<EmergencyContact>
 )
