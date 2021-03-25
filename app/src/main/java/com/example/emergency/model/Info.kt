@@ -22,11 +22,12 @@ data class Info(
     @ColumnInfo(name = "address") val address: String?,
 )
 
-@Entity(tableName = "emergency_contact")
+@Entity(tableName = "emergency_contact", primaryKeys = ["infoId", "relationship", "phone"])
 data class EmergencyContact(
-    @ColumnInfo(name = "info_id") val infoId: Int, // 这里和唯一的 info id 绑定
-    @ColumnInfo(name = "relationship") val relationship: String,
-    @ColumnInfo(name = "phone") val phone: String,
+
+    val infoId: Int, // 这里和唯一的 info id 绑定
+    val relationship: String,
+    val phone: String,
 )
 
 // 一对多关系
@@ -38,3 +39,15 @@ data class InfoWithEmergencyContact(
     )
     val emergencyContacts: List<EmergencyContact>
 )
+
+class Converters {
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return if (value == null) null else Date(value)
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
+    }
+}

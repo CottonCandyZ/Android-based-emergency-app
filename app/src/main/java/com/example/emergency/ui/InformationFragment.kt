@@ -2,8 +2,6 @@ package com.example.emergency.ui
 
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,6 +65,7 @@ class InformationFragment : BaseFragment() {
         val inputHints = arrayOf(
             getString(R.string.info_add_real_name_hint),
             getString(R.string.info_add_sex_hint),
+            getString(R.string.info_relationship),
             getString(R.string.info_add_birth_hint),
             getString(R.string.info_add_phone_hint),
             getString(R.string.info_add_weight_hint),
@@ -78,7 +77,7 @@ class InformationFragment : BaseFragment() {
             getString(R.string.info_add_address_hint)
         )
 
-        val informationAdapter = InformationAdapter(inputHints)
+        val informationAdapter = InformationAdapter(inputHints, requireContext())
         with(binding) {
             with(infoRecyclerView) {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -89,8 +88,5 @@ class InformationFragment : BaseFragment() {
 
     }
 
-    private fun createSpinner(view: AutoCompleteTextView, list: List<String>) {
-        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, list)
-        view.setAdapter(adapter)
-    }
+
 }

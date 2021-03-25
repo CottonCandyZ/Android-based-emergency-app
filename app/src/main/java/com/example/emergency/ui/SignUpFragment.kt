@@ -264,11 +264,6 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
         }
 
-    // 保存用户
-//    private suspend fun saveUser(phone:String) = withContext(Dispatchers.IO) {
-//        TODO()
-//    }
-
 
     // 为用户设置密码
     private suspend fun setUserPassword(pwd: String) =

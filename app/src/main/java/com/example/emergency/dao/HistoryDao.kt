@@ -1,4 +1,7 @@
 package com.example.emergency.dao
 
-class HistoryDao {
+import androidx.room.Dao
+
+@Dao
+interface HistoryDao {
 }

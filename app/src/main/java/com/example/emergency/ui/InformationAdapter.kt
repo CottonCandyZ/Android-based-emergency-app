@@ -1,9 +1,12 @@
 package com.example.emergency.ui
 
+import android.content.Context
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
@@ -11,8 +14,17 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
+
+enum class INPUT_HINT {
+    REAL_NAME, SEX, RELATIONSHIP, BIRTHDATE,
+    PHONE, WEIGHT, BLOOD_TYPE, MEDICAL_CONDITIONS,
+    MEDICAL_NOTES, ALLERGY, MEDICATIONS, ADDRESS
+}
+
+
 class InformationAdapter(
-    private val textHint: Array<String>
+    private val textHint: Array<String>,
+    private val context: Context,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -25,14 +37,15 @@ class InformationAdapter(
     class SpinnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textInputLayout: TextInputLayout = itemView.findViewById(R.id.infoSpinnerLayout)
-        val textInputEditText: MaterialAutoCompleteTextView =
+        val autoCompleteTextView: MaterialAutoCompleteTextView =
             itemView.findViewById(R.id.infoSpinnerText)
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {
-            0, 2, 3, 4, 6, 7, 8, 9, 10 -> 0
-            else -> 1
+            INPUT_HINT.SEX.ordinal,
+            INPUT_HINT.BLOOD_TYPE.ordinal -> 1
+            else -> 0
         }
     }
 
@@ -58,10 +71,15 @@ class InformationAdapter(
                     textInputLayout.hint = textHint[position]
                     with(textInputEditText) {
                         when (position) {
-                            3, 4 -> inputType = InputType.TYPE_CLASS_NUMBER
-                            in 6..10 -> inputType =
+
+                            INPUT_HINT.PHONE.ordinal,
+                            INPUT_HINT.WEIGHT.ordinal -> inputType = InputType.TYPE_CLASS_NUMBER
+                            in INPUT_HINT.MEDICAL_CONDITIONS.ordinal..INPUT_HINT.ADDRESS.ordinal
+                            -> inputType =
                                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
                         }
+
+
                     }
                     with(imageView) {
                         when (position) {
@@ -72,7 +90,22 @@ class InformationAdapter(
                 }
             }
             1 -> {
-                (holder as SpinnerViewHolder).textInputLayout.hint = textHint[position]
+                with(holder as SpinnerViewHolder) {
+                    textInputLayout.hint = textHint[position]
+                    // 下拉菜单
+                    when (position) {
+                        INPUT_HINT.SEX.ordinal -> createSpinner(
+                            autoCompleteTextView,
+                            listOf("男", "女")
+                        )
+                        INPUT_HINT.BLOOD_TYPE.ordinal -> createSpinner(
+                            autoCompleteTextView,
+                            listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+                        )
+                    }
+
+                }
+
             }
         }
 
@@ -80,4 +113,10 @@ class InformationAdapter(
     }
 
     override fun getItemCount(): Int = textHint.size
+
+    private fun createSpinner(view: AutoCompleteTextView, list: List<String>) {
+        val adapter = ArrayAdapter(context, R.layout.list_item, list)
+        view.setAdapter(adapter)
+    }
+
 }
