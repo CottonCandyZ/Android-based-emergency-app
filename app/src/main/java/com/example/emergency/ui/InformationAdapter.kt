@@ -7,17 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.ui.info.viewholder.BaseEmergencyContactViewHolder
 import com.example.emergency.ui.info.viewholder.BaseInputViewHolder
 import com.example.emergency.ui.info.viewholder.BaseSpinnerViewHolder
+import com.example.emergency.ui.info.viewholder.DatePickerInputViewHolder
 
 
-enum class INPUT_HINT {
+enum class InputHint {
     REAL_NAME, SEX, BIRTHDATE,
     PHONE, WEIGHT, BLOOD_TYPE, MEDICAL_CONDITIONS,
     MEDICAL_NOTES, ALLERGY, MEDICATIONS, ADDRESS
 }
 
-enum class INPUT_TYPE {
-    INPUT_TEXT, SPINNER_VIEW, EMERGENCY_CONTACT,
-    INPUT_TEXT_REQUIRED, SPINNER_VIEW_REQUIRED
+enum class InputType {
+    INPUT_TEXT, INPUT_TEXT_REQUIRED, INPUT_TEXT_DATE_REQUIRED,
+    INPUT_TEXT_PHONE_REQUIRED,
+    SPINNER_VIEW, EMERGENCY_CONTACT,
 }
 
 
@@ -33,21 +35,24 @@ class InformationAdapter(
 
 
             // SPINNER
-            INPUT_HINT.SEX.ordinal,
-            INPUT_HINT.BLOOD_TYPE.ordinal -> INPUT_TYPE.SPINNER_VIEW.ordinal
+            InputHint.SEX.ordinal,
+            InputHint.BLOOD_TYPE.ordinal -> InputType.SPINNER_VIEW.ordinal
 
-            // INPUT_TEXT
-            INPUT_HINT.REAL_NAME.ordinal,
-            INPUT_HINT.BIRTHDATE.ordinal,
-            INPUT_HINT.PHONE.ordinal
-            -> INPUT_TYPE.INPUT_TEXT_REQUIRED.ordinal
+            // INPUT_TEXT_REQUIRED
+            InputHint.REAL_NAME.ordinal -> InputType.INPUT_TEXT_REQUIRED.ordinal
+
+            // INPUT_TEXT_DATE_REQUIRED
+            InputHint.BIRTHDATE.ordinal -> InputType.INPUT_TEXT_DATE_REQUIRED.ordinal
+
+            // INPUT_TEXT_PHONE_REQUIRED
+            InputHint.PHONE.ordinal -> InputType.INPUT_TEXT_PHONE_REQUIRED.ordinal
 
 
-            in INPUT_HINT.REAL_NAME.ordinal..INPUT_HINT.ADDRESS.ordinal
-            -> INPUT_TYPE.INPUT_TEXT.ordinal
+            in InputHint.REAL_NAME.ordinal..InputHint.ADDRESS.ordinal
+            -> InputType.INPUT_TEXT.ordinal
 
 
-            else -> INPUT_TYPE.EMERGENCY_CONTACT.ordinal
+            else -> InputType.EMERGENCY_CONTACT.ordinal
         }
     }
 
@@ -57,23 +62,39 @@ class InformationAdapter(
         return when (viewType) {
 
 
-            INPUT_TYPE.INPUT_TEXT.ordinal ->
+            InputType.INPUT_TEXT.ordinal ->
                 BaseInputViewHolder(
                     BaseInputViewHolder.create(parent),
-                    InputTextWatcher()
+                    InputTextWatcher(),
                 )
 
-            INPUT_TYPE.SPINNER_VIEW.ordinal ->
+            InputType.SPINNER_VIEW.ordinal ->
                 BaseSpinnerViewHolder(
                     BaseSpinnerViewHolder.create(parent),
                     InputTextWatcher()
                 )
 
-            INPUT_TYPE.INPUT_TEXT_REQUIRED.ordinal ->
+            InputType.INPUT_TEXT_REQUIRED.ordinal ->
                 BaseInputViewHolder(
                     BaseInputViewHolder.create(parent),
                     InputTextWatcher(),
-                    true
+                    isRequired = true,
+                )
+
+            InputType.INPUT_TEXT_DATE_REQUIRED.ordinal ->
+                DatePickerInputViewHolder(
+                    BaseInputViewHolder.create(parent),
+                    InputTextWatcher(),
+                    parent.context,
+                    isRequired = true,
+                )
+
+            InputType.INPUT_TEXT_PHONE_REQUIRED.ordinal ->
+                BaseInputViewHolder(
+                    BaseInputViewHolder.create(parent),
+                    InputTextWatcher(),
+                    isRequired = true,
+                    isPhoneNumber = true
                 )
 
             else -> BaseEmergencyContactViewHolder(BaseEmergencyContactViewHolder.create(parent))
@@ -109,7 +130,7 @@ class InformationAdapter(
 
 
     inner class InputTextWatcher : TextWatcher {
-        private var position = 0
+        private var position = -1
         fun updatePosition(position: Int) {
             this.position = position
         }

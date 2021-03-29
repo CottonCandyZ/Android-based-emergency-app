@@ -100,16 +100,16 @@ class InformationFragment : BaseFragment() {
 
         val spinnerLists = fun(position: Int): List<String> {
             return when (position) {
-                INPUT_HINT.SEX.ordinal -> spinnerList[0]
-                INPUT_HINT.BLOOD_TYPE.ordinal -> spinnerList[1]
+                InputHint.SEX.ordinal -> spinnerList[0]
+                InputHint.BLOOD_TYPE.ordinal -> spinnerList[1]
                 else -> spinnerList[2]
             }
         }
 
         val inputType = fun(position: Int): Int {
             return when (position) {
-                INPUT_HINT.PHONE.ordinal, INPUT_HINT.WEIGHT.ordinal -> InputType.TYPE_CLASS_NUMBER
-                in INPUT_HINT.MEDICAL_CONDITIONS.ordinal..INPUT_HINT.ADDRESS.ordinal ->
+                InputHint.PHONE.ordinal, InputHint.WEIGHT.ordinal -> InputType.TYPE_CLASS_NUMBER
+                in InputHint.MEDICAL_CONDITIONS.ordinal..InputHint.ADDRESS.ordinal ->
                     InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 else -> InputType.TYPE_CLASS_TEXT
             }
