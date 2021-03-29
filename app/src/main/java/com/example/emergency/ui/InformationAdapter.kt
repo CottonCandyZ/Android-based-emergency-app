@@ -1,122 +1,107 @@
 package com.example.emergency.ui
 
-import android.content.Context
-import android.text.InputType
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.emergency.R
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.example.emergency.ui.info.viewholder.BaseEmergencyContactViewHolder
+import com.example.emergency.ui.info.viewholder.BaseInputViewHolder
+import com.example.emergency.ui.info.viewholder.BaseSpinnerViewHolder
 
 
 enum class INPUT_HINT {
-    REAL_NAME, SEX, RELATIONSHIP, BIRTHDATE,
+    REAL_NAME, SEX, BIRTHDATE,
     PHONE, WEIGHT, BLOOD_TYPE, MEDICAL_CONDITIONS,
     MEDICAL_NOTES, ALLERGY, MEDICATIONS, ADDRESS
 }
 
+enum class INPUT_TYPE {
+    INPUT_TEXT, SPINNER_VIEW, EMERGENCY_CONTACT,
+    INPUT_TEXT_REQUIRED, SPINNER_VIEW_REQUIRED
+}
+
 
 class InformationAdapter(
-    private val textHint: Array<String>,
-    private val context: Context,
+    private val inputHints: Array<String>,
+    private val spinnerList: (Int) -> List<String>,
+    private val inputType: (Int) -> Int,
+    private val mDataset: ArrayList<String>,
+//    private val getDataInput: (Int) -> String,
+//    private val inputTextWatcher: InformationFragment.InputTextWatcher
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-
-    class TextInputViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val textInputLayout: TextInputLayout = itemView.findViewById(R.id.infoInputLayout)
-        val textInputEditText: TextInputEditText = itemView.findViewById(R.id.infoInputText)
-    }
-
-    class SpinnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val textInputLayout: TextInputLayout = itemView.findViewById(R.id.infoSpinnerLayout)
-        val autoCompleteTextView: MaterialAutoCompleteTextView =
-            itemView.findViewById(R.id.infoSpinnerText)
-    }
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {
+
+
+            // SPINNER
             INPUT_HINT.SEX.ordinal,
-            INPUT_HINT.BLOOD_TYPE.ordinal -> 1
-            else -> 0
+            INPUT_HINT.BLOOD_TYPE.ordinal -> INPUT_TYPE.SPINNER_VIEW.ordinal
+
+            // INPUT_TEXT
+            INPUT_HINT.REAL_NAME.ordinal,
+            INPUT_HINT.BIRTHDATE.ordinal,
+            INPUT_HINT.PHONE.ordinal
+            -> INPUT_TYPE.INPUT_TEXT_REQUIRED.ordinal
+
+
+            in INPUT_HINT.REAL_NAME.ordinal..INPUT_HINT.ADDRESS.ordinal
+            -> INPUT_TYPE.INPUT_TEXT.ordinal
+
+
+            else -> INPUT_TYPE.EMERGENCY_CONTACT.ordinal
         }
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         return when (viewType) {
-            0 -> TextInputViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.info_input_item, parent, false)
-            )
-            else -> SpinnerViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.info_spinner_item, parent, false)
-            )
+
+
+            INPUT_TYPE.INPUT_TEXT.ordinal ->
+                BaseInputViewHolder(
+                    BaseInputViewHolder.create(parent),
+                    InformationFragment.InputTextWatcher(mDataset)
+                )
+
+            INPUT_TYPE.SPINNER_VIEW.ordinal ->
+                BaseSpinnerViewHolder(BaseSpinnerViewHolder.create(parent))
+
+            INPUT_TYPE.INPUT_TEXT_REQUIRED.ordinal ->
+                BaseInputViewHolder(
+                    BaseInputViewHolder.create(parent),
+                    InformationFragment.InputTextWatcher(mDataset),
+                    true
+                )
+
+            else -> BaseEmergencyContactViewHolder(BaseEmergencyContactViewHolder.create(parent))
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        // 下面的内容不应该写在这里，后期将会更改
 
-        when (holder.itemViewType) {
-            0 -> {
-                with(holder as TextInputViewHolder) {
-                    textInputLayout.hint = textHint[position]
-                    with(textInputEditText) {
-                        when (position) {
-
-                            INPUT_HINT.PHONE.ordinal,
-                            INPUT_HINT.WEIGHT.ordinal -> inputType = InputType.TYPE_CLASS_NUMBER
-                            in INPUT_HINT.MEDICAL_CONDITIONS.ordinal..INPUT_HINT.ADDRESS.ordinal
-                            -> inputType =
-                                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                        }
-
-
-                    }
-                    with(imageView) {
-                        when (position) {
-                            0 -> setImageResource(R.drawable.ic_bottom_bar_user_24)
-                        }
-                    }
-
-                }
+        when (holder) {
+            is BaseInputViewHolder -> {
+                holder.bind(
+                    inputHints[position],
+                    inputType(position),
+                    mDataset[position]
+                )
+                holder.inputTextWatcher.updatePosition(position)
             }
-            1 -> {
-                with(holder as SpinnerViewHolder) {
-                    textInputLayout.hint = textHint[position]
-                    // 下拉菜单
-                    when (position) {
-                        INPUT_HINT.SEX.ordinal -> createSpinner(
-                            autoCompleteTextView,
-                            listOf("男", "女")
-                        )
-                        INPUT_HINT.BLOOD_TYPE.ordinal -> createSpinner(
-                            autoCompleteTextView,
-                            listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
-                        )
-                    }
-
-                }
-
+            is BaseSpinnerViewHolder -> {
+                holder.bind(
+                    inputHints[position],
+                    spinnerList(position),
+                    mDataset[position]
+                )
             }
+            is BaseEmergencyContactViewHolder -> holder.bind(
+                spinnerList(position)
+            )
         }
-
-
     }
 
-    override fun getItemCount(): Int = textHint.size
-
-    private fun createSpinner(view: AutoCompleteTextView, list: List<String>) {
-        val adapter = ArrayAdapter(context, R.layout.list_item, list)
-        view.setAdapter(adapter)
-    }
+    override fun getItemCount(): Int = inputHints.size + 1
 
 }

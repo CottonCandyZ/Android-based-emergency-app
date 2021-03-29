@@ -3,23 +3,31 @@ package com.example.emergency.model
 import androidx.room.*
 import java.sql.Date
 
+data class AbstractInfo(
+    val id: Int,
+    val realName: String,
+    val relationship: String,
+    val phone: String,
+//    val lastUpdate: Long
+)
 
 
 @Entity(tableName = "personal_info")
 data class Info(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "real_name") val realName: String,
-    @ColumnInfo(name = "sex") val sex: String,
-    @ColumnInfo(name = "relationship") val relationship: String,
-    @ColumnInfo(name = "birthdate") val birthdate: Date,
-    @ColumnInfo(name = "phone") val phone: String,
-    @ColumnInfo(name = "weight") val weight: Int?,
-    @ColumnInfo(name = "blood_type") val bloodType: String?,
-    @ColumnInfo(name = "medical_conditions") val medicalConditions: String?,
-    @ColumnInfo(name = "medical_notes") val medicalNotes: String?,
-    @ColumnInfo(name = "allergy") val allergy: String?,
-    @ColumnInfo(name = "medications") val medications: String?,
-    @ColumnInfo(name = "address") val address: String?,
+    @PrimaryKey val id: Int,
+    val realName: String,
+    val sex: String = "",
+    val relationship: String,
+    val birthdate: Date = Date(0),
+    val phone: String = "",
+    val weight: Int = 0,
+    val bloodType: String = "",
+    val medicalConditions: String = "",
+    val medicalNotes: String = "",
+    val allergy: String = "",
+    val medications: String = "",
+    val address: String = "",
+//    val lastUpdate: Long
 )
 
 @Entity(tableName = "emergency_contact", primaryKeys = ["infoId", "relationship", "phone"])

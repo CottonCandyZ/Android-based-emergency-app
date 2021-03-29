@@ -7,9 +7,11 @@ import com.example.emergency.model.InfoWithEmergencyContact
 
 @Dao
 interface InfoDao {
-    @Insert
-    suspend fun insertInfo(info: Info)
+    // 插入替换
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInfo(vararg info: Info)
 
+    // 更新全部
     @Update
     suspend fun updateInfo(vararg info: Info)
 
@@ -21,8 +23,13 @@ interface InfoDao {
     @Delete
     suspend fun delete(vararg info: Info)
 
-    @Query("SELECT real_name, phone, relationship FROM personal_info")
-    suspend fun getAbstractInfo(): Flow<List<Info>>
+    // 通过 ID 删除
+    @Query("DELETE FROM personal_info WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
+
+    @Query("SELECT id, realName, phone, relationship FROM personal_info")
+    suspend fun getAbstractInfo(): List<AbstractInfo>
 
 //    @ExperimentalCoroutinesApi
 //    suspend fun getAbstractInfoDistinctUntilChanged() = getAbstractInfo().distinctUntilChanged()
@@ -32,4 +39,10 @@ interface InfoDao {
     @Query("SELECT * FROM personal_info WHERE id = :id")
     suspend fun getInfoWithEmergencyContact(id: Int): List<InfoWithEmergencyContact>
 
+//    // 查询某行是否超时
+//    @Query("SELECT id FROM personal_info WHERE lastUpdate < :remoteUpdate")
+//    suspend fun getAbstractUpdateInfo(remoteUpdate: Long): List<Int>
+
+//    @Query("SELECT MAX(id) FROM personal_info")
+//    suspend fun getMaxId():Int
 }

@@ -41,5 +41,5 @@
     <string name="phone_number_len_not_correct_hint">请输入正确的手机号</string>
     <string name="code_len_not_correct_hint">请输入正确验证码</string>
     <string name="password_not_unanimous">输入密码不一致</string>
-    <string name="info_relationship">与注册人关系</string>
+    <string name="info_relationship">关系</string>
 </resources>
