@@ -7,8 +7,13 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.doAfterTextChanged
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoSpinnerItemBinding
+import com.example.emergency.ui.InformationAdapter
 
-class BaseSpinnerViewHolder(val binding: InfoSpinnerItemBinding, isRequired: Boolean = false) :
+class BaseSpinnerViewHolder(
+    val binding: InfoSpinnerItemBinding,
+    val inputTextWatcher: InformationAdapter.InputTextWatcher,
+    isRequired: Boolean = false
+) :
     BaseViewHolder(binding) {
     init {
         if (isRequired) {
@@ -28,6 +33,7 @@ class BaseSpinnerViewHolder(val binding: InfoSpinnerItemBinding, isRequired: Boo
                 }
             }
         }
+        binding.infoSpinnerText.addTextChangedListener(inputTextWatcher)
     }
 
 

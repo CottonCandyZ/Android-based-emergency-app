@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import com.example.emergency.databinding.InfoInputItemBinding
-import com.example.emergency.ui.InformationFragment
+import com.example.emergency.ui.InformationAdapter
 
 class BaseInputViewHolder(
     val binding: InfoInputItemBinding,
-    val inputTextWatcher: InformationFragment.InputTextWatcher,
+    val inputTextWatcher: InformationAdapter.InputTextWatcher,
     isRequired: Boolean = false
 ) :
     BaseViewHolder(binding) {

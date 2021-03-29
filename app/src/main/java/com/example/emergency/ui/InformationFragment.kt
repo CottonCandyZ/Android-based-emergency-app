@@ -1,9 +1,7 @@
 package com.example.emergency.ui
 
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -130,24 +128,6 @@ class InformationFragment : BaseFragment() {
                 adapter = informationAdapter
             }
         }
-    }
-
-    class InputTextWatcher(private val dataInput: ArrayList<String>) : TextWatcher {
-        private var position = 0
-        fun updatePosition(position: Int) {
-            this.position = position
-        }
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            dataInput[position] = p0.toString()
-        }
-
-        override fun afterTextChanged(p0: Editable?) {
-        }
-
     }
 
 
