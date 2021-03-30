@@ -6,7 +6,6 @@ import java.sql.Date
 data class AbstractInfo(
     val id: Int,
     val realName: String,
-    val relationship: String,
     val phone: String,
 //    val lastUpdate: Long
 )
@@ -17,7 +16,6 @@ data class Info(
     @PrimaryKey val id: Int,
     val realName: String,
     val sex: String = "",
-    val relationship: String,
     val birthdate: Date = Date(0),
     val phone: String = "",
     val weight: Int = 0,

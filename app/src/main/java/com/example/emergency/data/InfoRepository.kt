@@ -3,6 +3,8 @@ package com.example.emergency.data
 import com.example.emergency.WebService
 import com.example.emergency.dao.InfoDao
 import com.example.emergency.model.AbstractInfo
+import com.example.emergency.model.EmergencyContact
+import com.example.emergency.model.Info
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.TimeUnit
 
@@ -32,6 +34,14 @@ class InfoRepository(private val infoDao: InfoDao, private val webService: WebSe
 
         val list = webService.getAbstractInfo()
         infoDao.insertInfo(*list.toTypedArray())
+    }
+
+    suspend fun saveInfo(info: Info): Int {
+        return webService.saveInfo(info)
+    }
+
+    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact) {
+        webService.saveEmergencyContact(emergencyContact)
     }
 
 

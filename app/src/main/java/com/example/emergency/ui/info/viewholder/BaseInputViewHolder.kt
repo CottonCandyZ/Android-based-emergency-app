@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import com.example.emergency.databinding.InfoInputItemBinding
-import com.example.emergency.ui.InformationAdapter
+import com.example.emergency.ui.info.InformationAdapter
 
 open class BaseInputViewHolder(
     val binding: InfoInputItemBinding,
@@ -19,7 +19,18 @@ open class BaseInputViewHolder(
         if (isRequired) {
             binding.infoInputLayout.helperText = "*必填"
             binding.infoInputText.run {
-
+                onFocusChangeListener = View.OnFocusChangeListener { _, b ->
+                    if (!b) {
+                        if (text.isNullOrBlank()) {
+                            binding.infoInputLayout.error = "请输入"
+                        }
+                    }
+                }
+                doAfterTextChanged {
+                    if (text.toString().isNotEmpty()) {
+                        binding.infoInputLayout.error = null
+                    }
+                }
             }
         }
 
@@ -39,7 +50,6 @@ open class BaseInputViewHolder(
                 }
             }
         }
-        binding.infoInputLayout.isEndIconVisible = true
         if (isPhoneNumber) {
             binding.infoInputText.inputType = InputType.TYPE_CLASS_PHONE
         }

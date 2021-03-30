@@ -4,7 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoInputItemBinding
-import com.example.emergency.ui.InformationAdapter
+import com.example.emergency.ui.info.InformationAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,6 +21,7 @@ class DatePickerInputViewHolder(
         binding.infoInputText.isCursorVisible = false
         binding.infoInputText.isFocusable = false
         binding.infoInputText.isFocusableInTouchMode = false
+        binding.infoInputLayout.isEndIconVisible = true
         binding.infoInputLayout.setEndIconDrawable(R.drawable.ic_baseline_calendar_today_24)
 
         val date = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
@@ -51,7 +52,7 @@ class DatePickerInputViewHolder(
 
     private fun updateLabel() {
         val myFormat = "yyyy/MM/dd"
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        val sdf = SimpleDateFormat(myFormat, Locale.CHINA)
         binding.infoInputText.setText(sdf.format(myCalendar.time))
     }
 }

@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.info
 
 import android.os.Bundle
 import android.text.InputType
@@ -6,8 +6,12 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.emergency.R
+import com.example.emergency.WebService
+import com.example.emergency.data.AppDatabase
+import com.example.emergency.data.InfoRepository
 import com.example.emergency.databinding.FragmentInformationBinding
 import com.example.emergency.util.BaseFragment
 
@@ -19,6 +23,14 @@ class InformationFragment : BaseFragment() {
     override var bottomNavigationViewVisibility = false
     private var _binding: FragmentInformationBinding? = null
     private val binding get() = _binding!!
+    private val infoViewModel: InfoViewModel by viewModels {
+        InfoViewModelFactory(
+            InfoRepository(
+                AppDatabase.getInstance(requireContext()).infoDao(),
+                WebService()
+            )
+        )
+    }
     private val dataInput: ArrayList<String> = arrayListOf()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,16 +112,16 @@ class InformationFragment : BaseFragment() {
 
         val spinnerLists = fun(position: Int): List<String> {
             return when (position) {
-                InputHint.SEX.ordinal -> spinnerList[0]
-                InputHint.BLOOD_TYPE.ordinal -> spinnerList[1]
+                InputHint.SEX -> spinnerList[0]
+                InputHint.BLOOD_TYPE -> spinnerList[1]
                 else -> spinnerList[2]
             }
         }
 
         val inputType = fun(position: Int): Int {
             return when (position) {
-                InputHint.PHONE.ordinal, InputHint.WEIGHT.ordinal -> InputType.TYPE_CLASS_NUMBER
-                in InputHint.MEDICAL_CONDITIONS.ordinal..InputHint.ADDRESS.ordinal ->
+                InputHint.PHONE, InputHint.WEIGHT -> InputType.TYPE_CLASS_NUMBER
+                in InputHint.MEDICAL_CONDITIONS..InputHint.ADDRESS ->
                     InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 else -> InputType.TYPE_CLASS_TEXT
             }
@@ -120,7 +132,7 @@ class InformationFragment : BaseFragment() {
             inputHints,
             spinnerLists,
             inputType,
-            dataInput
+            infoViewModel
         )
         with(binding) {
             with(infoRecyclerView) {
