@@ -31,6 +31,9 @@ interface InfoDao {
     @Query("SELECT id, realName, phone FROM personal_info")
     suspend fun getAbstractInfo(): List<AbstractInfo>
 
+    @Query("DELETE FROM personal_info")
+    suspend fun nukeTable()
+
 //    @ExperimentalCoroutinesApi
 //    suspend fun getAbstractInfoDistinctUntilChanged() = getAbstractInfo().distinctUntilChanged()
 

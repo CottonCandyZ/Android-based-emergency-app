@@ -13,15 +13,14 @@ import kotlin.reflect.full.declaredMemberProperties
 
 class WebService {
     suspend fun getAbstractInfo(): List<Info> = withContext(Dispatchers.IO) {
-        val query = AVQuery<AVObject>("")
+        val query = AVQuery<AVObject>("Info")
         query.selectKeys(listOf("userId", "id", "realName", "phone"))
         query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
         val result = query.find()
         val resultList: ArrayList<Info> = arrayListOf()
         result.forEach {
-            val id = it.get("id") as String
             val info = Info(
-                id,
+                it.get("objectId") as String,
                 realName = it.get("realName") as String,
                 phone = it.get("phone") as String,
             )

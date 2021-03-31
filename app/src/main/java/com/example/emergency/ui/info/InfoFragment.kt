@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVException
@@ -16,6 +16,8 @@ import com.example.emergency.WebService
 import com.example.emergency.data.AppDatabase
 import com.example.emergency.data.InfoRepository
 import com.example.emergency.databinding.FragmentInformationBinding
+import com.example.emergency.ui.MyViewModel
+import com.example.emergency.ui.MyViewModelFactory
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showError
 import kotlinx.coroutines.CoroutineScope
@@ -26,19 +28,20 @@ import kotlinx.coroutines.launch
 /**
  * A simple [Fragment] subclass.
  */
-class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
+class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
     private var _binding: FragmentInformationBinding? = null
     private val binding get() = _binding!!
-    private val infoViewModel: InfoViewModel by viewModels {
-        InfoViewModelFactory(
-            InfoRepository(
-                AppDatabase.getInstance(requireContext()).infoDao(),
-                WebService()
-            )
-        )
-    }
-    private val dataInput: ArrayList<String> = arrayListOf()
+
+    //    private val myViewModel: MyViewModel by viewModels {
+//        MyViewModelFactory(
+//            InfoRepository(
+//                AppDatabase.getInstance(requireContext()).infoDao(),
+//                WebService()
+//            )
+//        )
+//    }
+    private lateinit var myViewModel: MyViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +49,14 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
     ): View {
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
         _binding = FragmentInformationBinding.inflate(inflater, container, false)
+        myViewModel = ViewModelProvider(
+            requireActivity(), MyViewModelFactory(
+                InfoRepository(
+                    AppDatabase.getInstance(requireContext()).infoDao(),
+                    WebService()
+                )
+            )
+        ).get(MyViewModel::class.java)
         return binding.root
     }
 
@@ -58,9 +69,9 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.save -> {
-                if (infoViewModel.inputInfo[InputHint.REAL_NAME] == ""
-                    && infoViewModel.inputInfo[InputHint.BIRTHDATE] == ""
-                    && infoViewModel.inputInfo[InputHint.PHONE].length != 11
+                if (myViewModel.inputInfo[InputHint.REAL_NAME] == ""
+                    || myViewModel.inputInfo[InputHint.BIRTHDATE] == ""
+                    || myViewModel.inputInfo[InputHint.PHONE].length != 11
                 ) {
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle("请确认输入是否完整")
@@ -73,7 +84,7 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
                         item.isEnabled = false
                         binding.progressBar3.visibility = View.VISIBLE
                         try {
-                            infoViewModel.save()
+                            myViewModel.save()
                         } catch (e: AVException) {
                             item.isEnabled = true
                             showError(e, requireContext())
@@ -81,6 +92,7 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
                         binding.progressBar3.visibility = View.INVISIBLE
 
                         Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT).show()
+                        myViewModel.fromSaveInfo = true
                         findNavController().navigateUp()
                     }
                 }
@@ -95,10 +107,7 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
 
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
-        repeat(11) {
-            dataInput.add("")
-        }
-
+        myViewModel.cleanup()
 
         val inputHints = arrayOf(
             getString(R.string.info_add_real_name_hint),
@@ -163,11 +172,11 @@ class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
         }
 
 
-        val informationAdapter = InformationAdapter(
+        val informationAdapter = InfoAdapter(
             inputHints,
             spinnerLists,
             inputType,
-            infoViewModel
+            myViewModel
         )
         with(binding) {
             with(infoRecyclerView) {

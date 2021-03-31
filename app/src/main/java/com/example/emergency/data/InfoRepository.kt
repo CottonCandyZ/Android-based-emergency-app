@@ -33,6 +33,7 @@ class InfoRepository(private val infoDao: InfoDao, private val webService: WebSe
 //        }
 
         val list = webService.getAbstractInfo()
+        infoDao.nukeTable()
         infoDao.insertInfo(*list.toTypedArray())
     }
 

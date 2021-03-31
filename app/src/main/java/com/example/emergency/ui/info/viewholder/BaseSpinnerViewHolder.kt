@@ -7,11 +7,11 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.doAfterTextChanged
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoSpinnerItemBinding
-import com.example.emergency.ui.info.InformationAdapter
+import com.example.emergency.ui.info.InfoAdapter
 
 class BaseSpinnerViewHolder(
     val binding: InfoSpinnerItemBinding,
-    val inputTextWatcher: InformationAdapter.InputTextWatcher,
+    val inputTextWatcher: InfoAdapter.InputTextWatcher,
     isRequired: Boolean = false
 ) :
     BaseViewHolder(binding) {

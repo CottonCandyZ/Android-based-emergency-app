@@ -3,17 +3,33 @@ package com.example.emergency.ui.myPage
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.emergency.R
+import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
+import com.example.emergency.model.AbstractInfo
 
 
-class MyPageAdapter(private val dataSet: Array<String>) :
+class MyPageAdapter :
     RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
+    private var _dataList = listOf<AbstractInfo>()
+    fun updateDataList(newList: List<AbstractInfo>) {
+        _dataList = newList
+    }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textViewName: TextView = itemView.findViewById(R.id.myPagePersonalName)
-        val textViewPhone: TextView = itemView.findViewById(R.id.myPagePersonalPhone)
+    class ViewHolder(private val binding: MyPagePersonalInfoItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(abstractInfo: AbstractInfo) {
+            binding.myPagePersonalName.text = abstractInfo.realName
+            binding.myPagePersonalPhone.text = abstractInfo.phone
+        }
+
+        companion object {
+            fun create(parent: ViewGroup) =
+                MyPagePersonalInfoItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+        }
     }
 
 
@@ -22,9 +38,7 @@ class MyPageAdapter(private val dataSet: Array<String>) :
      * 此方法会创建并初始化 [ViewHolder] 及其关联的 [View]，但不会填充视图的内容，因为 [ViewHolder] 此时尚未绑定到具体数据。
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.my_page_personal_info_item, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(ViewHolder.create(parent))
     }
 
 
@@ -34,8 +48,9 @@ class MyPageAdapter(private val dataSet: Array<String>) :
      * 例如，如果 [RecyclerView] 显示的是一个名称列表，该方法可能会在列表中查找适当的名称，并填充 ViewHolder 的 TextView 微件。
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(_dataList[position])
     }
 
-    override fun getItemCount() = dataSet.size
+    override fun getItemCount() = _dataList.size
 }
 

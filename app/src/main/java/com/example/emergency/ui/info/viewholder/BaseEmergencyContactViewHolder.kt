@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
-import com.example.emergency.ui.info.InformationAdapter
+import com.example.emergency.ui.info.InfoAdapter
 
 class BaseEmergencyContactViewHolder(
     val binding: InfoEmergencyContactItemBinding,
-    val emergencyPhoneTextWatcher: InformationAdapter.EmergencyPhoneTextWatcher,
-    val emergencyOnClickDelete: InformationAdapter.EmergencyOnClickDelete,
-    val emergencyRelationshipTextWatcher: InformationAdapter.EmergencyRelationshipTextWatcher
+    val emergencyPhoneTextWatcher: InfoAdapter.EmergencyPhoneTextWatcher,
+    val emergencyOnClickDelete: InfoAdapter.EmergencyOnClickDelete,
+    val emergencyRelationshipTextWatcher: InfoAdapter.EmergencyRelationshipTextWatcher
 ) :
     BaseViewHolder(binding) {
     init {

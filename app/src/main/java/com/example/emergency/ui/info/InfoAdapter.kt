@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
+import com.example.emergency.ui.INPUT_ARRAY_SIZE
+import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.info.viewholder.BaseEmergencyContactViewHolder
 import com.example.emergency.ui.info.viewholder.BaseInputViewHolder
 import com.example.emergency.ui.info.viewholder.BaseSpinnerViewHolder
@@ -35,11 +37,11 @@ class InputHint {
 }
 
 
-class InformationAdapter(
+class InfoAdapter(
     private val inputHints: Array<String>,
     private val spinnerList: (Int) -> List<String>,
     private val inputType: (Int) -> Int,
-    private val infoViewModel: InfoViewModel
+    private val myViewModel: MyViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //    private var lastEmptyPosition = -1
 
@@ -122,7 +124,7 @@ class InformationAdapter(
                 holder.bind(
                     inputHints[position],
                     inputType(position),
-                    infoViewModel.inputInfo[position]
+                    myViewModel.inputInfo[position]
                 )
 
             }
@@ -131,7 +133,7 @@ class InformationAdapter(
                 holder.bind(
                     inputHints[position],
                     spinnerList(position),
-                    infoViewModel.inputInfo[position]
+                    myViewModel.inputInfo[position]
                 )
             }
             is BaseEmergencyContactViewHolder -> {
@@ -140,14 +142,14 @@ class InformationAdapter(
                 holder.emergencyOnClickDelete.updatePosition(holder.adapterPosition)
                 holder.bind(
                     spinnerList(position),
-                    infoViewModel.emergencyNumber[position - INPUT_ARRAY_SIZE]
+                    myViewModel.emergencyNumber[position - INPUT_ARRAY_SIZE]
                 )
 
             }
         }
     }
 
-    override fun getItemCount(): Int = INPUT_ARRAY_SIZE + infoViewModel.emergencyNumber.size
+    override fun getItemCount(): Int = INPUT_ARRAY_SIZE + myViewModel.emergencyNumber.size
 
     inner class InputTextWatcher : TextWatcher {
         private var position = -1
@@ -158,7 +160,7 @@ class InformationAdapter(
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            infoViewModel.inputInfo[position] = text.toString()
+            myViewModel.inputInfo[position] = text.toString()
         }
 
         override fun afterTextChanged(p0: Editable?) {}
@@ -187,21 +189,21 @@ class InformationAdapter(
 
         override fun afterTextChanged(text: Editable?) {
             if (text.toString().trim().isNotEmpty()) {
-                if (infoViewModel.emergencyNumber[getIndex(position)][0] == "") {
+                if (myViewModel.emergencyNumber[getIndex(position)][0] == "") {
                     binding.infoRemoveEC.visibility = View.VISIBLE
-                    infoViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
-                    infoViewModel.emergencyNumber.add(arrayOf("", ""))
+                    myViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
+                    myViewModel.emergencyNumber.add(arrayOf("", ""))
                 } else {
-                    infoViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
+                    myViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
                     return
                 }
                 notifyItemChanged(itemCount)
             } else {
                 val empty =
-                    infoViewModel.emergencyNumber.mapIndexed { index, strings -> if (strings[0] == "") index else null }
+                    myViewModel.emergencyNumber.mapIndexed { index, strings -> if (strings[0] == "") index else null }
                         .filterNotNull()[0]
-                infoViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
-                infoViewModel.emergencyNumber.removeAt(empty)
+                myViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
+                myViewModel.emergencyNumber.removeAt(empty)
                 notifyItemRemoved(empty + INPUT_ARRAY_SIZE)
                 notifyItemRangeChanged(
                     empty + INPUT_ARRAY_SIZE,
@@ -223,7 +225,7 @@ class InformationAdapter(
         }
 
         override fun onClick(p0: View?) {
-            infoViewModel.emergencyNumber.removeAt(getIndex(position))
+            myViewModel.emergencyNumber.removeAt(getIndex(position))
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount - position)
         }
@@ -245,7 +247,7 @@ class InformationAdapter(
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun afterTextChanged(text: Editable?) {
-            infoViewModel.emergencyNumber[getIndex(position)][1] = text.toString()
+            myViewModel.emergencyNumber[getIndex(position)][1] = text.toString()
         }
     }
 }

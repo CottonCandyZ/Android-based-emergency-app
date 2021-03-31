@@ -1,9 +1,15 @@
-package com.example.emergency.ui.info
+package com.example.emergency.ui
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.emergency.data.InfoRepository
+import com.example.emergency.model.AbstractInfo
 import com.example.emergency.model.EmergencyContact
 import com.example.emergency.model.Info
+import com.example.emergency.ui.info.InputHint
+import kotlinx.coroutines.launch
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
@@ -11,13 +17,33 @@ import java.util.*
 
 const val INPUT_ARRAY_SIZE = 11
 
-class InfoViewModel(
+class MyViewModel(
     private val infoRepository: InfoRepository
 ) : ViewModel() {
     // 用于保存填入的信息
-    val inputInfo: Array<String> = Array(INPUT_ARRAY_SIZE) { "" }
-    val emergencyNumber: ArrayList<Array<String>> = arrayListOf(arrayOf("", ""))
+    lateinit var inputInfo: Array<String>
+    lateinit var emergencyNumber: ArrayList<Array<String>>
+    private val _abstractInfo = MutableLiveData<List<AbstractInfo>>()
+    val abstractInfo: LiveData<List<AbstractInfo>> = _abstractInfo
+    var fromSaveInfo = false
+
+    init {
+        viewModelScope.launch {
+            fetch(true)
+        }
+
+    }
+
+
     lateinit var info: Info
+    suspend fun fetch(remote: Boolean) {
+        _abstractInfo.value = infoRepository.getAbstractInfo(remote)
+    }
+
+    fun cleanup() {
+        inputInfo = Array(INPUT_ARRAY_SIZE) { "" }
+        emergencyNumber = arrayListOf(arrayOf("", ""))
+    }
 
     suspend fun save() {
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
@@ -26,7 +52,7 @@ class InfoViewModel(
             if (inputInfo[InputHint.WEIGHT] == "") 0 else inputInfo[InputHint.WEIGHT].toInt()
         info = Info(
             "",
-            inputInfo[InputHint.ADDRESS],
+            inputInfo[InputHint.REAL_NAME],
             inputInfo[InputHint.SEX],
             date,
             inputInfo[InputHint.PHONE],
