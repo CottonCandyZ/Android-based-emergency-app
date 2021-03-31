@@ -13,7 +13,7 @@ data class AbstractInfo(
 
 @Entity(tableName = "personal_info")
 data class Info(
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: String,
     val realName: String,
     val sex: String = "",
     val birthdate: Date = Date(0),
@@ -31,7 +31,7 @@ data class Info(
 @Entity(tableName = "emergency_contact", primaryKeys = ["infoId", "relationship", "phone"])
 data class EmergencyContact(
 
-    val infoId: Int, // 这里和唯一的 info id 绑定
+    val infoId: String, // 这里和唯一的 info id 绑定
     val relationship: String,
     val phone: String,
 )

@@ -19,7 +19,7 @@ class WebService {
         val result = query.find()
         val resultList: ArrayList<Info> = arrayListOf()
         result.forEach {
-            val id = it.get("id") as Int
+            val id = it.get("id") as String
             val info = Info(
                 id,
                 realName = it.get("realName") as String,
@@ -30,25 +30,29 @@ class WebService {
         return@withContext resultList
     }
 
-    suspend fun saveInfo(info: Info): Int =
+    suspend fun saveInfo(info: Info): String =
         withContext(Dispatchers.IO) {
             val remoteInfo = AVObject("Info")
             remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
             info.javaClass
                 .kotlin.declaredMemberProperties
                 .forEach {
-                    remoteInfo.put(it.name, it.get(info))
+                    if (it.name != "id") {
+                        remoteInfo.put(it.name, it.get(info))
+                    }
+
                 }
-            var id = 0
+            var id = ""
             remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
                 override fun onSubscribe(d: Disposable) {
                 }
 
                 override fun onNext(t: AVObject) {
-                    id = t.get("id") as Int
+                    id = t.objectId
                 }
 
                 override fun onError(e: Throwable) {
+                    throw e
                 }
 
                 override fun onComplete() {

@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_information.xml" value="0.1712962962962963" />
+        <entry key="app/src/main/res/layout/fragment_my_page.xml" value="0.2015625" />
+        <entry key="app/src/main/res/layout/info_input_item.xml" value="0.1712962962962963" />
         <entry key="app/src/main/res/layout/info_spinner_item.xml" value="0.12685185185185185" />
+        <entry key="app/src/main/res/layout/my_page_personal_info_item.xml" value="0.24166666666666667" />
       </map>
     </option>
   </component>

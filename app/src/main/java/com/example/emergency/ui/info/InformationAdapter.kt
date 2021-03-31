@@ -108,7 +108,9 @@ class InformationAdapter(
             else ->
                 BaseEmergencyContactViewHolder(
                     BaseEmergencyContactViewHolder.create(parent),
-                    EmergencyTextWatcher()
+                    EmergencyPhoneTextWatcher(),
+                    EmergencyOnClickDelete(),
+                    EmergencyRelationshipTextWatcher()
                 )
         }
     }
@@ -133,17 +135,19 @@ class InformationAdapter(
                 )
             }
             is BaseEmergencyContactViewHolder -> {
+                holder.emergencyPhoneTextWatcher.updatePosition(holder.adapterPosition)
+                holder.emergencyRelationshipTextWatcher.updatePosition(holder.adapterPosition)
+                holder.emergencyOnClickDelete.updatePosition(holder.adapterPosition)
                 holder.bind(
                     spinnerList(position),
                     infoViewModel.emergencyNumber[position - INPUT_ARRAY_SIZE]
                 )
-                holder.emergencyTextWatcher.updatePosition(holder.adapterPosition)
+
             }
         }
     }
 
     override fun getItemCount(): Int = INPUT_ARRAY_SIZE + infoViewModel.emergencyNumber.size
-
 
     inner class InputTextWatcher : TextWatcher {
         private var position = -1
@@ -160,9 +164,8 @@ class InformationAdapter(
         override fun afterTextChanged(p0: Editable?) {}
     }
 
-    inner class EmergencyTextWatcher : TextWatcher {
+    inner class EmergencyPhoneTextWatcher : TextWatcher {
         private var position = -1
-        private var before = ""
 
         private lateinit var binding: InfoEmergencyContactItemBinding
 
@@ -178,60 +181,71 @@ class InformationAdapter(
             return position - INPUT_ARRAY_SIZE
         }
 
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
-
-        override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-        }
+        override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun afterTextChanged(text: Editable?) {
             if (text.toString().trim().isNotEmpty()) {
-                if (before == "") {
+                if (infoViewModel.emergencyNumber[getIndex(position)][0] == "") {
                     binding.infoRemoveEC.visibility = View.VISIBLE
-                    before = text.toString()
+                    infoViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
+                    infoViewModel.emergencyNumber.add(arrayOf("", ""))
                 } else {
-                    before = text.toString()
+                    infoViewModel.emergencyNumber[getIndex(position)][0] = text.toString()
                     return
                 }
-                infoViewModel.emergencyNumber.add(
-                    infoViewModel.emergencyNumber.size - 1, arrayOf(text.toString(), "")
-                )
                 notifyItemChanged(itemCount)
             } else {
                 val empty =
                     infoViewModel.emergencyNumber.mapIndexed { index, strings -> if (strings[0] == "") index else null }
                         .filterNotNull()[0]
-                notifyItemRemoved(empty + INPUT_ARRAY_SIZE)
-                notifyItemRangeChanged(empty + INPUT_ARRAY_SIZE, itemCount - 1)
                 infoViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
                 infoViewModel.emergencyNumber.removeAt(empty)
-
-
-//                if (position == itemCount - 1) {
-//                    notifyItemRemoved(lastEmptyPosition)
-//                    notifyItemRangeChanged(lastEmptyPosition, itemCount)
-//                    infoViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
-//                    infoViewModel.emergencyNumber.removeAt(getIndex(lastEmptyPosition))
-//                } else if (position < itemCount - 1) {
-//                    if (lastEmptyPosition != -1 && lastEmptyPosition != itemCount - 2) {
-//                        notifyItemRemoved(lastEmptyPosition)
-//                        notifyItemRangeChanged(lastEmptyPosition, itemCount - 1)
-//                        infoViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
-//                        infoViewModel.emergencyNumber.removeAt(getIndex(lastEmptyPosition))
-//                    } else {
-//
-//                        notifyItemRemoved(itemCount - 1)
-//                        infoViewModel.emergencyNumber.removeAt(getIndex(itemCount - 1))
-//                        infoViewModel.emergencyNumber[getIndex(position)] = arrayOf("", "")
-//                    }
-//                    lastEmptyPosition = position
-//                }
-                before = ""
+                notifyItemRemoved(empty + INPUT_ARRAY_SIZE)
+                notifyItemRangeChanged(
+                    empty + INPUT_ARRAY_SIZE,
+                    itemCount - empty + INPUT_ARRAY_SIZE
+                )
                 binding.infoRemoveEC.visibility = View.GONE
             }
         }
+    }
 
+    inner class EmergencyOnClickDelete : View.OnClickListener {
+        private var position = -1
+        fun updatePosition(position: Int) {
+            this.position = position
+        }
+
+        private fun getIndex(position: Int): Int {
+            return position - INPUT_ARRAY_SIZE
+        }
+
+        override fun onClick(p0: View?) {
+            infoViewModel.emergencyNumber.removeAt(getIndex(position))
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, itemCount - position)
+        }
+    }
+
+    inner class EmergencyRelationshipTextWatcher : TextWatcher {
+        private var position = -1
+        fun updatePosition(position: Int) {
+            this.position = position
+        }
+
+        private fun getIndex(position: Int): Int {
+            return position - INPUT_ARRAY_SIZE
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun afterTextChanged(text: Editable?) {
+            infoViewModel.emergencyNumber[getIndex(position)][1] = text.toString()
+        }
     }
 }

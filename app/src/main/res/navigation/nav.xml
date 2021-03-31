@@ -67,7 +67,7 @@
         tools:layout="@layout/fragment_history" />
     <fragment
         android:id="@+id/user"
-        android:name="com.example.emergency.ui.MyPageFragment"
+        android:name="com.example.emergency.ui.myPage.MyPageFragment"
         android:label="用户"
         tools:layout="@layout/fragment_my_page">
         <action

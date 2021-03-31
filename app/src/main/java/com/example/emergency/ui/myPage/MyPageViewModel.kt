@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.myPage
 
 import androidx.lifecycle.ViewModel
 

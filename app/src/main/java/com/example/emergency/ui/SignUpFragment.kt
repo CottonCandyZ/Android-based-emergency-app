@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import cn.leancloud.AVException
 import cn.leancloud.AVObject
 import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
@@ -106,7 +107,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                         // 转变视图
                                         changeViewToSetPwd()
                                     }
-                                } catch (e: Throwable) {
+                                } catch (e: AVException) {
                                     // 如果出现错误，用户需要可再次请求
                                     binding.buttonNextStep.isEnabled = true
                                     // 给出错误提示

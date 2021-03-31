@@ -36,7 +36,7 @@ class InfoRepository(private val infoDao: InfoDao, private val webService: WebSe
         infoDao.insertInfo(*list.toTypedArray())
     }
 
-    suspend fun saveInfo(info: Info): Int {
+    suspend fun saveInfo(info: Info): String {
         return webService.saveInfo(info)
     }
 

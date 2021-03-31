@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.myPage
 
 import android.view.LayoutInflater
 import android.view.View

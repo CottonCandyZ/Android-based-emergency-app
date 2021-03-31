@@ -4,22 +4,29 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.leancloud.AVException
 import com.example.emergency.R
 import com.example.emergency.WebService
 import com.example.emergency.data.AppDatabase
 import com.example.emergency.data.InfoRepository
 import com.example.emergency.databinding.FragmentInformationBinding
 import com.example.emergency.util.BaseFragment
+import com.example.emergency.util.showError
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class InformationFragment : BaseFragment() {
+class InformationFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
     private var _binding: FragmentInformationBinding? = null
     private val binding get() = _binding!!
@@ -32,6 +39,7 @@ class InformationFragment : BaseFragment() {
         )
     }
     private val dataInput: ArrayList<String> = arrayListOf()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,7 +58,34 @@ class InformationFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.save -> {
-                Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT).show()
+                if (infoViewModel.inputInfo[InputHint.REAL_NAME] == ""
+                    && infoViewModel.inputInfo[InputHint.BIRTHDATE] == ""
+                    && infoViewModel.inputInfo[InputHint.PHONE].length != 11
+                ) {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("请确认输入是否完整")
+                    builder.setPositiveButton("确认") { _, _ ->
+                    }
+                    builder.create().show()
+
+                } else {
+                    launch {
+                        item.isEnabled = false
+                        binding.progressBar3.visibility = View.VISIBLE
+                        try {
+                            infoViewModel.save()
+                        } catch (e: AVException) {
+                            item.isEnabled = true
+                            showError(e, requireContext())
+                        }
+                        binding.progressBar3.visibility = View.INVISIBLE
+
+                        Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT).show()
+                        findNavController().navigateUp()
+                    }
+                }
+
+
             }
         }
         return super.onOptionsItemSelected(item)
@@ -84,7 +119,7 @@ class InformationFragment : BaseFragment() {
             listOf("男", "女"),
             listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"),
             listOf(
-                "本人",
+                "家人",
                 "母亲",
                 "父亲",
                 "父母",
