@@ -6,7 +6,6 @@ import com.example.emergency.model.AbstractInfo
 import com.example.emergency.model.EmergencyContact
 import com.example.emergency.model.Info
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.util.concurrent.TimeUnit
 
 class InfoRepository(private val infoDao: InfoDao, private val webService: WebService) {
     @ExperimentalCoroutinesApi
@@ -46,9 +45,9 @@ class InfoRepository(private val infoDao: InfoDao, private val webService: WebSe
     }
 
 
-    companion object {
-        val FRESH_TIMEOUT = TimeUnit.DAYS.toMillis(1)
-    }
+//    companion object {
+//        val FRESH_TIMEOUT = TimeUnit.DAYS.toMillis(1)
+//    }
 
 
 }

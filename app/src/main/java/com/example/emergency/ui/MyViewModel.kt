@@ -1,5 +1,6 @@
 package com.example.emergency.ui
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.emergency.model.AbstractInfo
 import com.example.emergency.model.EmergencyContact
 import com.example.emergency.model.Info
 import com.example.emergency.ui.info.InputHint
+import com.example.emergency.util.showError
 import kotlinx.coroutines.launch
 import java.sql.Date
 import java.text.SimpleDateFormat
@@ -18,7 +20,8 @@ import java.util.*
 const val INPUT_ARRAY_SIZE = 11
 
 class MyViewModel(
-    private val infoRepository: InfoRepository
+    private val infoRepository: InfoRepository,
+    context: Context
 ) : ViewModel() {
     // 用于保存填入的信息
     lateinit var inputInfo: Array<String>
@@ -29,7 +32,13 @@ class MyViewModel(
 
     init {
         viewModelScope.launch {
-            fetch(true)
+            try {
+                fetch(true)
+            } catch (e: Exception) {
+                fetch(false)
+                showError(e.cause!!, context)
+            }
+
         }
 
     }

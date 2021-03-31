@@ -19,6 +19,7 @@ import com.example.emergency.databinding.FragmentMyPageBinding
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.MyViewModelFactory
 import com.example.emergency.util.BaseFragment
+import com.example.emergency.util.showError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
@@ -46,7 +47,8 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                 InfoRepository(
                     AppDatabase.getInstance(requireContext()).infoDao(),
                     WebService()
-                )
+                ),
+                requireContext()
             )
         ).get(MyViewModel::class.java)
         return binding.root
@@ -56,9 +58,13 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         super.onResume()
         if (myViewModel.fromSaveInfo) {
             launch {
-                myViewModel.fetch(true)
+                try {
+                    myViewModel.fetch(true)
+                } catch (e: Exception) {
+                    showError(e.cause!!, requireContext())
+                    myViewModel.fetch(false)
+                }
             }
-
             myViewModel.fromSaveInfo = false
         } else {
             launch {
@@ -90,7 +96,12 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
             swipRefresh.setOnRefreshListener {
                 launch {
-                    myViewModel.fetch(true)
+                    try {
+                        myViewModel.fetch(true)
+                    } catch (e: Exception) {
+                        showError(e.cause!!, requireContext())
+                        swipRefresh.isRefreshing = false
+                    }
                     swipRefresh.isRefreshing = false
                 }
 

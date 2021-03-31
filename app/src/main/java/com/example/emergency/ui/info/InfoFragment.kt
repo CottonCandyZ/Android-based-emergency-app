@@ -54,7 +54,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                 InfoRepository(
                     AppDatabase.getInstance(requireContext()).infoDao(),
                     WebService()
-                )
+                ),
+                requireContext()
             )
         ).get(MyViewModel::class.java)
         return binding.root

@@ -10,6 +10,7 @@ fun showError(e: Throwable, context: Context) {
         211 -> "该用户尚未注册"
         219 -> "登录失败次数超过限制，请稍候再试，或尝试重制密码"
         603 -> "验证码无效"
+        999 -> "网络断开"
         else -> "error: code $code"
     }
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

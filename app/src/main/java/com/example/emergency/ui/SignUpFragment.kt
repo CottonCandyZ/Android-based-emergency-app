@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import cn.leancloud.AVException
 import cn.leancloud.AVObject
 import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
@@ -33,6 +32,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
+    private lateinit var myCountDownTimer: CountDownTimer
     private var step = 0
 
 
@@ -47,7 +47,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         // 创建一个计时器
-        val myCountDownTimer = object : CountDownTimer(
+        myCountDownTimer = object : CountDownTimer(
             60000,
             1000
         ) {
@@ -107,7 +107,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                         // 转变视图
                                         changeViewToSetPwd()
                                     }
-                                } catch (e: AVException) {
+                                } catch (e: Exception) {
                                     // 如果出现错误，用户需要可再次请求
                                     binding.buttonNextStep.isEnabled = true
                                     // 给出错误提示
@@ -129,7 +129,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                     Toast.makeText(requireContext(), "设置密码成功", Toast.LENGTH_SHORT)
                                         .show()
                                     findNavController().navigate(R.id.action_signUpFragment_to_emergency)
-                                } catch (e: Throwable) {
+                                } catch (e: Exception) {
                                     binding.progressBar2.visibility = View.INVISIBLE
                                     binding.buttonNextStep.isEnabled = true
                                     showError(e.cause!!, requireContext())
@@ -166,7 +166,6 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             buttonGetCode.setOnClickListener {
                 val phone = signUpPhoneText.text.toString().trim()
                 sendCodeForSignUp(phone)
-                myCountDownTimer.start()
             }
 
             // 验证验证码合法性，不得少于 6 位
@@ -224,7 +223,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
         try {
             query.whereEqualTo("phone", phone)
             return@withContext query.count() == 1
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             throw e
         }
     }
@@ -242,6 +241,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
 
             override fun onNext(t: AVNull) {
                 Toast.makeText(requireContext(), "发送成功", Toast.LENGTH_SHORT).show()
+                myCountDownTimer.start()
             }
 
             override fun onError(e: Throwable) {
@@ -260,7 +260,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             try {
                 AVUser.signUpOrLoginByMobilePhone("+86$phone", code)
 
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 throw e
             }
         }
@@ -274,7 +274,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
 
             try {
                 user.save()
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 throw e
             }
         }
@@ -286,7 +286,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             newUser.put("phone", phone)
             try {
                 newUser.save()
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 throw e
             }
         }
