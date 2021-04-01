@@ -4,13 +4,13 @@ import android.app.DatePickerDialog
 import android.content.Context
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoInputItemBinding
-import com.example.emergency.ui.info.InfoAdapter
+import com.example.emergency.ui.info.EditInfoAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DatePickerInputViewHolder(
     binding: InfoInputItemBinding,
-    inputTextWatcher: InfoAdapter.InputTextWatcher,
+    inputTextWatcher: EditInfoAdapter.InputTextWatcher,
     context: Context,
     isRequired: Boolean,
 ) : BaseInputViewHolder(binding, inputTextWatcher, isRequired) {

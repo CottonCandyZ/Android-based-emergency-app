@@ -4,7 +4,7 @@ import androidx.room.*
 import java.sql.Date
 
 data class AbstractInfo(
-    val id: Int,
+    val id: String,
     val realName: String,
     val phone: String,
 //    val lastUpdate: Long
@@ -13,8 +13,8 @@ data class AbstractInfo(
 
 @Entity(tableName = "personal_info")
 data class Info(
-    @PrimaryKey val id: String,
-    val realName: String,
+    @PrimaryKey val id: String = "",
+    val realName: String = "",
     val sex: String = "",
     val birthdate: Date = Date(0),
     val phone: String = "",
@@ -28,9 +28,9 @@ data class Info(
 //    val lastUpdate: Long
 )
 
-@Entity(tableName = "emergency_contact", primaryKeys = ["infoId", "relationship", "phone"])
+@Entity(tableName = "emergency_contact")
 data class EmergencyContact(
-
+    @PrimaryKey val id: String = "",
     val infoId: String, // 这里和唯一的 info id 绑定
     val relationship: String,
     val phone: String,

@@ -37,8 +37,7 @@ class InputHint {
 }
 
 
-class InfoAdapter(
-    private val inputHints: Array<String>,
+class EditInfoAdapter(
     private val spinnerList: (Int) -> List<String>,
     private val inputType: (Int) -> Int,
     private val myViewModel: MyViewModel
@@ -122,7 +121,7 @@ class InfoAdapter(
             is BaseInputViewHolder -> {
                 holder.inputTextWatcher.updatePosition(position)
                 holder.bind(
-                    inputHints[position],
+                    myViewModel.inputHints[position],
                     inputType(position),
                     myViewModel.inputInfo[position]
                 )
@@ -131,7 +130,7 @@ class InfoAdapter(
             is BaseSpinnerViewHolder -> {
                 holder.inputTextWatcher.updatePosition(position)
                 holder.bind(
-                    inputHints[position],
+                    myViewModel.inputHints[position],
                     spinnerList(position),
                     myViewModel.inputInfo[position]
                 )

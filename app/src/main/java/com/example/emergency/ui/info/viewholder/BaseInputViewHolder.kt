@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import com.example.emergency.databinding.InfoInputItemBinding
-import com.example.emergency.ui.info.InfoAdapter
+import com.example.emergency.ui.info.EditInfoAdapter
 
 open class BaseInputViewHolder(
     val binding: InfoInputItemBinding,
-    val inputTextWatcher: InfoAdapter.InputTextWatcher,
+    val inputTextWatcher: EditInfoAdapter.InputTextWatcher,
     isRequired: Boolean = false,
     isPhoneNumber: Boolean = false,
 ) :

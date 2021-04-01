@@ -25,7 +25,7 @@ interface InfoDao {
 
     // 通过 ID 删除
     @Query("DELETE FROM personal_info WHERE id = :id")
-    suspend fun deleteById(id: Int)
+    suspend fun deleteById(id: String)
 
 
     @Query("SELECT id, realName, phone FROM personal_info")
@@ -40,7 +40,7 @@ interface InfoDao {
     // 关联查询 查找紧急联系人
     @Transaction
     @Query("SELECT * FROM personal_info WHERE id = :id")
-    suspend fun getInfoWithEmergencyContact(id: Int): List<InfoWithEmergencyContact>
+    suspend fun getInfoWithEmergencyContact(id: String): List<InfoWithEmergencyContact>
 
 //    // 查询某行是否超时
 //    @Query("SELECT id FROM personal_info WHERE lastUpdate < :remoteUpdate")

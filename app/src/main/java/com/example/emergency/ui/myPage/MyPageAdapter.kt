@@ -3,20 +3,33 @@ package com.example.emergency.ui.myPage
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.example.emergency.R
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
 import com.example.emergency.model.AbstractInfo
+import com.example.emergency.ui.MyViewModel
 
 
-class MyPageAdapter :
+class MyPageAdapter(
+    private val myViewModel: MyViewModel
+) :
     RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
     private var _dataList = listOf<AbstractInfo>()
     fun updateDataList(newList: List<AbstractInfo>) {
         _dataList = newList
     }
 
-    class ViewHolder(private val binding: MyPagePersonalInfoItemBinding) :
+    class ViewHolder(
+        private val binding: MyPagePersonalInfoItemBinding,
+        val onClickListener: OnClickListener
+    ) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            onClickListener.setBiding(binding)
+            binding.myPageCard.setOnClickListener(onClickListener)
+        }
+
         fun bind(abstractInfo: AbstractInfo) {
             binding.myPagePersonalName.text = abstractInfo.realName
             binding.myPagePersonalPhone.text = abstractInfo.phone
@@ -38,7 +51,7 @@ class MyPageAdapter :
      * 此方法会创建并初始化 [ViewHolder] 及其关联的 [View]，但不会填充视图的内容，因为 [ViewHolder] 此时尚未绑定到具体数据。
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ViewHolder.create(parent))
+        return ViewHolder(ViewHolder.create(parent), OnClickListener())
     }
 
 
@@ -49,8 +62,26 @@ class MyPageAdapter :
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(_dataList[position])
+        holder.onClickListener.setId(_dataList[position].id)
     }
 
     override fun getItemCount() = _dataList.size
+
+    inner class OnClickListener : View.OnClickListener {
+        private var id: String? = null
+        private lateinit var binding: MyPagePersonalInfoItemBinding
+        fun setId(id: String) {
+            this.id = id
+        }
+
+        fun setBiding(binding: MyPagePersonalInfoItemBinding) {
+            this.binding = binding
+        }
+
+        override fun onClick(p0: View?) {
+            myViewModel.showInfoId = id
+            binding.root.findNavController().navigate(R.id.action_user_to_showInfoFragment)
+        }
+    }
 }
 

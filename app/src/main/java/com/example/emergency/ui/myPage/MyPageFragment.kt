@@ -12,9 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVUser
 import com.example.emergency.R
-import com.example.emergency.WebService
-import com.example.emergency.data.AppDatabase
-import com.example.emergency.data.InfoRepository
 import com.example.emergency.databinding.FragmentMyPageBinding
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.MyViewModelFactory
@@ -44,10 +41,6 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         _binding = FragmentMyPageBinding.inflate(inflater, container, false)
         myViewModel = ViewModelProvider(
             requireActivity(), MyViewModelFactory(
-                InfoRepository(
-                    AppDatabase.getInstance(requireContext()).infoDao(),
-                    WebService()
-                ),
                 requireContext()
             )
         ).get(MyViewModel::class.java)
@@ -59,16 +52,16 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         if (myViewModel.fromSaveInfo) {
             launch {
                 try {
-                    myViewModel.fetch(true)
+                    myViewModel.fetchAbstractInfo(true)
                 } catch (e: Exception) {
                     showError(e.cause!!, requireContext())
-                    myViewModel.fetch(false)
+                    myViewModel.fetchAbstractInfo(false)
                 }
             }
             myViewModel.fromSaveInfo = false
         } else {
             launch {
-                myViewModel.fetch(false)
+                myViewModel.fetchAbstractInfo(false)
             }
         }
     }
@@ -81,7 +74,7 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                 AVUser.logOut()
                 findNavController().navigate(R.id.action_user_to_loginFragment)
             }
-            val myPageAdapter = MyPageAdapter()
+            val myPageAdapter = MyPageAdapter(myViewModel)
             with(myPageRecyclerView) {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = myPageAdapter
@@ -97,7 +90,7 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
             swipRefresh.setOnRefreshListener {
                 launch {
                     try {
-                        myViewModel.fetch(true)
+                        myViewModel.fetchAbstractInfo(true)
                     } catch (e: Exception) {
                         showError(e.cause!!, requireContext())
                         swipRefresh.isRefreshing = false

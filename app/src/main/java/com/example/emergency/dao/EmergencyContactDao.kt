@@ -1,15 +1,12 @@
 package com.example.emergency.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Update
+import androidx.room.*
 import com.example.emergency.model.EmergencyContact
 
 
 @Dao
 interface EmergencyContactDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEmergencyContact(info: EmergencyContact)
 
     @Update

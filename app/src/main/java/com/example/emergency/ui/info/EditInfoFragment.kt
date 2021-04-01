@@ -12,10 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVException
 import com.example.emergency.R
-import com.example.emergency.WebService
-import com.example.emergency.data.AppDatabase
-import com.example.emergency.data.InfoRepository
-import com.example.emergency.databinding.FragmentInformationBinding
+import com.example.emergency.databinding.FragmentEditInfoBinding
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.MyViewModelFactory
 import com.example.emergency.util.BaseFragment
@@ -28,9 +25,9 @@ import kotlinx.coroutines.launch
 /**
  * A simple [Fragment] subclass.
  */
-class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
+class EditInfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
-    private var _binding: FragmentInformationBinding? = null
+    private var _binding: FragmentEditInfoBinding? = null
     private val binding get() = _binding!!
 
     //    private val myViewModel: MyViewModel by viewModels {
@@ -48,13 +45,9 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         savedInstanceState: Bundle?
     ): View {
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
-        _binding = FragmentInformationBinding.inflate(inflater, container, false)
+        _binding = FragmentEditInfoBinding.inflate(inflater, container, false)
         myViewModel = ViewModelProvider(
             requireActivity(), MyViewModelFactory(
-                InfoRepository(
-                    AppDatabase.getInstance(requireContext()).infoDao(),
-                    WebService()
-                ),
                 requireContext()
             )
         ).get(MyViewModel::class.java)
@@ -110,56 +103,14 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         setHasOptionsMenu(true)
         myViewModel.cleanup()
 
-        val inputHints = arrayOf(
-            getString(R.string.info_add_real_name_hint),
-            getString(R.string.info_add_sex_hint),
-//            getString(R.string.info_relationship),
-            getString(R.string.info_add_birth_hint),
-            getString(R.string.info_add_phone_hint),
-            getString(R.string.info_add_weight_hint),
-            getString(R.string.info_add_blood_type_hint),
-            getString(R.string.info_add_medical_conditions_hint),
-            getString(R.string.info_add_medical_notes_hint),
-            getString(R.string.info_add_allergy_hint),
-            getString(R.string.info_add_medications_hint),
-            getString(R.string.info_add_address_hint)
-        )
 
-        val spinnerList = arrayOf(
-            listOf("男", "女"),
-            listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"),
-            listOf(
-                "家人",
-                "母亲",
-                "父亲",
-                "父母",
-                "兄弟",
-                "姐妹",
-                "儿子",
-                "女儿",
-                "子女",
-                "朋友",
-                "配偶",
-                "伴侣",
-                "助理",
-                "上司",
-                "医生",
-                "紧急联系人",
-                "家庭成员",
-                "老师",
-                "看护",
-                "监护人",
-                "社会工作者",
-                "学校",
-                "托儿所"
-            )
-        )
+
 
         val spinnerLists = fun(position: Int): List<String> {
             return when (position) {
-                InputHint.SEX -> spinnerList[0]
-                InputHint.BLOOD_TYPE -> spinnerList[1]
-                else -> spinnerList[2]
+                InputHint.SEX -> myViewModel.spinnerList[0]
+                InputHint.BLOOD_TYPE -> myViewModel.spinnerList[1]
+                else -> myViewModel.spinnerList[2]
             }
         }
 
@@ -173,8 +124,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         }
 
 
-        val informationAdapter = InfoAdapter(
-            inputHints,
+        val informationAdapter = EditInfoAdapter(
             spinnerLists,
             inputType,
             myViewModel
