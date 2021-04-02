@@ -15,6 +15,13 @@ interface EmergencyContactDao {
     @Delete
     suspend fun delete(vararg info: EmergencyContact)
 
+    @Query("DELETE FROM emergency_contact WHERE infoId = :id")
+    suspend fun deleteByInfoId(id: String)
+
+    // 删除全部
+    @Query("DELETE FROM emergency_contact")
+    suspend fun nukeTable()
+
     /**
      * 查询在 [InfoDao] 中已写
      */

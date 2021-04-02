@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.databinding.InfoEmergencyShowItemBinding
 import com.example.emergency.databinding.InfoShowItemBinding
+import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.INPUT_ARRAY_SIZE
 import com.example.emergency.ui.MyViewModel
 
@@ -19,11 +20,11 @@ class ShowInfoAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var _infoList: Array<String> = arrayOf()
-    private var _emergencyNumberList: List<Array<String>> = listOf()
+    private var _emergencyNumberList: List<EmergencyContact> = listOf()
     private var title = 0
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateDataList(infoList: Array<String>, emergencyNumberList: List<Array<String>>) {
+    fun updateDataList(infoList: Array<String>, emergencyNumberList: List<EmergencyContact>) {
         _infoList = infoList
         _emergencyNumberList = emergencyNumberList
         title = 1
@@ -101,13 +102,14 @@ class ShowInfoAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is InfoViewHolder -> {
-                val text = if (_infoList[position] == "") "尚未填写" else _infoList[position]
+                val text =
+                    if (_infoList[position] == "" || _infoList[position] == "1970/01/01") "尚未填写" else _infoList[position]
                 holder.bind(myViewModel.inputHints[position], text)
             }
             is TitleViewHolder -> holder.bind("紧急联系人")
             is EmergencyNumberViewHolder -> holder.bind(
-                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][0],
-                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][1]
+                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1].phone,
+                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1].relationship
             )
         }
     }

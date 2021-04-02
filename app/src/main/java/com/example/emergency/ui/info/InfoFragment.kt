@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVException
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentInfoBinding
+import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.MyViewModelFactory
@@ -109,7 +110,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             R.id.edit -> {
                 saveMenuItem.isVisible = true
                 editMenuItem.isVisible = false
-                myViewModel.emergencyNumber.add(arrayOf("", ""))
+                myViewModel.emergencyNumber.add(EmergencyContact())
                 createEditView()
 
             }
@@ -142,7 +143,23 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                     adapter = myPageAdapter
                 }
                 launch {
-                    myViewModel.fetchInfo(true)
+                    try {
+                        if (!myViewModel.fetchInfo(true)) {
+                            // 这里是一个错误处理 暂时没有包装
+                            findNavController().navigateUp()
+                            Toast.makeText(requireContext(), "数据似乎已经被删除了", Toast.LENGTH_SHORT)
+                                .show()
+                            try {
+                            } catch (e: Throwable) {
+                                showError(e, requireContext())
+                            }
+                        }
+                    } catch (e: Throwable) {
+                        showError(e, requireContext())
+                        myViewModel.fetchInfo(false)
+                        editMenuItem.isEnabled = false
+                    }
+
                     myPageAdapter.updateDataList(myViewModel.inputInfo, myViewModel.emergencyNumber)
                 }
             }

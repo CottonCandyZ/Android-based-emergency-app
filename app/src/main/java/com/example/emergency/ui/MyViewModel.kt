@@ -30,7 +30,8 @@ class MyViewModel(
 ) : ViewModel() {
     // 用于保存填入的信息
     lateinit var inputInfo: Array<String>
-    lateinit var emergencyNumber: ArrayList<Array<String>>
+    lateinit var emergencyNumber: ArrayList<EmergencyContact>
+    private lateinit var emergencyContactsCopy: ArrayList<EmergencyContact>
 
 
     // hints
@@ -122,13 +123,11 @@ class MyViewModel(
     }
 
     // 获取详细信息的数据
-    suspend fun fetchInfo(remote: Boolean) {
+    suspend fun fetchInfo(remote: Boolean): Boolean {
+        emergencyContactsCopy = arrayListOf()
 
-        val result = infoRepository.getInfo(showInfoId!!, remote)
-        if (result.isEmpty()) {
-        } else {
-            infoWithEmergencyContact = result[0]
-        }
+        val result = infoRepository.getInfo(showInfoId!!, remote) ?: return false
+        infoWithEmergencyContact = result[0]
         val info = infoWithEmergencyContact.info
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
         inputInfo = Array(INPUT_ARRAY_SIZE) { "" }
@@ -150,14 +149,16 @@ class MyViewModel(
         }
         val emergencyContacts = infoWithEmergencyContact.emergencyContacts
         emergencyContacts.forEach {
-            emergencyNumber.add(arrayOf(it.phone, it.relationship))
+            emergencyNumber.add(it)
         }
+        emergencyContactsCopy.addAll(emergencyContacts)
+        return true
     }
 
 
     fun cleanup() {
         inputInfo = Array(INPUT_ARRAY_SIZE) { "" }
-        emergencyNumber = arrayListOf(arrayOf("", ""))
+        emergencyNumber = arrayListOf(EmergencyContact())
     }
 
     suspend fun save(saveFromId: Boolean) {
@@ -189,15 +190,23 @@ class MyViewModel(
             infoRepository.saveInfo(info, true)
         }
 
-        val saveList = emergencyNumber.filter { it[0] != "" }
-        for (strings in saveList) {
-            infoRepository.saveEmergencyContact(
-                EmergencyContact(
-                    infoId = infoId,
-                    phone = strings[0],
-                    relationship = strings[1],
-                )
-            )
+        val saveList = emergencyNumber.filter { it.phone != "" }
+
+        saveList.forEach {
+            it.infoId = infoId
+            if (saveFromId) {
+                infoRepository.saveEmergencyContact(it, true)
+            } else {
+                infoRepository.saveEmergencyContact(it, false)
+            }
         }
+        if (saveFromId) {
+            emergencyContactsCopy.forEach { old ->
+                if (!emergencyNumber.any { it.id == old.id }) {
+                    infoRepository.deleteEmergencyContact(old.id)
+                }
+            }
+        }
+
     }
 }

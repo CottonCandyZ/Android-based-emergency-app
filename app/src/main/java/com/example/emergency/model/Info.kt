@@ -31,9 +31,9 @@ data class Info(
 @Entity(tableName = "emergency_contact")
 data class EmergencyContact(
     @PrimaryKey val id: String = "",
-    val infoId: String, // 这里和唯一的 info id 绑定
-    val relationship: String,
-    val phone: String,
+    var infoId: String = "", // 这里和唯一的 info id 绑定
+    var relationship: String = "",
+    var phone: String = "",
 )
 
 // 一对多关系

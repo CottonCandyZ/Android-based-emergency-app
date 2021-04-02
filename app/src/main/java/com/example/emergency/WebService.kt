@@ -15,7 +15,7 @@ import kotlin.reflect.full.declaredMemberProperties
 
 class WebService {
 
-    suspend fun getInfoWithEmergencyContact(id: String): InfoWithEmergencyContact =
+    suspend fun getInfoWithEmergencyContact(id: String): InfoWithEmergencyContact? =
         withContext(Dispatchers.IO) {
             val queryInfo = AVQuery<AVObject>("Info")
             queryInfo.whereEqualTo("objectId", id)
@@ -53,6 +53,10 @@ class WebService {
                 )
                 emergencyContacts.add(emergencyContact)
             }
+
+            if (info == null) return@withContext null
+
+
             return@withContext InfoWithEmergencyContact(
                 info!!,
                 emergencyContacts
@@ -111,14 +115,19 @@ class WebService {
             return@withContext id
         }
 
-    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact) =
+    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) =
         withContext(Dispatchers.IO) {
             val remoteEmergencyContact = AVObject("EmergencyContact")
             emergencyContact.javaClass
                 .kotlin.declaredMemberProperties
                 .forEach {
-                    remoteEmergencyContact.put(it.name, it.get(emergencyContact))
+                    if (it.name != "id") {
+                        remoteEmergencyContact.put(it.name, it.get(emergencyContact))
+                    }
                 }
+            if (saveById) {
+                remoteEmergencyContact.objectId = emergencyContact.id
+            }
             remoteEmergencyContact.save()
         }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
+import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.info.EditInfoAdapter
 
 class BaseEmergencyContactViewHolder(
@@ -27,18 +28,18 @@ class BaseEmergencyContactViewHolder(
         binding.infoECRelationshipText.addTextChangedListener(emergencyRelationshipTextWatcher)
     }
 
-    fun bind(list: List<String>, inputText: Array<String>) {
+    fun bind(list: List<String>, emergencyContact: EmergencyContact) {
         binding.infoECRelationshipText.setAdapter(
             ArrayAdapter(binding.root.context, R.layout.list_item, list)
         )
         binding.infoECPhoneText.removeTextChangedListener(emergencyPhoneTextWatcher)
-        if (inputText[0] != "") {
+        if (emergencyContact.phone != "") {
             binding.infoRemoveEC.visibility = View.VISIBLE
         } else {
             binding.infoRemoveEC.visibility = View.GONE
         }
-        binding.infoECPhoneText.setText(inputText[0])
-        binding.infoECRelationshipText.setText(inputText[1], false)
+        binding.infoECPhoneText.setText(emergencyContact.phone)
+        binding.infoECRelationshipText.setText(emergencyContact.relationship, false)
         binding.infoECPhoneText.addTextChangedListener(emergencyPhoneTextWatcher)
     }
 

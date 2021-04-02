@@ -31,6 +31,7 @@ interface InfoDao {
     @Query("SELECT id, realName, phone FROM personal_info")
     suspend fun getAbstractInfo(): List<AbstractInfo>
 
+    // 删除全部
     @Query("DELETE FROM personal_info")
     suspend fun nukeTable()
 

@@ -7,14 +7,12 @@ import com.example.emergency.model.AbstractInfo
 import com.example.emergency.model.EmergencyContact
 import com.example.emergency.model.Info
 import com.example.emergency.model.InfoWithEmergencyContact
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class InfoRepository(
     private val infoDao: InfoDao,
     private val emergencyContactDao: EmergencyContactDao,
     private val webService: WebService
 ) {
-    @ExperimentalCoroutinesApi
     suspend fun getAbstractInfo(fetch: Boolean): List<AbstractInfo> {
         if (fetch) {
             refreshAbstractInfo()
@@ -26,22 +24,26 @@ class InfoRepository(
     private suspend fun refreshAbstractInfo() {
         val list = webService.getAbstractInfo()
         infoDao.nukeTable()
+        emergencyContactDao.nukeTable()
         infoDao.insertInfo(*list.toTypedArray())
     }
 
-    suspend fun getInfo(id: String, fetch: Boolean): List<InfoWithEmergencyContact> {
+    suspend fun getInfo(id: String, fetch: Boolean): List<InfoWithEmergencyContact>? {
         if (fetch) {
-            refreshInfo(id)
+            if (!refreshInfo(id)) {
+                return null
+            }
         }
         return infoDao.getInfoWithEmergencyContact(id)
     }
 
-    private suspend fun refreshInfo(id: String) {
-        val result = webService.getInfoWithEmergencyContact(id)
+    private suspend fun refreshInfo(id: String): Boolean {
+        val result = webService.getInfoWithEmergencyContact(id) ?: return false
         infoDao.updateInfo(result.info)
         result.emergencyContacts.forEach {
             emergencyContactDao.insertEmergencyContact(it)
         }
+        return true
     }
 
 
@@ -49,8 +51,8 @@ class InfoRepository(
         return webService.saveInfo(info, saveById)
     }
 
-    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact) {
-        webService.saveEmergencyContact(emergencyContact)
+    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) {
+        webService.saveEmergencyContact(emergencyContact, saveById)
     }
 
     suspend fun deleteEmergencyContact(id: String) {
