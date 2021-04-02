@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentMyPageBinding
+import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.MyViewModelFactory
 import com.example.emergency.util.BaseFragment
@@ -79,12 +80,14 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = myPageAdapter
             }
-            myViewModel.abstractInfo.observe(viewLifecycleOwner, {
+            myViewModel.abstractInfo.observe(viewLifecycleOwner) {
                 myPageAdapter.updateDataList(it)
                 myPageAdapter.notifyDataSetChanged()
-            })
+            }
 
             addInformation.setOnClickListener {
+                myViewModel.changeInfoTitle("添加呼救人信息")
+                myViewModel.infoState = InfoState.NEW
                 findNavController().navigate(R.id.action_user_to_informationFragment)
             }
             swipRefresh.setOnRefreshListener {

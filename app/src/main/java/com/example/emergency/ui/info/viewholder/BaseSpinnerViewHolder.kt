@@ -41,7 +41,7 @@ class BaseSpinnerViewHolder(
         val adapter = ArrayAdapter(binding.root.context, R.layout.list_item, list)
         binding.infoSpinnerText.setAdapter(adapter)
         binding.infoSpinnerLayout.hint = hint
-        binding.infoSpinnerText.setText(input)
+        binding.infoSpinnerText.setText(input, false)
 
     }
 

@@ -20,6 +20,9 @@ import java.util.*
 
 
 const val INPUT_ARRAY_SIZE = 11
+enum class InfoState {
+    SHOW, NEW
+}
 
 class MyViewModel(
     private val infoRepository: InfoRepository,
@@ -28,7 +31,9 @@ class MyViewModel(
     // 用于保存填入的信息
     lateinit var inputInfo: Array<String>
     lateinit var emergencyNumber: ArrayList<Array<String>>
-    var showInfoId: String? = null
+
+
+    // hints
     val inputHints = listOf(
         context.getString(R.string.info_add_real_name_hint),
         context.getString(R.string.info_add_sex_hint),
@@ -75,13 +80,31 @@ class MyViewModel(
         )
     )
 
+    // 页面跳转时的 ID
+    var showInfoId: String? = null
+
     private lateinit var infoWithEmergencyContact: InfoWithEmergencyContact
+
+
+    // info 页面数据
+    private val _infoFragmentTitle = MutableLiveData<String>()
+    val infoFragmentTitle: LiveData<String> = _infoFragmentTitle
+
+    fun changeInfoTitle(title: String) {
+        _infoFragmentTitle.value = title
+    }
+
+    var infoState = InfoState.NEW
+
 
     // 我的页面数据
     private val _abstractInfo = MutableLiveData<List<AbstractInfo>>()
     val abstractInfo: LiveData<List<AbstractInfo>> = _abstractInfo
+
+    // 用来判断返回我的页面时是否需要刷新数据
     var fromSaveInfo = false
 
+    // 第一次进入页面时需要从远程获取数据
     init {
         viewModelScope.launch {
             try {
@@ -93,11 +116,12 @@ class MyViewModel(
         }
     }
 
-
+    // 获取我的页面的数据
     suspend fun fetchAbstractInfo(remote: Boolean) {
         _abstractInfo.value = infoRepository.getAbstractInfo(remote)
     }
 
+    // 获取详细信息的数据
     suspend fun fetchInfo(remote: Boolean) {
 
         val result = infoRepository.getInfo(showInfoId!!, remote)
@@ -136,13 +160,17 @@ class MyViewModel(
         emergencyNumber = arrayListOf(arrayOf("", ""))
     }
 
-    suspend fun save() {
+    suspend fun save(saveFromId: Boolean) {
+        var infoId = ""
+        if (saveFromId) {
+            infoId = showInfoId!!
+        }
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
         val date = Date(simpleDateFormat.parse(inputInfo[InputHint.BIRTHDATE])!!.time)
         val weight =
             if (inputInfo[InputHint.WEIGHT] == "") 0 else inputInfo[InputHint.WEIGHT].toInt()
         val info = Info(
-            "",
+            infoId,
             inputInfo[InputHint.REAL_NAME],
             inputInfo[InputHint.SEX],
             date,
@@ -155,14 +183,19 @@ class MyViewModel(
             inputInfo[InputHint.MEDICATIONS],
             inputInfo[InputHint.ADDRESS],
         )
-        val id = infoRepository.saveInfo(info)
+        if (infoId == "") {
+            infoId = infoRepository.saveInfo(info, false)
+        } else {
+            infoRepository.saveInfo(info, true)
+        }
+
         val saveList = emergencyNumber.filter { it[0] != "" }
         for (strings in saveList) {
             infoRepository.saveEmergencyContact(
                 EmergencyContact(
-                    infoId = id,
-                    relationship = strings[0],
-                    phone = strings[1]
+                    infoId = infoId,
+                    phone = strings[0],
+                    relationship = strings[1],
                 )
             )
         }

@@ -45,12 +45,16 @@ class InfoRepository(
     }
 
 
-    suspend fun saveInfo(info: Info): String {
-        return webService.saveInfo(info)
+    suspend fun saveInfo(info: Info, saveById: Boolean): String {
+        return webService.saveInfo(info, saveById)
     }
 
     suspend fun saveEmergencyContact(emergencyContact: EmergencyContact) {
         webService.saveEmergencyContact(emergencyContact)
+    }
+
+    suspend fun deleteEmergencyContact(id: String) {
+        webService.deleteEmergencyContact(id)
     }
 
 

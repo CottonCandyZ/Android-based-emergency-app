@@ -68,16 +68,16 @@ class WebService {
         val resultList: ArrayList<Info> = arrayListOf()
         result.forEach {
             val info = Info(
-                it.get("objectId") as String,
-                realName = it.get("realName") as String,
-                phone = it.get("phone") as String,
+                it.getString("objectId"),
+                realName = it.getString("realName"),
+                phone = it.getString("phone"),
             )
             resultList.add(info)
         }
         return@withContext resultList
     }
 
-    suspend fun saveInfo(info: Info): String =
+    suspend fun saveInfo(info: Info, saveById: Boolean): String =
         withContext(Dispatchers.IO) {
             val remoteInfo = AVObject("Info")
             remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
@@ -87,8 +87,11 @@ class WebService {
                     if (it.name != "id") {
                         remoteInfo.put(it.name, it.get(info))
                     }
-
                 }
+            if (saveById) {
+                remoteInfo.objectId = info.id
+            }
+
             var id = ""
             remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
                 override fun onSubscribe(d: Disposable) {
@@ -119,6 +122,10 @@ class WebService {
             remoteEmergencyContact.save()
         }
 
+    suspend fun deleteEmergencyContact(id: String) = withContext(Dispatchers.IO) {
+        val deleteItem = AVObject.createWithoutData("EmergencyContact", id)
+        deleteItem.delete()
+    }
 
     companion object {
         @Volatile

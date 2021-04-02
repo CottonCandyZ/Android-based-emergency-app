@@ -68,7 +68,7 @@ class ShowInfoAdapter(
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(phone: String, relationship: String) {
-            binding.showInfoEditText.text = "电话：${phone} 关系：${relationship}"
+            binding.showInfoEditText.text = "电话：${phone}  关系：${relationship}"
         }
 
         companion object {
@@ -106,8 +106,8 @@ class ShowInfoAdapter(
             }
             is TitleViewHolder -> holder.bind("紧急联系人")
             is EmergencyNumberViewHolder -> holder.bind(
-                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][1],
-                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][0]
+                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][0],
+                _emergencyNumberList[position - INPUT_ARRAY_SIZE - 1][1]
             )
         }
     }

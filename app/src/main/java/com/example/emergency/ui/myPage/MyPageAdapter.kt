@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
 import com.example.emergency.model.AbstractInfo
+import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 
 
@@ -62,16 +63,16 @@ class MyPageAdapter(
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(_dataList[position])
-        holder.onClickListener.setId(_dataList[position].id)
+        holder.onClickListener.setAbstractInfo(_dataList[position])
     }
 
     override fun getItemCount() = _dataList.size
 
     inner class OnClickListener : View.OnClickListener {
-        private var id: String? = null
+        private var abstractInfo: AbstractInfo? = null
         private lateinit var binding: MyPagePersonalInfoItemBinding
-        fun setId(id: String) {
-            this.id = id
+        fun setAbstractInfo(abstractInfo: AbstractInfo) {
+            this.abstractInfo = abstractInfo
         }
 
         fun setBiding(binding: MyPagePersonalInfoItemBinding) {
@@ -79,8 +80,10 @@ class MyPageAdapter(
         }
 
         override fun onClick(p0: View?) {
-            myViewModel.showInfoId = id
-            binding.root.findNavController().navigate(R.id.action_user_to_showInfoFragment)
+            myViewModel.showInfoId = abstractInfo!!.id
+            myViewModel.changeInfoTitle("${abstractInfo!!.realName}的信息")
+            myViewModel.infoState = InfoState.SHOW
+            binding.root.findNavController().navigate(R.id.action_user_to_informationFragment)
         }
     }
 }
