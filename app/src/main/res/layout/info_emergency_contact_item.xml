@@ -37,7 +37,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/infoECRelationshipText"
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -47,7 +47,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/infoECPhoneLayout"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/infoECPhoneLayout"
         tools:srcCompat="@tools:sample/avatars" />

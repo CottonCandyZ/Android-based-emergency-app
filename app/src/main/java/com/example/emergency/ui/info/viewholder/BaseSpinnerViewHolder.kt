@@ -37,10 +37,13 @@ class BaseSpinnerViewHolder(
     }
 
 
-    fun bind(hint: String, list: List<String>, input: String) {
+    fun bind(hint: String, list: List<String>, icon: Int, input: String) {
         val adapter = ArrayAdapter(binding.root.context, R.layout.list_item, list)
         binding.infoSpinnerText.setAdapter(adapter)
         binding.infoSpinnerLayout.hint = hint
+        if (icon != -1) {
+            binding.imageView.setImageResource(icon)
+        }
         binding.infoSpinnerText.setText(input, false)
 
     }

@@ -41,6 +41,7 @@ class InputHint {
 class EditInfoAdapter(
     private val spinnerList: (Int) -> List<String>,
     private val inputType: (Int) -> Int,
+    private val icon: (Int) -> Int,
     private val myViewModel: MyViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //    private var lastEmptyPosition = -1
@@ -124,6 +125,7 @@ class EditInfoAdapter(
                 holder.bind(
                     myViewModel.inputHints[position],
                     inputType(position),
+                    icon(position),
                     myViewModel.inputInfo[position]
                 )
 
@@ -133,6 +135,7 @@ class EditInfoAdapter(
                 holder.bind(
                     myViewModel.inputHints[position],
                     spinnerList(position),
+                    icon(position),
                     myViewModel.inputInfo[position]
                 )
             }

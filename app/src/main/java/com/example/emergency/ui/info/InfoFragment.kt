@@ -217,9 +217,27 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
         }
 
+        val icon = fun(position: Int): Int {
+            return when (position) {
+                InputHint.REAL_NAME -> R.drawable.ic_phone_icon_24
+                InputHint.SEX -> R.drawable.ic_gender_icon
+                InputHint.BIRTHDATE -> R.drawable.ic_birthdate_icon
+                InputHint.PHONE -> R.drawable.ic_baseline_phone_24
+                InputHint.WEIGHT -> R.drawable.ic_weight_icon
+                InputHint.BLOOD_TYPE -> R.drawable.ic_blood_type_icon
+                InputHint.MEDICAL_CONDITIONS -> R.drawable.ic_medical_conditions_24
+                InputHint.MEDICAL_NOTES -> R.drawable.ic_medical_notes_icon
+                InputHint.ALLERGY -> R.drawable.ic_allergy_icon
+                InputHint.MEDICATIONS -> R.drawable.ic_pill_icon_24
+                InputHint.ADDRESS -> R.drawable.ic_baseline_home_24
+                else -> -1
+            }
+        }
+
         val informationAdapter = EditInfoAdapter(
             spinnerLists,
             inputType,
+            icon,
             myViewModel
         )
         with(binding.infoRecyclerView) {

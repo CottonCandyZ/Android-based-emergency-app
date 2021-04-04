@@ -20,6 +20,7 @@ class BaseEmergencyContactViewHolder(
     init {
         binding.infoECPhoneLayout.hint = "紧急联系人"
         binding.infoECRelationshipLayout.hint = "关系"
+        binding.imageView2.setImageResource(R.drawable.ic_baseline_phone_24)
         binding.infoRemoveEC.setOnClickListener(emergencyOnClickDelete)
         binding.infoECPhoneText.run {
             inputType = InputType.TYPE_CLASS_PHONE

@@ -56,10 +56,13 @@ open class BaseInputViewHolder(
         binding.infoInputText.addTextChangedListener(inputTextWatcher)
     }
 
-    fun bind(hint: String, inputType: Int, input: String) {
+    fun bind(hint: String, inputType: Int, icon: Int, input: String) {
         binding.infoInputLayout.hint = hint
         binding.infoInputText.setText(input)
         binding.infoInputText.inputType = inputType
+        if (icon != -1) {
+            binding.imageView.setImageResource(icon)
+        }
     }
 
 

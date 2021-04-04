@@ -73,6 +73,7 @@ class InfoRepository(
     suspend fun updateItemChosen(abstractInfo: AbstractInfo) {
         webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
         infoDao.updateAbstractInfo(abstractInfo)
+
     }
 
 
