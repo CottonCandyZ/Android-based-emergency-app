@@ -81,13 +81,12 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                 adapter = myPageAdapter
             }
             myViewModel.abstractInfo.observe(viewLifecycleOwner) {
-                myPageAdapter.updateDataList(it)
-                myPageAdapter.notifyDataSetChanged()
+                myPageAdapter.submitList(it)
             }
 
             addInformation.setOnClickListener {
                 myViewModel.changeInfoTitle("添加呼救人信息")
-                myViewModel.infoState = InfoState.NEW
+                myViewModel.changeInfoState(InfoState.NEW)
                 findNavController().navigate(R.id.action_user_to_informationFragment)
             }
             swipRefresh.setOnRefreshListener {

@@ -4,8 +4,6 @@ import com.example.emergency.WebService
 import com.example.emergency.dao.EmergencyContactDao
 import com.example.emergency.dao.InfoDao
 import com.example.emergency.model.AbstractInfo
-import com.example.emergency.model.EmergencyContact
-import com.example.emergency.model.Info
 import com.example.emergency.model.InfoWithEmergencyContact
 
 class InfoRepository(
@@ -46,23 +44,39 @@ class InfoRepository(
         return true
     }
 
-
-    suspend fun saveInfo(info: Info, saveById: Boolean): String {
-        return webService.saveInfo(info, saveById)
-    }
-
-    suspend fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) {
-        webService.saveEmergencyContact(emergencyContact, saveById)
-    }
-
     suspend fun deleteEmergencyContact(id: String) {
         webService.deleteEmergencyContact(id)
+    }
+
+
+    suspend fun saveInfoWithEmergencyContact(
+        infoWithEmergencyContact: InfoWithEmergencyContact,
+        saveById: Boolean
+    ) {
+        val infoId = webService.saveInfo(infoWithEmergencyContact.info, saveById)
+        infoWithEmergencyContact.emergencyContacts.forEach {
+            it.infoId = infoId
+            webService.saveEmergencyContact(it, saveById)
+        }
+    }
+
+
+    suspend fun deleteInfoWithEmergencyContact(infoWithEmergencyContact: InfoWithEmergencyContact) {
+        webService.deleteInfo(infoWithEmergencyContact.info.id)
+        infoWithEmergencyContact.emergencyContacts.forEach {
+            webService.deleteEmergencyContact(it.id)
+            emergencyContactDao.deleteByInfoId(it.id)
+        }
+        infoDao.deleteById(infoWithEmergencyContact.info.id)
+    }
+
+    suspend fun updateItemChosen(abstractInfo: AbstractInfo) {
+        webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
+        infoDao.updateAbstractInfo(abstractInfo)
     }
 
 
 //    companion object {
 //        val FRESH_TIMEOUT = TimeUnit.DAYS.toMillis(1)
 //    }
-
-
 }

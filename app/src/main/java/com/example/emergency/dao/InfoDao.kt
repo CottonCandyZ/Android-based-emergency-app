@@ -28,7 +28,7 @@ interface InfoDao {
     suspend fun deleteById(id: String)
 
 
-    @Query("SELECT id, realName, phone FROM personal_info")
+    @Query("SELECT id, realName, phone, chosen FROM personal_info")
     suspend fun getAbstractInfo(): List<AbstractInfo>
 
     // 删除全部

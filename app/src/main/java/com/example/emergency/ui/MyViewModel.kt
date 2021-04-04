@@ -20,8 +20,9 @@ import java.util.*
 
 
 const val INPUT_ARRAY_SIZE = 11
+
 enum class InfoState {
-    SHOW, NEW
+    SHOW, NEW, EDIT
 }
 
 class MyViewModel(
@@ -95,7 +96,12 @@ class MyViewModel(
         _infoFragmentTitle.value = title
     }
 
-    var infoState = InfoState.NEW
+    private val _infoState = MutableLiveData<InfoState>()
+    val infoState: LiveData<InfoState> = _infoState
+
+    fun changeInfoState(infoState: InfoState) {
+        _infoState.value = infoState
+    }
 
 
     // 我的页面数据
@@ -161,45 +167,47 @@ class MyViewModel(
         emergencyNumber = arrayListOf(EmergencyContact())
     }
 
-    suspend fun save(saveFromId: Boolean) {
-        var infoId = ""
-        if (saveFromId) {
-            infoId = showInfoId!!
+    suspend fun deleteInfoWithEmergencyContact() {
+        infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
+    }
+
+
+    fun updateAbstractInfo(abstractInfo: AbstractInfo) {
+        viewModelScope.launch {
+            infoRepository.updateItemChosen(abstractInfo)
         }
+
+    }
+
+
+    suspend fun save() {
+        // 判断 info 状态
+        val saveFromId = _infoState.value != InfoState.NEW
+
+        val infoId = if (saveFromId) showInfoId!! else ""
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
         val date = Date(simpleDateFormat.parse(inputInfo[InputHint.BIRTHDATE])!!.time)
         val weight =
             if (inputInfo[InputHint.WEIGHT] == "") 0 else inputInfo[InputHint.WEIGHT].toInt()
+        // 如果是新创建的，则给到
+        val chosen = if (saveFromId) infoWithEmergencyContact.info.chosen else false
         val info = Info(
-            infoId,
-            inputInfo[InputHint.REAL_NAME],
-            inputInfo[InputHint.SEX],
-            date,
-            inputInfo[InputHint.PHONE],
-            weight,
-            inputInfo[InputHint.BLOOD_TYPE],
-            inputInfo[InputHint.MEDICAL_CONDITIONS],
-            inputInfo[InputHint.MEDICAL_NOTES],
-            inputInfo[InputHint.ALLERGY],
-            inputInfo[InputHint.MEDICATIONS],
-            inputInfo[InputHint.ADDRESS],
+            id = infoId,
+            realName = inputInfo[InputHint.REAL_NAME],
+            sex = inputInfo[InputHint.SEX],
+            birthdate = date,
+            phone = inputInfo[InputHint.PHONE],
+            weight = weight,
+            bloodType = inputInfo[InputHint.BLOOD_TYPE],
+            medicalConditions = inputInfo[InputHint.MEDICAL_CONDITIONS],
+            medicalNotes = inputInfo[InputHint.MEDICAL_NOTES],
+            allergy = inputInfo[InputHint.ALLERGY],
+            medications = inputInfo[InputHint.MEDICATIONS],
+            address = inputInfo[InputHint.ADDRESS],
+            chosen = chosen,
         )
-        if (infoId == "") {
-            infoId = infoRepository.saveInfo(info, false)
-        } else {
-            infoRepository.saveInfo(info, true)
-        }
-
         val saveList = emergencyNumber.filter { it.phone != "" }
 
-        saveList.forEach {
-            it.infoId = infoId
-            if (saveFromId) {
-                infoRepository.saveEmergencyContact(it, true)
-            } else {
-                infoRepository.saveEmergencyContact(it, false)
-            }
-        }
         if (saveFromId) {
             emergencyContactsCopy.forEach { old ->
                 if (!emergencyNumber.any { it.id == old.id }) {
@@ -207,6 +215,11 @@ class MyViewModel(
                 }
             }
         }
+        val save = InfoWithEmergencyContact(info, saveList)
+        infoRepository.saveInfoWithEmergencyContact(
+            save,
+            saveFromId
+        )
 
     }
 }

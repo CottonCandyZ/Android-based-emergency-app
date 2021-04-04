@@ -3,7 +3,10 @@ package com.example.emergency.ui.myPage
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
@@ -15,25 +18,30 @@ import com.example.emergency.ui.MyViewModel
 class MyPageAdapter(
     private val myViewModel: MyViewModel
 ) :
-    RecyclerView.Adapter<MyPageAdapter.ViewHolder>() {
-    private var _dataList = listOf<AbstractInfo>()
-    fun updateDataList(newList: List<AbstractInfo>) {
-        _dataList = newList
-    }
+    ListAdapter<AbstractInfo, MyPageAdapter.ViewHolder>(DIFFCALLBACK) {
 
     class ViewHolder(
         private val binding: MyPagePersonalInfoItemBinding,
-        val onClickListener: OnClickListener
+        val onClickListener: OnClickListener,
+        val onClickChangeListener: OnClickChangeListener
     ) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             onClickListener.setBiding(binding)
-            binding.myPageCard.setOnClickListener(onClickListener)
+            onClickChangeListener.setBiding(binding)
+            binding.leftContainter.setOnClickListener(onClickListener)
+            binding.infoSwitch.setOnCheckedChangeListener(onClickChangeListener)
         }
 
         fun bind(abstractInfo: AbstractInfo) {
             binding.myPagePersonalName.text = abstractInfo.realName
             binding.myPagePersonalPhone.text = abstractInfo.phone
+            val infoSwitchText = if (abstractInfo.chosen) "已选择" else "未选择"
+            binding.infoSwitch.text = infoSwitchText
+            // 修改状态时需要先解绑监听器
+            binding.infoSwitch.setOnCheckedChangeListener(null)
+            binding.infoSwitch.isChecked = abstractInfo.chosen
+            binding.infoSwitch.setOnCheckedChangeListener(onClickChangeListener)
         }
 
         companion object {
@@ -52,7 +60,7 @@ class MyPageAdapter(
      * 此方法会创建并初始化 [ViewHolder] 及其关联的 [View]，但不会填充视图的内容，因为 [ViewHolder] 此时尚未绑定到具体数据。
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ViewHolder.create(parent), OnClickListener())
+        return ViewHolder(ViewHolder.create(parent), OnClickListener(), OnClickChangeListener())
     }
 
 
@@ -62,12 +70,10 @@ class MyPageAdapter(
      * 例如，如果 [RecyclerView] 显示的是一个名称列表，该方法可能会在列表中查找适当的名称，并填充 ViewHolder 的 TextView 微件。
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(_dataList[position])
-        holder.onClickListener.setAbstractInfo(_dataList[position])
+        holder.bind(getItem(position))
+        holder.onClickListener.setAbstractInfo(getItem(position))
+        holder.onClickChangeListener.setAbstractInfo(getItem(position))
     }
-
-    override fun getItemCount() = _dataList.size
-
     inner class OnClickListener : View.OnClickListener {
         private var abstractInfo: AbstractInfo? = null
         private lateinit var binding: MyPagePersonalInfoItemBinding
@@ -79,11 +85,40 @@ class MyPageAdapter(
             this.binding = binding
         }
 
-        override fun onClick(p0: View?) {
+        override fun onClick(v: View?) {
             myViewModel.showInfoId = abstractInfo!!.id
             myViewModel.changeInfoTitle("${abstractInfo!!.realName}的信息")
-            myViewModel.infoState = InfoState.SHOW
+            myViewModel.changeInfoState(InfoState.SHOW)
             binding.root.findNavController().navigate(R.id.action_user_to_informationFragment)
+        }
+    }
+
+    inner class OnClickChangeListener : CompoundButton.OnCheckedChangeListener {
+        private lateinit var binding: MyPagePersonalInfoItemBinding
+        private var abstractInfo: AbstractInfo? = null
+        fun setAbstractInfo(abstractInfo: AbstractInfo) {
+            this.abstractInfo = abstractInfo
+        }
+
+        fun setBiding(binding: MyPagePersonalInfoItemBinding) {
+            this.binding = binding
+        }
+
+        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+            binding.infoSwitch.text = if (isChecked) "已选择" else "未选择"
+            abstractInfo!!.chosen = isChecked
+            myViewModel.updateAbstractInfo(abstractInfo!!)
+        }
+
+    }
+
+    object DIFFCALLBACK : DiffUtil.ItemCallback<AbstractInfo>() {
+        override fun areItemsTheSame(oldItem: AbstractInfo, newItem: AbstractInfo): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: AbstractInfo, newItem: AbstractInfo): Boolean {
+            return oldItem == newItem
         }
     }
 }

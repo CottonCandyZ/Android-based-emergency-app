@@ -7,7 +7,7 @@ data class AbstractInfo(
     val id: String,
     val realName: String,
     val phone: String,
-//    val lastUpdate: Long
+    var chosen: Boolean,
 )
 
 
@@ -25,7 +25,7 @@ data class Info(
     val allergy: String = "",
     val medications: String = "",
     val address: String = "",
-//    val lastUpdate: Long
+    val chosen: Boolean,
 )
 
 @Entity(tableName = "emergency_contact")

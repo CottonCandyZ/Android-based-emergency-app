@@ -35,7 +35,8 @@ class WebService {
                     medicalNotes = it.getString("medicalNotes"),
                     allergy = it.getString("allergy"),
                     medications = it.getString("medications"),
-                    address = it.getString("address")
+                    address = it.getString("address"),
+                    chosen = it.getBoolean("chosen")
                 )
             }
 
@@ -66,7 +67,7 @@ class WebService {
 
     suspend fun getAbstractInfo(): List<Info> = withContext(Dispatchers.IO) {
         val query = AVQuery<AVObject>("Info")
-        query.selectKeys(listOf("userId", "id", "realName", "phone"))
+        query.selectKeys(listOf("userId", "id", "realName", "phone", "chosen"))
         query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
         val result = query.find()
         val resultList: ArrayList<Info> = arrayListOf()
@@ -75,6 +76,7 @@ class WebService {
                 it.getString("objectId"),
                 realName = it.getString("realName"),
                 phone = it.getString("phone"),
+                chosen = it.getBoolean("chosen")
             )
             resultList.add(info)
         }
@@ -135,6 +137,18 @@ class WebService {
         val deleteItem = AVObject.createWithoutData("EmergencyContact", id)
         deleteItem.delete()
     }
+
+    suspend fun deleteInfo(id: String) = withContext(Dispatchers.IO) {
+        val deleteItem = AVObject.createWithoutData("Info", id)
+        deleteItem.delete()
+    }
+
+    suspend fun updateInfoChosen(id: String, toggle: Boolean) = withContext(Dispatchers.IO) {
+        val updateItem = AVObject.createWithoutData("Info", id)
+        updateItem.put("chosen", toggle)
+        updateItem.save()
+    }
+
 
     companion object {
         @Volatile

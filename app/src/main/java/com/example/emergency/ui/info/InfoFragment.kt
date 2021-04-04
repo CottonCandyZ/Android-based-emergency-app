@@ -33,8 +33,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
     private lateinit var myViewModel: MyViewModel
-    private lateinit var saveMenuItem: MenuItem
     private lateinit var editMenuItem: MenuItem
+    private lateinit var deleteMenuItem: MenuItem
     private lateinit var dividerItemDecoration: DividerItemDecoration
 
     override fun onCreateView(
@@ -56,25 +56,41 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.info_menu, menu)
-        saveMenuItem = menu.findItem(R.id.save)
+        val saveMenuItem = menu.findItem(R.id.save)
         editMenuItem = menu.findItem(R.id.edit)
-        when (myViewModel.infoState) {
-            InfoState.SHOW -> {
-                saveMenuItem.isVisible = false
-            }
-            InfoState.NEW -> {
-                editMenuItem.isVisible = false
+        deleteMenuItem = menu.findItem(R.id.delete)
+
+        myViewModel.infoState.observe(this) {
+            @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+            when (it) {
+                InfoState.SHOW -> {
+                    saveMenuItem.isVisible = false
+                    editMenuItem.isVisible = true
+                    deleteMenuItem.isVisible = true
+                }
+                InfoState.NEW -> {
+                    saveMenuItem.isVisible = true
+                    editMenuItem.isVisible = false
+                    deleteMenuItem.isVisible = false
+                }
+                InfoState.EDIT -> {
+                    saveMenuItem.isVisible = true
+                    deleteMenuItem.isVisible = false
+                    editMenuItem.isVisible = false
+                }
             }
         }
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        fun save(saveFromId: Boolean) {
+        fun save() {
             launch {
                 item.isEnabled = false
                 binding.progressBar3.visibility = View.VISIBLE
                 try {
-                    myViewModel.save(saveFromId)
+                    myViewModel.save()
                 } catch (e: AVException) {
                     item.isEnabled = true
                     showError(e, requireContext())
@@ -99,19 +115,31 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                     builder.create().show()
 
                 } else {
-                    if (myViewModel.infoState == InfoState.NEW) {
-                        save(false)
-                    } else {
-                        save(true)
-                    }
-
+                    save()
                 }
             }
             R.id.edit -> {
-                saveMenuItem.isVisible = true
-                editMenuItem.isVisible = false
+                myViewModel.changeInfoState(InfoState.EDIT)
                 myViewModel.emergencyNumber.add(EmergencyContact())
                 createEditView()
+
+            }
+            R.id.delete -> {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("确认要删除吗？（不可恢复）")
+                builder.setPositiveButton("确认") { _, _ ->
+                    launch {
+                        try {
+                            myViewModel.deleteInfoWithEmergencyContact()
+                        } catch (e: Exception) {
+                            showError(e.cause!!, requireContext())
+                        }
+                        Toast.makeText(requireContext(), "删除成功", Toast.LENGTH_SHORT).show()
+                        findNavController().navigateUp()
+                    }
+                }
+                builder.setNegativeButton("取消") { _, _ -> }
+                builder.create().show()
 
             }
         }
@@ -131,8 +159,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         )
 
 
-        when (myViewModel.infoState) {
-            InfoState.SHOW -> {
+        when (myViewModel.infoState.value) {
+            InfoState.SHOW, InfoState.EDIT -> {
                 val myPageAdapter = ShowInfoAdapter(myViewModel)
 
                 with(binding.infoRecyclerView) {
@@ -158,6 +186,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                         showError(e, requireContext())
                         myViewModel.fetchInfo(false)
                         editMenuItem.isEnabled = false
+                        deleteMenuItem.isEnabled = false
                     }
 
                     myPageAdapter.updateDataList(myViewModel.inputInfo, myViewModel.emergencyNumber)
