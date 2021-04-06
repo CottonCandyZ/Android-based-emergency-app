@@ -200,16 +200,16 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     }
 
     private fun createEditView() {
-        val spinnerLists = fun(position: Int): List<String> {
-            return when (position) {
+        val spinnerLists: (Int) -> List<String> = { position ->
+            when (position) {
                 InputHint.SEX -> myViewModel.spinnerList[0]
                 InputHint.BLOOD_TYPE -> myViewModel.spinnerList[1]
                 else -> myViewModel.spinnerList[2]
             }
         }
 
-        val inputType = fun(position: Int): Int {
-            return when (position) {
+        val inputType: (Int) -> Int = { position ->
+            when (position) {
                 InputHint.PHONE, InputHint.WEIGHT -> InputType.TYPE_CLASS_NUMBER
                 in InputHint.MEDICAL_CONDITIONS..InputHint.ADDRESS ->
                     InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -217,8 +217,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
         }
 
-        val icon = fun(position: Int): Int {
-            return when (position) {
+        val icon: (Int) -> Int = { position ->
+            when (position) {
                 InputHint.REAL_NAME -> R.drawable.ic_phone_icon_24
                 InputHint.SEX -> R.drawable.ic_gender_icon
                 InputHint.BIRTHDATE -> R.drawable.ic_birthdate_icon

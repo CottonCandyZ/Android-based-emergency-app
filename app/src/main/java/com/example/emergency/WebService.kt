@@ -87,8 +87,7 @@ class WebService {
         withContext(Dispatchers.IO) {
             val remoteInfo = AVObject("Info")
             remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
-            info.javaClass
-                .kotlin.declaredMemberProperties
+            Info::class.declaredMemberProperties
                 .forEach {
                     if (it.name != "id") {
                         remoteInfo.put(it.name, it.get(info))
@@ -120,8 +119,7 @@ class WebService {
     suspend fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) =
         withContext(Dispatchers.IO) {
             val remoteEmergencyContact = AVObject("EmergencyContact")
-            emergencyContact.javaClass
-                .kotlin.declaredMemberProperties
+            EmergencyContact::class.declaredMemberProperties
                 .forEach {
                     if (it.name != "id") {
                         remoteEmergencyContact.put(it.name, it.get(emergencyContact))

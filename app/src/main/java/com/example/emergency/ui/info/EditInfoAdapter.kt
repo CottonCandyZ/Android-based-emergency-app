@@ -9,10 +9,7 @@ import com.example.emergency.databinding.InfoEmergencyContactItemBinding
 import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.INPUT_ARRAY_SIZE
 import com.example.emergency.ui.MyViewModel
-import com.example.emergency.ui.info.viewholder.BaseEmergencyContactViewHolder
-import com.example.emergency.ui.info.viewholder.BaseInputViewHolder
-import com.example.emergency.ui.info.viewholder.BaseSpinnerViewHolder
-import com.example.emergency.ui.info.viewholder.DatePickerInputViewHolder
+import com.example.emergency.ui.info.viewholder.*
 
 
 enum class InputLayoutType {
@@ -119,25 +116,22 @@ class EditInfoAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is BaseViewHolder) {
+            holder.inputTextWatcher.updatePosition(position)
+            holder.bind(
+                myViewModel.inputHints[position],
+                icon(position),
+                myViewModel.inputInfo[position]
+            )
+
+        }
         when (holder) {
             is BaseInputViewHolder -> {
-                holder.inputTextWatcher.updatePosition(position)
-                holder.bind(
-                    myViewModel.inputHints[position],
-                    inputType(position),
-                    icon(position),
-                    myViewModel.inputInfo[position]
-                )
+                holder.setInputType(inputType(position))
 
             }
             is BaseSpinnerViewHolder -> {
-                holder.inputTextWatcher.updatePosition(position)
-                holder.bind(
-                    myViewModel.inputHints[position],
-                    spinnerList(position),
-                    icon(position),
-                    myViewModel.inputInfo[position]
-                )
+                holder.setSpinnerList(spinnerList(position))
             }
             is BaseEmergencyContactViewHolder -> {
                 holder.emergencyPhoneTextWatcher.updatePosition(holder.adapterPosition)

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
 import com.example.emergency.model.EmergencyContact
@@ -15,8 +16,7 @@ class BaseEmergencyContactViewHolder(
     val emergencyPhoneTextWatcher: EditInfoAdapter.EmergencyPhoneTextWatcher,
     val emergencyOnClickDelete: EditInfoAdapter.EmergencyOnClickDelete,
     val emergencyRelationshipTextWatcher: EditInfoAdapter.EmergencyRelationshipTextWatcher
-) :
-    BaseViewHolder(binding) {
+) : RecyclerView.ViewHolder(binding.root) {
     init {
         binding.infoECPhoneLayout.hint = "紧急联系人"
         binding.infoECRelationshipLayout.hint = "关系"

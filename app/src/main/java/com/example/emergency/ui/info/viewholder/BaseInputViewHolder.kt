@@ -10,11 +10,11 @@ import com.example.emergency.ui.info.EditInfoAdapter
 
 open class BaseInputViewHolder(
     val binding: InfoInputItemBinding,
-    val inputTextWatcher: EditInfoAdapter.InputTextWatcher,
+    inputTextWatcher: EditInfoAdapter.InputTextWatcher,
     isRequired: Boolean = false,
     isPhoneNumber: Boolean = false,
 ) :
-    BaseViewHolder(binding) {
+    BaseViewHolder(binding, inputTextWatcher) {
     init {
         if (isRequired) {
             binding.infoInputLayout.helperText = "*必填"
@@ -33,7 +33,6 @@ open class BaseInputViewHolder(
                 }
             }
         }
-
         if (isPhoneNumber) {
             binding.infoInputText.run {
                 onFocusChangeListener = View.OnFocusChangeListener { _, b ->
@@ -56,13 +55,16 @@ open class BaseInputViewHolder(
         binding.infoInputText.addTextChangedListener(inputTextWatcher)
     }
 
-    fun bind(hint: String, inputType: Int, icon: Int, input: String) {
+    override fun bind(hint: String, icon: Int, input: String) {
         binding.infoInputLayout.hint = hint
         binding.infoInputText.setText(input)
-        binding.infoInputText.inputType = inputType
         if (icon != -1) {
             binding.imageView.setImageResource(icon)
         }
+    }
+
+    fun setInputType(inputType: Int) {
+        binding.infoInputText.inputType = inputType
     }
 
 

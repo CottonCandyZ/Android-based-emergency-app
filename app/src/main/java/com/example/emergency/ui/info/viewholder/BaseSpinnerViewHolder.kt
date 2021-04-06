@@ -11,10 +11,10 @@ import com.example.emergency.ui.info.EditInfoAdapter
 
 class BaseSpinnerViewHolder(
     val binding: InfoSpinnerItemBinding,
-    val inputTextWatcher: EditInfoAdapter.InputTextWatcher,
+    inputTextWatcher: EditInfoAdapter.InputTextWatcher,
     isRequired: Boolean = false
 ) :
-    BaseViewHolder(binding) {
+    BaseViewHolder(binding, inputTextWatcher) {
     init {
         if (isRequired) {
             binding.infoSpinnerLayout.helperText = "*必填"
@@ -37,15 +37,18 @@ class BaseSpinnerViewHolder(
     }
 
 
-    fun bind(hint: String, list: List<String>, icon: Int, input: String) {
-        val adapter = ArrayAdapter(binding.root.context, R.layout.list_item, list)
-        binding.infoSpinnerText.setAdapter(adapter)
+    override fun bind(hint: String, icon: Int, input: String) {
+
         binding.infoSpinnerLayout.hint = hint
         if (icon != -1) {
             binding.imageView.setImageResource(icon)
         }
         binding.infoSpinnerText.setText(input, false)
+    }
 
+    fun setSpinnerList(list: List<String>) {
+        val adapter = ArrayAdapter(binding.root.context, R.layout.list_item, list)
+        binding.infoSpinnerText.setAdapter(adapter)
     }
 
     companion object {
