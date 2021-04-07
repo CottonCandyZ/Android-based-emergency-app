@@ -1,4 +1,4 @@
-package com.example.emergency
+package com.example.emergency.ui.main
 
 import android.content.Context
 import android.graphics.Rect
@@ -12,9 +12,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.example.emergency.R
 import com.example.emergency.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController

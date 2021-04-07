@@ -1,22 +1,21 @@
 package com.example.emergency.ui
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.emergency.R
-import com.example.emergency.data.InfoRepository
-import com.example.emergency.model.AbstractInfo
-import com.example.emergency.model.EmergencyContact
-import com.example.emergency.model.Info
-import com.example.emergency.model.InfoWithEmergencyContact
+import com.example.emergency.data.entity.AbstractInfo
+import com.example.emergency.data.entity.EmergencyContact
+import com.example.emergency.data.entity.Info
+import com.example.emergency.data.entity.InfoWithEmergencyContact
+import com.example.emergency.data.local.InfoRepository
 import com.example.emergency.ui.info.InputHint
-import com.example.emergency.util.showError
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
 const val INPUT_ARRAY_SIZE = 11
@@ -25,62 +24,14 @@ enum class InfoState {
     SHOW, NEW, EDIT
 }
 
-class MyViewModel(
+@HiltViewModel
+class MyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
-    context: Context
 ) : ViewModel() {
     // 用于保存填入的信息
     lateinit var inputInfo: Array<String>
     lateinit var emergencyNumber: ArrayList<EmergencyContact>
     private lateinit var emergencyContactsCopy: ArrayList<EmergencyContact>
-
-
-    // hints
-    val inputHints = listOf(
-        context.getString(R.string.info_add_real_name_hint),
-        context.getString(R.string.info_add_sex_hint),
-//            context.getString(R.string.info_relationship),
-        context.getString(R.string.info_add_birth_hint),
-        context.getString(R.string.info_add_phone_hint),
-        context.getString(R.string.info_add_weight_hint),
-        context.getString(R.string.info_add_blood_type_hint),
-        context.getString(R.string.info_add_medical_conditions_hint),
-        context.getString(R.string.info_add_medical_notes_hint),
-        context.getString(R.string.info_add_allergy_hint),
-        context.getString(R.string.info_add_medications_hint),
-        context.getString(R.string.info_add_address_hint)
-    )
-
-    // spinner selection
-    val spinnerList = listOf(
-        listOf("男", "女"),
-        listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"),
-        listOf(
-            "家人",
-            "母亲",
-            "父亲",
-            "父母",
-            "兄弟",
-            "姐妹",
-            "儿子",
-            "女儿",
-            "子女",
-            "朋友",
-            "配偶",
-            "伴侣",
-            "助理",
-            "上司",
-            "医生",
-            "紧急联系人",
-            "家庭成员",
-            "老师",
-            "看护",
-            "监护人",
-            "社会工作者",
-            "学校",
-            "托儿所"
-        )
-    )
 
     // 页面跳转时的 ID
     var showInfoId: String? = null
@@ -118,7 +69,7 @@ class MyViewModel(
                 fetchAbstractInfo(true)
             } catch (e: Exception) {
                 fetchAbstractInfo(false)
-                showError(e.cause!!, context)
+//                showError(e.cause!!, context)
             }
         }
     }

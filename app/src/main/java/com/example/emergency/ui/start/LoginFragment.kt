@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.start
 
 import android.os.Bundle
 import android.text.Editable
@@ -40,10 +40,8 @@ class LoginFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         with(binding) {
             buttonSignUp.setOnClickListener {
                 findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)

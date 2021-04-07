@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.history
 
 import android.os.Bundle
 import android.view.LayoutInflater

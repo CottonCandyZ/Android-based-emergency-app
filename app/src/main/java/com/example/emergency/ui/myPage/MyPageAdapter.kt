@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
+import com.example.emergency.data.entity.AbstractInfo
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
-import com.example.emergency.model.AbstractInfo
 import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 

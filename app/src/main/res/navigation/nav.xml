@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.emergency.ui.LoginFragment"
+        android:name="com.example.emergency.ui.start.LoginFragment"
         android:label="@string/login_top_bar_title"
         tools:layout="@layout/fragment_login">
         <action
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.emergency.ui.SignUpFragment"
+        android:name="com.example.emergency.ui.start.SignUpFragment"
         android:label="@string/sign_up_top_bar_title"
         tools:layout="@layout/fragment_sign_up">
         <action
@@ -61,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/history"
-        android:name="com.example.emergency.ui.HistoryFragment"
+        android:name="com.example.emergency.ui.history.HistoryFragment"
         android:label="历史"
         tools:layout="@layout/fragment_history" />
     <fragment

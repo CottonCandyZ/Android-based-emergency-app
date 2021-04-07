@@ -1,4 +1,4 @@
-package com.example.emergency.model
+package com.example.emergency.data.entity
 
 import androidx.room.*
 import java.sql.Date

@@ -5,8 +5,8 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
-import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.INPUT_ARRAY_SIZE
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.ui.info.viewholder.*
@@ -39,6 +39,7 @@ class EditInfoAdapter(
     private val spinnerList: (Int) -> List<String>,
     private val inputType: (Int) -> Int,
     private val icon: (Int) -> Int,
+    private val inputHints: List<String>,
     private val myViewModel: MyViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //    private var lastEmptyPosition = -1
@@ -119,7 +120,7 @@ class EditInfoAdapter(
         if (holder is BaseViewHolder) {
             holder.inputTextWatcher.updatePosition(position)
             holder.bind(
-                myViewModel.inputHints[position],
+                inputHints[position],
                 icon(position),
                 myViewModel.inputInfo[position]
             )

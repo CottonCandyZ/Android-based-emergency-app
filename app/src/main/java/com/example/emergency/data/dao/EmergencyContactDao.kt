@@ -1,7 +1,7 @@
-package com.example.emergency.dao
+package com.example.emergency.data.dao
 
 import androidx.room.*
-import com.example.emergency.model.EmergencyContact
+import com.example.emergency.data.entity.EmergencyContact
 
 
 @Dao

@@ -1,17 +1,19 @@
-package com.example.emergency
+package com.example.emergency.data.remote
 
 import cn.leancloud.AVObject
 import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
-import com.example.emergency.model.EmergencyContact
-import com.example.emergency.model.Info
-import com.example.emergency.model.InfoWithEmergencyContact
+import com.example.emergency.data.entity.EmergencyContact
+import com.example.emergency.data.entity.Info
+import com.example.emergency.data.entity.InfoWithEmergencyContact
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Date
 import kotlin.reflect.full.declaredMemberProperties
+
+
 
 class WebService {
 

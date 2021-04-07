@@ -7,48 +7,54 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVException
 import com.example.emergency.R
+import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.FragmentInfoBinding
-import com.example.emergency.model.EmergencyContact
 import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
-import com.example.emergency.ui.MyViewModelFactory
 import com.example.emergency.util.BaseFragment
+import com.example.emergency.util.Hints
 import com.example.emergency.util.showError
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 /**
  * A simple [Fragment] subclass.
  */
+@AndroidEntryPoint
 class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
-    private lateinit var myViewModel: MyViewModel
+    private val myViewModel: MyViewModel by activityViewModels()
     private lateinit var editMenuItem: MenuItem
     private lateinit var deleteMenuItem: MenuItem
     private lateinit var dividerItemDecoration: DividerItemDecoration
+
+    @Inject
+    lateinit var hints: Hints
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
-
         _binding = FragmentInfoBinding.inflate(inflater, container, false)
-        myViewModel = ViewModelProvider(
-            requireActivity(), MyViewModelFactory(
-                requireContext()
-            )
-        ).get(MyViewModel::class.java)
+//        myViewModel = ViewModelProvider(
+//            requireActivity(), MyViewModelFactory(
+//                requireContext()
+//            )
+//        ).get(MyViewModel::class.java)
 
         return binding.root
     }
@@ -140,14 +146,14 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
                 builder.setNegativeButton("取消") { _, _ -> }
                 builder.create().show()
-
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
         myViewModel.infoFragmentTitle.observe(viewLifecycleOwner) {
@@ -161,7 +167,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
 
         when (myViewModel.infoState.value) {
             InfoState.SHOW, InfoState.EDIT -> {
-                val myPageAdapter = ShowInfoAdapter(myViewModel)
+                val myPageAdapter = ShowInfoAdapter(myViewModel, hints.inputHints)
 
                 with(binding.infoRecyclerView) {
                     layoutManager = LinearLayoutManager(requireContext())
@@ -202,9 +208,9 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     private fun createEditView() {
         val spinnerLists: (Int) -> List<String> = { position ->
             when (position) {
-                InputHint.SEX -> myViewModel.spinnerList[0]
-                InputHint.BLOOD_TYPE -> myViewModel.spinnerList[1]
-                else -> myViewModel.spinnerList[2]
+                InputHint.SEX -> hints.spinnerList[0]
+                InputHint.BLOOD_TYPE -> hints.spinnerList[1]
+                else -> hints.spinnerList[2]
             }
         }
 
@@ -238,6 +244,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             spinnerLists,
             inputType,
             icon,
+            hints.inputHints,
             myViewModel
         )
         with(binding.infoRecyclerView) {

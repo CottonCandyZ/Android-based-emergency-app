@@ -1,9 +1,9 @@
-package com.example.emergency.dao
+package com.example.emergency.data.dao
 
 import androidx.room.*
-import com.example.emergency.model.AbstractInfo
-import com.example.emergency.model.Info
-import com.example.emergency.model.InfoWithEmergencyContact
+import com.example.emergency.data.entity.AbstractInfo
+import com.example.emergency.data.entity.Info
+import com.example.emergency.data.entity.InfoWithEmergencyContact
 
 @Dao
 interface InfoDao {

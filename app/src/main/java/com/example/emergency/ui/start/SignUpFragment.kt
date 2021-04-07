@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.ui.start
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -44,8 +44,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         // 创建一个计时器
         myCountDownTimer = object : CountDownTimer(
             60000,
@@ -213,7 +213,6 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
 
         }
     }
-
 
     // 以下是网络请求，全走 IO 线程
 

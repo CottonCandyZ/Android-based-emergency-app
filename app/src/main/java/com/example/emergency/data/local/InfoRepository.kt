@@ -1,12 +1,13 @@
-package com.example.emergency.data
+package com.example.emergency.data.local
 
-import com.example.emergency.WebService
-import com.example.emergency.dao.EmergencyContactDao
-import com.example.emergency.dao.InfoDao
-import com.example.emergency.model.AbstractInfo
-import com.example.emergency.model.InfoWithEmergencyContact
+import com.example.emergency.data.dao.EmergencyContactDao
+import com.example.emergency.data.dao.InfoDao
+import com.example.emergency.data.entity.AbstractInfo
+import com.example.emergency.data.entity.InfoWithEmergencyContact
+import com.example.emergency.data.remote.WebService
+import javax.inject.Inject
 
-class InfoRepository(
+class InfoRepository @Inject constructor(
     private val infoDao: InfoDao,
     private val emergencyContactDao: EmergencyContactDao,
     private val webService: WebService

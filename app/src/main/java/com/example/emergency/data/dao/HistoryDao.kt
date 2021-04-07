@@ -1,4 +1,4 @@
-package com.example.emergency.dao
+package com.example.emergency.data.dao
 
 import androidx.room.Dao
 
