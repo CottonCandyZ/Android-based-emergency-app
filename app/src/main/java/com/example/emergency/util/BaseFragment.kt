@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.emergency.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 abstract class BaseFragment : Fragment() {
     protected open var bottomNavigationViewVisibility = true
 

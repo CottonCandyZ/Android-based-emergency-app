@@ -33,9 +33,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
+
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
+
     private val myViewModel: MyViewModel by activityViewModels()
+
     private lateinit var editMenuItem: MenuItem
     private lateinit var deleteMenuItem: MenuItem
     private lateinit var dividerItemDecoration: DividerItemDecoration
@@ -152,8 +155,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
         myViewModel.infoFragmentTitle.observe(viewLifecycleOwner) {
@@ -252,5 +255,10 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             removeItemDecoration(dividerItemDecoration)
             adapter = informationAdapter
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

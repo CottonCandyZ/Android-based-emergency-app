@@ -39,13 +39,9 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
     ): View {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         _binding = FragmentMyPageBinding.inflate(inflater, container, false)
-//        myViewModel = ViewModelProvider(
-//            requireActivity(), MyViewModelFactory(
-//                requireContext()
-//            )
-//        ).get(MyViewModel::class.java)
         return binding.root
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -66,8 +62,9 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         with(binding) {
             button.setOnClickListener {
                 AVUser.logOut()
@@ -100,5 +97,10 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
 
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

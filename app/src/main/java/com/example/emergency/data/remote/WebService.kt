@@ -11,11 +11,13 @@ import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Date
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.reflect.full.declaredMemberProperties
 
 
-
-class WebService {
+@Singleton
+class WebService @Inject constructor() {
 
     suspend fun getInfoWithEmergencyContact(id: String): InfoWithEmergencyContact? =
         withContext(Dispatchers.IO) {

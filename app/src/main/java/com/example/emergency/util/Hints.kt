@@ -2,10 +2,13 @@ package com.example.emergency.util
 
 import android.content.Context
 import com.example.emergency.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class Hints constructor(
-    context: Context
+@Singleton
+class Hints @Inject constructor(
+    @ApplicationContext context: Context
 ) {
     // hints
     val inputHints = listOf(

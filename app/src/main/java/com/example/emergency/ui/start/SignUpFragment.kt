@@ -30,8 +30,10 @@ import kotlinx.coroutines.*
  */
 class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
+
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var myCountDownTimer: CountDownTimer
     private var step = 0
 
@@ -44,8 +46,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // 创建一个计时器
         myCountDownTimer = object : CountDownTimer(
             60000,
@@ -303,4 +305,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

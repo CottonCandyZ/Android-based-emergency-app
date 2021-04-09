@@ -40,8 +40,8 @@ class LoginFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         with(binding) {
             buttonSignUp.setOnClickListener {
                 findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
@@ -100,5 +100,9 @@ class LoginFragment : BaseFragment() {
         override fun afterTextChanged(p0: Editable?) {}
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
 }
