@@ -1,9 +1,9 @@
 package com.example.emergency.ui.info
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -13,13 +13,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVException
 import com.example.emergency.R
-import com.example.emergency.data.entity.EmergencyContact
+import com.example.emergency.data.succeeded
 import com.example.emergency.databinding.FragmentInfoBinding
 import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
-import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.Hints
-import com.example.emergency.util.showError
+import com.example.emergency.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -102,20 +100,19 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                     myViewModel.save()
                 } catch (e: AVException) {
                     item.isEnabled = true
-                    showError(e, requireContext())
+                    showMessage(requireContext(), getErrorMessage(e))
                 }
                 binding.progressBar3.visibility = View.INVISIBLE
-
-                Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT).show()
+                showMessage(requireContext(), "保存成功")
                 myViewModel.fromSaveInfo = true
                 findNavController().navigateUp()
             }
         }
         when (item.itemId) {
             R.id.save -> {
-                if (myViewModel.inputInfo[InputHint.REAL_NAME] == ""
-                    || myViewModel.inputInfo[InputHint.BIRTHDATE] == ""
-                    || myViewModel.inputInfo[InputHint.PHONE].length != 11
+                if (myViewModel.data.inputInfo[InputHint.REAL_NAME] == ""
+                    || myViewModel.data.inputInfo[InputHint.BIRTHDATE] == ""
+                    || myViewModel.data.inputInfo[InputHint.PHONE].length != 11
                 ) {
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle("请确认输入是否完整")
@@ -129,9 +126,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
             R.id.edit -> {
                 myViewModel.changeInfoState(InfoState.EDIT)
-                myViewModel.emergencyNumber.add(EmergencyContact())
                 createEditView()
-
             }
             R.id.delete -> {
                 val builder = AlertDialog.Builder(requireContext())
@@ -141,9 +136,9 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                         try {
                             myViewModel.deleteInfoWithEmergencyContact()
                         } catch (e: Exception) {
-                            showError(e.cause!!, requireContext())
+                            showMessage(requireContext(), getErrorMessage(e))
                         }
-                        Toast.makeText(requireContext(), "删除成功", Toast.LENGTH_SHORT).show()
+                        showMessage(requireContext(), "删除成功")
                         findNavController().navigateUp()
                     }
                 }
@@ -168,41 +163,45 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         )
 
 
+
+
+        @SuppressLint("NotifyDataSetChanged")
         when (myViewModel.infoState.value) {
             InfoState.SHOW, InfoState.EDIT -> {
-                val myPageAdapter = ShowInfoAdapter(myViewModel, hints.inputHints)
-
+                val showInfoAdapter = ShowInfoAdapter(myViewModel, hints.inputHints)
                 with(binding.infoRecyclerView) {
                     layoutManager = LinearLayoutManager(requireContext())
                     addItemDecoration(
                         dividerItemDecoration
                     )
-                    adapter = myPageAdapter
+                    adapter = showInfoAdapter
+                }
+                myViewModel.showInfo.observe(viewLifecycleOwner) {
+                    when {
+                        it.succeeded -> {
+                            showInfoAdapter.updateDataList(
+                                it.data!!.inputInfo,
+                                it.data.emergencyNumber
+                            )
+                        }
+                        it.message == ID_NOT_FOUND_ERROR -> {
+                            findNavController().navigateUp()
+                            showMessage(requireContext(), "数据似乎已经被删除了")
+                        }
+                        else -> {
+                            showMessage(requireContext(), it.message!!)
+                            showInfoAdapter.updateDataList(
+                                it.data!!.inputInfo,
+                                it.data.emergencyNumber
+                            )
+                        }
+                    }
                 }
                 launch {
-                    try {
-                        if (!myViewModel.fetchInfo(true)) {
-                            // 这里是一个错误处理 暂时没有包装
-                            findNavController().navigateUp()
-                            Toast.makeText(requireContext(), "数据似乎已经被删除了", Toast.LENGTH_SHORT)
-                                .show()
-                            try {
-                            } catch (e: Throwable) {
-                                showError(e, requireContext())
-                            }
-                        }
-                    } catch (e: Throwable) {
-                        showError(e, requireContext())
-                        myViewModel.fetchInfo(false)
-                        editMenuItem.isEnabled = false
-                        deleteMenuItem.isEnabled = false
-                    }
-
-                    myPageAdapter.updateDataList(myViewModel.inputInfo, myViewModel.emergencyNumber)
+                    myViewModel.fetchInfo()
                 }
             }
             InfoState.NEW -> {
-                myViewModel.cleanup()
                 createEditView()
             }
         }

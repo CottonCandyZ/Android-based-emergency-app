@@ -6,7 +6,6 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -15,13 +14,11 @@ import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
 import cn.leancloud.sms.AVSMS
 import cn.leancloud.sms.AVSMSOption
-import cn.leancloud.types.AVNull
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentSignUpBinding
 import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.showError
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import com.example.emergency.util.getErrorMessage
+import com.example.emergency.util.showMessage
 import kotlinx.coroutines.*
 
 
@@ -92,20 +89,12 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                 try {
                                     if (judgeUserIfExist(phone)) { // 若是老用户
                                         checkCodeToSignUpOrLogin(phone, code)
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "已注册，登陆成功",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        showMessage(requireContext(), "已注册，登陆成功")
                                         findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                     } else { // 新用户
                                         checkCodeToSignUpOrLogin(phone, code)
                                         saveUser(phone)
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "注册成功",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        showMessage(requireContext(), "注册成功")
                                         // 转变视图
                                         changeViewToSetPwd()
                                     }
@@ -114,7 +103,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                     binding.buttonNextStep.isEnabled = true
                                     // 给出错误提示
                                     binding.progressBar2.visibility = View.INVISIBLE
-                                    showError(e.cause!!, requireContext())
+                                    showMessage(requireContext(), getErrorMessage(e))
                                     return@launch
                                 }
                                 binding.progressBar2.visibility = View.INVISIBLE
@@ -128,13 +117,12 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                             launch {
                                 try {
                                     setUserPassword(pwd)
-                                    Toast.makeText(requireContext(), "设置密码成功", Toast.LENGTH_SHORT)
-                                        .show()
+                                    showMessage(requireContext(), "设置密码成功")
                                     findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                 } catch (e: Exception) {
                                     binding.progressBar2.visibility = View.INVISIBLE
                                     binding.buttonNextStep.isEnabled = true
-                                    showError(e.cause!!, requireContext())
+                                    showMessage(requireContext(), getErrorMessage(e))
                                     return@launch
                                 }
                             }
@@ -167,7 +155,16 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             // 获得验证码
             buttonGetCode.setOnClickListener {
                 val phone = signUpPhoneText.text.toString().trim()
-                sendCodeForSignUp(phone)
+                launch {
+                    try {
+                        sendCodeForSignUp(phone)
+                    } catch (e: Exception) {
+                        showMessage(requireContext(), getErrorMessage(e))
+                    }
+                    showMessage(requireContext(), "发送成功")
+                    myCountDownTimer.start()
+                }
+
             }
 
             // 验证验证码合法性，不得少于 6 位
@@ -221,49 +218,27 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
     // 判断用户是否已注册
     private suspend fun judgeUserIfExist(phone: String) = withContext(Dispatchers.IO) {
         val query = AVQuery<AVObject>("UserSignUp")
-        try {
-            query.whereEqualTo("phone", phone)
-            return@withContext query.count() == 1
-        } catch (e: Exception) {
-            throw e
-        }
+        query.whereEqualTo("phone", phone)
+        return@withContext query.count() == 1
     }
 
 
     // 发送验证码
-    private fun sendCodeForSignUp(phone: String) {
-        val option = AVSMSOption()
-        // 未提供函数
-        AVSMS.requestSMSCodeInBackground(
-            "+86$phone",
-            option
-        ).subscribe(object : Observer<AVNull> {
-            override fun onSubscribe(d: Disposable) {}
-
-            override fun onNext(t: AVNull) {
-                Toast.makeText(requireContext(), "发送成功", Toast.LENGTH_SHORT).show()
-                myCountDownTimer.start()
-            }
-
-            override fun onError(e: Throwable) {
-                showError(e, requireContext())
-            }
-
-            override fun onComplete() {}
-
-        })
-    }
+    private suspend fun sendCodeForSignUp(phone: String) =
+        withContext(Dispatchers.IO) {
+            val option = AVSMSOption()
+            // 未提供函数
+            AVSMS.requestSMSCodeInBackground(
+                "+86$phone",
+                option
+            ).blockingSubscribe()
+        }
 
 
     // 检测登陆或注册验证码是否正确
     private suspend fun checkCodeToSignUpOrLogin(phone: String, code: String) =
         withContext(Dispatchers.IO) {
-            try {
-                AVUser.signUpOrLoginByMobilePhone("+86$phone", code)
-
-            } catch (e: Exception) {
-                throw e
-            }
+            AVUser.signUpOrLoginByMobilePhone("+86$phone", code)
         }
 
 
@@ -272,24 +247,16 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
         withContext(Dispatchers.IO) {
             val user = AVUser.getCurrentUser()
             user.password = pwd
-
-            try {
-                user.save()
-            } catch (e: Exception) {
-                throw e
-            }
+            user.save()
         }
+
 
     // 保存用户
     private suspend fun saveUser(phone: String) =
         withContext(Dispatchers.IO) {
             val newUser = AVObject("UserSignUp")
             newUser.put("phone", phone)
-            try {
-                newUser.save()
-            } catch (e: Exception) {
-                throw e
-            }
+            newUser.save()
         }
 
     // 设置密码界面

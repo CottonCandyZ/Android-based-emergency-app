@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -11,11 +12,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.leancloud.AVUser
 import com.example.emergency.R
+import com.example.emergency.data.succeeded
 import com.example.emergency.databinding.FragmentMyPageBinding
 import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.showError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -42,17 +43,11 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         return binding.root
     }
 
-
     override fun onResume() {
         super.onResume()
         if (myViewModel.fromSaveInfo) {
             launch {
-                try {
-                    myViewModel.fetchAbstractInfo(true)
-                } catch (e: Exception) {
-                    showError(e.cause!!, requireContext())
-                    myViewModel.fetchAbstractInfo(false)
-                }
+                myViewModel.fetchAbstractInfo(true)
             }
             myViewModel.fromSaveInfo = false
         } else {
@@ -65,18 +60,23 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val myPageAdapter = MyPageAdapter(myViewModel)
         with(binding) {
             button.setOnClickListener {
                 AVUser.logOut()
                 findNavController().navigate(R.id.action_user_to_loginFragment)
             }
-            val myPageAdapter = MyPageAdapter(myViewModel)
             with(myPageRecyclerView) {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = myPageAdapter
             }
             myViewModel.abstractInfo.observe(viewLifecycleOwner) {
-                myPageAdapter.submitList(it)
+                if (it.succeeded) {
+                    myPageAdapter.submitList(it.data)
+                } else {
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                }
+
             }
 
             addInformation.setOnClickListener {
@@ -86,12 +86,7 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
             swipRefresh.setOnRefreshListener {
                 launch {
-                    try {
-                        myViewModel.fetchAbstractInfo(true)
-                    } catch (e: Exception) {
-                        showError(e.cause!!, requireContext())
-                        swipRefresh.isRefreshing = false
-                    }
+                    myViewModel.fetchAbstractInfo(true)
                     swipRefresh.isRefreshing = false
                 }
 

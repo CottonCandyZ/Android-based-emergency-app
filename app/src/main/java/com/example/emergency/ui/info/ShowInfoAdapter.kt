@@ -14,7 +14,8 @@ import com.example.emergency.ui.MyViewModel
 enum class ShowLayoutType {
     INFO, EMERGENCY_NUMBER, TITLE
 }
-class ShowInfoAdapter(
+
+class ShowInfoAdapter constructor(
     private val myViewModel: MyViewModel,
     private val hints: List<String>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -28,7 +29,6 @@ class ShowInfoAdapter(
     fun updateDataList(infoList: Array<String>, emergencyNumberList: List<EmergencyContact>) {
         _infoList = infoList
         _emergencyNumberList = emergencyNumberList
-        title = 1
         notifyDataSetChanged()
     }
 
@@ -103,6 +103,7 @@ class ShowInfoAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is InfoViewHolder -> {
+
                 val text =
                     if (_infoList[position] == "" || _infoList[position] == "1970/01/01") "尚未填写" else _infoList[position]
                 holder.bind(hints[position], text)
@@ -115,6 +116,6 @@ class ShowInfoAdapter(
         }
     }
 
-    override fun getItemCount(): Int = _infoList.size + _emergencyNumberList.size + title
-
+    override fun getItemCount(): Int =
+        _infoList.size + _emergencyNumberList.size + if (_emergencyNumberList.size == 0) 0 else 1
 }

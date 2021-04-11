@@ -15,7 +15,7 @@ import com.example.emergency.ui.InfoState
 import com.example.emergency.ui.MyViewModel
 
 
-class MyPageAdapter(
+class MyPageAdapter constructor(
     private val myViewModel: MyViewModel
 ) :
     ListAdapter<AbstractInfo, MyPageAdapter.ViewHolder>(DIFFCALLBACK) {
@@ -72,7 +72,7 @@ class MyPageAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
         holder.onClickListener.setAbstractInfo(getItem(position))
-        holder.onClickChangeListener.setAbstractInfo(getItem(position))
+        holder.onClickChangeListener.setAbstractInfo(getItem(position), position)
     }
     inner class OnClickListener : View.OnClickListener {
         private var abstractInfo: AbstractInfo? = null
@@ -96,8 +96,10 @@ class MyPageAdapter(
     inner class OnClickChangeListener : CompoundButton.OnCheckedChangeListener {
         private lateinit var binding: MyPagePersonalInfoItemBinding
         private var abstractInfo: AbstractInfo? = null
-        fun setAbstractInfo(abstractInfo: AbstractInfo) {
+        private var position = -1
+        fun setAbstractInfo(abstractInfo: AbstractInfo, position: Int) {
             this.abstractInfo = abstractInfo
+            this.position = position
         }
 
         fun setBiding(binding: MyPagePersonalInfoItemBinding) {

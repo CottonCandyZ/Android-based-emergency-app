@@ -40,9 +40,10 @@ class EditInfoAdapter(
     private val inputType: (Int) -> Int,
     private val icon: (Int) -> Int,
     private val inputHints: List<String>,
-    private val myViewModel: MyViewModel
+    myViewModel: MyViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-//    private var lastEmptyPosition = -1
+    private val _inputInfo = myViewModel.data.inputInfo
+    private val _emergencyNumber = myViewModel.data.emergencyNumber
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {
@@ -122,7 +123,7 @@ class EditInfoAdapter(
             holder.bind(
                 inputHints[position],
                 icon(position),
-                myViewModel.inputInfo[position]
+                _inputInfo[position]
             )
 
         }
@@ -140,14 +141,14 @@ class EditInfoAdapter(
                 holder.emergencyOnClickDelete.updatePosition(holder.adapterPosition)
                 holder.bind(
                     spinnerList(position),
-                    myViewModel.emergencyNumber[position - INPUT_ARRAY_SIZE]
+                    _emergencyNumber[position - INPUT_ARRAY_SIZE]
                 )
 
             }
         }
     }
 
-    override fun getItemCount(): Int = INPUT_ARRAY_SIZE + myViewModel.emergencyNumber.size
+    override fun getItemCount(): Int = INPUT_ARRAY_SIZE + _emergencyNumber.size
 
     inner class InputTextWatcher : TextWatcher {
         private var position = -1
@@ -158,7 +159,7 @@ class EditInfoAdapter(
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            myViewModel.inputInfo[position] = text.toString()
+            _inputInfo[position] = text.toString()
         }
 
         override fun afterTextChanged(p0: Editable?) {}
@@ -187,21 +188,21 @@ class EditInfoAdapter(
 
         override fun afterTextChanged(text: Editable?) {
             if (text.toString().trim().isNotEmpty()) {
-                if (myViewModel.emergencyNumber[getIndex(position)].phone == "") {
+                if (_emergencyNumber[getIndex(position)].phone == "") {
                     binding.infoRemoveEC.visibility = View.VISIBLE
-                    myViewModel.emergencyNumber[getIndex(position)].phone = text.toString()
-                    myViewModel.emergencyNumber.add(EmergencyContact())
+                    _emergencyNumber[getIndex(position)].phone = text.toString()
+                    _emergencyNumber.add(EmergencyContact())
                 } else {
-                    myViewModel.emergencyNumber[getIndex(position)].phone = text.toString()
+                    _emergencyNumber[getIndex(position)].phone = text.toString()
                     return
                 }
                 notifyItemChanged(itemCount)
             } else {
                 val empty =
-                    myViewModel.emergencyNumber.mapIndexed { index, it -> if (it.phone == "") index else null }
+                    _emergencyNumber.mapIndexed { index, it -> if (it.phone == "") index else null }
                         .filterNotNull()[0]
-                myViewModel.emergencyNumber[getIndex(position)] = EmergencyContact()
-                myViewModel.emergencyNumber.removeAt(empty)
+                _emergencyNumber[getIndex(position)] = EmergencyContact()
+                _emergencyNumber.removeAt(empty)
                 notifyItemRemoved(empty + INPUT_ARRAY_SIZE)
                 notifyItemRangeChanged(
                     empty + INPUT_ARRAY_SIZE,
@@ -223,7 +224,7 @@ class EditInfoAdapter(
         }
 
         override fun onClick(p0: View?) {
-            myViewModel.emergencyNumber.removeAt(getIndex(position))
+            _emergencyNumber.removeAt(getIndex(position))
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount - position)
         }
@@ -245,7 +246,7 @@ class EditInfoAdapter(
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun afterTextChanged(text: Editable?) {
-            myViewModel.emergencyNumber[getIndex(position)].relationship = text.toString()
+            _emergencyNumber[getIndex(position)].relationship = text.toString()
         }
     }
 }

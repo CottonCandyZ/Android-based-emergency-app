@@ -8,7 +8,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -16,7 +15,8 @@ import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentLoginBinding
 import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.showError
+import com.example.emergency.util.getErrorMessage
+import com.example.emergency.util.showMessage
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
@@ -69,13 +69,13 @@ class LoginFragment : BaseFragment() {
                         override fun onSubscribe(d: Disposable) {}
 
                         override fun onNext(t: AVUser) {
-                            Toast.makeText(requireContext(), "欢迎回来", Toast.LENGTH_SHORT).show()
+                            showMessage(requireContext(), "欢迎回来")
                             findNavController().navigate(R.id.action_loginFragment_to_emergency)
                         }
 
                         override fun onError(e: Throwable) {
                             progressBar.visibility = View.INVISIBLE
-                            showError(e, requireContext())
+                            showMessage(requireContext(), getErrorMessage(e))
                         }
 
                         override fun onComplete() {}
@@ -104,5 +104,6 @@ class LoginFragment : BaseFragment() {
         super.onDestroyView()
         _binding = null
     }
+
 
 }

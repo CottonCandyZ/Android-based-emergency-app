@@ -1,10 +1,13 @@
 package com.example.emergency.data.local
 
-import com.example.emergency.data.dao.EmergencyContactDao
-import com.example.emergency.data.dao.InfoDao
+import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.AbstractInfo
 import com.example.emergency.data.entity.InfoWithEmergencyContact
+import com.example.emergency.data.local.dao.EmergencyContactDao
+import com.example.emergency.data.local.dao.InfoDao
 import com.example.emergency.data.remote.WebService
+import com.example.emergency.util.ID_NOT_FOUND_ERROR
+import com.example.emergency.util.getErrorMessage
 import javax.inject.Inject
 
 class InfoRepository @Inject constructor(
@@ -12,11 +15,15 @@ class InfoRepository @Inject constructor(
     private val emergencyContactDao: EmergencyContactDao,
     private val webService: WebService
 ) {
-    suspend fun getAbstractInfo(fetch: Boolean): List<AbstractInfo> {
+    suspend fun getAbstractInfo(fetch: Boolean): Resource<List<AbstractInfo>> {
         if (fetch) {
-            refreshAbstractInfo()
+            try {
+                refreshAbstractInfo()
+            } catch (e: Exception) {
+                return Resource.Error(getErrorMessage(e), infoDao.getAbstractInfo())
+            }
         }
-        return infoDao.getAbstractInfo()
+        return Resource.Success(infoDao.getAbstractInfo())
     }
 
 
@@ -27,13 +34,18 @@ class InfoRepository @Inject constructor(
         infoDao.insertInfo(*list.toTypedArray())
     }
 
-    suspend fun getInfo(id: String, fetch: Boolean): List<InfoWithEmergencyContact>? {
-        if (fetch) {
+    suspend fun getInfo(id: String): Resource<List<InfoWithEmergencyContact>> {
+        try {
             if (!refreshInfo(id)) {
-                return null
+                return Resource.Error(ID_NOT_FOUND_ERROR)
             }
+        } catch (e: Exception) {
+            return Resource.Error(
+                getErrorMessage(e),
+                infoDao.getInfoWithEmergencyContact(id)
+            )
         }
-        return infoDao.getInfoWithEmergencyContact(id)
+        return Resource.Success(infoDao.getInfoWithEmergencyContact(id))
     }
 
     private suspend fun refreshInfo(id: String): Boolean {
@@ -72,9 +84,12 @@ class InfoRepository @Inject constructor(
     }
 
     suspend fun updateItemChosen(abstractInfo: AbstractInfo) {
-        webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
+        try {
+            webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
+        } catch (e: Exception) {
+            infoDao.updateAbstractInfo(abstractInfo)
+        }
         infoDao.updateAbstractInfo(abstractInfo)
-
     }
 
 

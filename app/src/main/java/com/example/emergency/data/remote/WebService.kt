@@ -18,7 +18,6 @@ import kotlin.reflect.full.declaredMemberProperties
 
 @Singleton
 class WebService @Inject constructor() {
-
     suspend fun getInfoWithEmergencyContact(id: String): InfoWithEmergencyContact? =
         withContext(Dispatchers.IO) {
             val queryInfo = AVQuery<AVObject>("Info")
@@ -149,16 +148,5 @@ class WebService @Inject constructor() {
         val updateItem = AVObject.createWithoutData("Info", id)
         updateItem.put("chosen", toggle)
         updateItem.save()
-    }
-
-
-    companion object {
-        @Volatile
-        private var instance: WebService? = null
-
-        fun getInstance(
-        ): WebService = instance ?: synchronized(this) {
-            instance ?: WebService().also { instance = it }
-        }
     }
 }

@@ -4,12 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.AbstractInfo
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.data.entity.Info
 import com.example.emergency.data.entity.InfoWithEmergencyContact
 import com.example.emergency.data.local.InfoRepository
+import com.example.emergency.data.succeeded
 import com.example.emergency.ui.info.InputHint
+import com.example.emergency.util.ID_NOT_FOUND_ERROR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.sql.Date
@@ -29,14 +32,16 @@ class MyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
 ) : ViewModel() {
     // 用于保存填入的信息
-    lateinit var inputInfo: Array<String>
-    lateinit var emergencyNumber: ArrayList<EmergencyContact>
+    lateinit var data: Data
     private lateinit var emergencyContactsCopy: ArrayList<EmergencyContact>
+    private lateinit var infoWithEmergencyContact: InfoWithEmergencyContact
+
+    private val _showInfo = MutableLiveData<Resource<Data>>()
+    val showInfo: LiveData<Resource<Data>> = _showInfo
+
 
     // 页面跳转时的 ID
     var showInfoId: String? = null
-
-    private lateinit var infoWithEmergencyContact: InfoWithEmergencyContact
 
 
     // info 页面数据
@@ -51,13 +56,24 @@ class MyViewModel @Inject constructor(
     val infoState: LiveData<InfoState> = _infoState
 
     fun changeInfoState(infoState: InfoState) {
+        when (infoState) {
+            InfoState.NEW -> {
+                data = Data(Array(INPUT_ARRAY_SIZE) { "" }, arrayListOf(EmergencyContact()))
+            }
+            InfoState.SHOW -> {
+                data = Data(Array(INPUT_ARRAY_SIZE) { "" }, arrayListOf())
+            }
+            InfoState.EDIT -> {
+                data.emergencyNumber.add(EmergencyContact())
+            }
+        }
         _infoState.value = infoState
     }
 
 
     // 我的页面数据
-    private val _abstractInfo = MutableLiveData<List<AbstractInfo>>()
-    val abstractInfo: LiveData<List<AbstractInfo>> = _abstractInfo
+    private val _abstractInfo = MutableLiveData<Resource<List<AbstractInfo>>>()
+    val abstractInfo: LiveData<Resource<List<AbstractInfo>>> = _abstractInfo
 
     // 用来判断返回我的页面时是否需要刷新数据
     var fromSaveInfo = false
@@ -65,12 +81,7 @@ class MyViewModel @Inject constructor(
     // 第一次进入页面时需要从远程获取数据
     init {
         viewModelScope.launch {
-            try {
-                fetchAbstractInfo(true)
-            } catch (e: Exception) {
-                fetchAbstractInfo(false)
-//                showError(e.cause!!, context)
-            }
+            fetchAbstractInfo(true)
         }
     }
 
@@ -80,15 +91,18 @@ class MyViewModel @Inject constructor(
     }
 
     // 获取详细信息的数据
-    suspend fun fetchInfo(remote: Boolean): Boolean {
+    suspend fun fetchInfo() {
         emergencyContactsCopy = arrayListOf()
 
-        val result = infoRepository.getInfo(showInfoId!!, remote) ?: return false
-        infoWithEmergencyContact = result[0]
+        val result = infoRepository.getInfo(showInfoId!!)
+        if (result is Resource.Error && result.message == ID_NOT_FOUND_ERROR) {
+            _showInfo.value = Resource.Error(result.message)
+            return
+        }
+        infoWithEmergencyContact = result.data!![0]
         val info = infoWithEmergencyContact.info
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
-        inputInfo = Array(INPUT_ARRAY_SIZE) { "" }
-        emergencyNumber = arrayListOf()
+        val inputInfo = data.inputInfo
         info.run {
             with(InputHint) {
                 inputInfo[REAL_NAME] = realName
@@ -106,20 +120,20 @@ class MyViewModel @Inject constructor(
         }
         val emergencyContacts = infoWithEmergencyContact.emergencyContacts
         emergencyContacts.forEach {
-            emergencyNumber.add(it)
+            data.emergencyNumber.add(it)
         }
         emergencyContactsCopy.addAll(emergencyContacts)
-        return true
-    }
-
-
-    fun cleanup() {
-        inputInfo = Array(INPUT_ARRAY_SIZE) { "" }
-        emergencyNumber = arrayListOf(EmergencyContact())
+        _showInfo.value =
+            if (result.succeeded) {
+                Resource.Success(data)
+            } else {
+                Resource.Error(result.message!!, data)
+            }
     }
 
     suspend fun deleteInfoWithEmergencyContact() {
         infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
+
     }
 
 
@@ -134,9 +148,9 @@ class MyViewModel @Inject constructor(
     suspend fun save() {
         // 判断 info 状态
         val saveFromId = _infoState.value != InfoState.NEW
-
         val infoId = if (saveFromId) showInfoId!! else ""
         val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
+        val inputInfo = data.inputInfo
         val date = Date(simpleDateFormat.parse(inputInfo[InputHint.BIRTHDATE])!!.time)
         val weight =
             if (inputInfo[InputHint.WEIGHT] == "") 0 else inputInfo[InputHint.WEIGHT].toInt()
@@ -157,11 +171,11 @@ class MyViewModel @Inject constructor(
             address = inputInfo[InputHint.ADDRESS],
             chosen = chosen,
         )
-        val saveList = emergencyNumber.filter { it.phone != "" }
+        val saveList = data.emergencyNumber.filter { it.phone != "" }
 
         if (saveFromId) {
             emergencyContactsCopy.forEach { old ->
-                if (!emergencyNumber.any { it.id == old.id }) {
+                if (!data.emergencyNumber.any { it.id == old.id }) {
                     infoRepository.deleteEmergencyContact(old.id)
                 }
             }
@@ -171,6 +185,10 @@ class MyViewModel @Inject constructor(
             save,
             saveFromId
         )
-
     }
 }
+
+class Data(
+    val inputInfo: Array<String>,
+    val emergencyNumber: ArrayList<EmergencyContact>
+)

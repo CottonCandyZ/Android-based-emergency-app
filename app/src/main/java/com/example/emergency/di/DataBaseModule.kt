@@ -2,9 +2,9 @@ package com.example.emergency.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.emergency.data.dao.EmergencyContactDao
-import com.example.emergency.data.dao.InfoDao
 import com.example.emergency.data.local.AppDatabase
+import com.example.emergency.data.local.dao.EmergencyContactDao
+import com.example.emergency.data.local.dao.InfoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
