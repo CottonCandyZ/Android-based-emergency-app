@@ -27,8 +27,8 @@ class MyPageAdapter constructor(
     ) :
         RecyclerView.ViewHolder(binding.root) {
         init {
-            onClickListener.setBiding(binding)
-            onClickChangeListener.setBiding(binding)
+            onClickListener.setBinding(binding)
+            onClickChangeListener.setBinding(binding)
             binding.leftContainter.setOnClickListener(onClickListener)
             binding.infoSwitch.setOnCheckedChangeListener(onClickChangeListener)
         }
@@ -72,7 +72,7 @@ class MyPageAdapter constructor(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
         holder.onClickListener.setAbstractInfo(getItem(position))
-        holder.onClickChangeListener.setAbstractInfo(getItem(position), position)
+        holder.onClickChangeListener.setAbstractInfo(getItem(position))
     }
     inner class OnClickListener : View.OnClickListener {
         private var abstractInfo: AbstractInfo? = null
@@ -81,7 +81,7 @@ class MyPageAdapter constructor(
             this.abstractInfo = abstractInfo
         }
 
-        fun setBiding(binding: MyPagePersonalInfoItemBinding) {
+        fun setBinding(binding: MyPagePersonalInfoItemBinding) {
             this.binding = binding
         }
 
@@ -96,13 +96,11 @@ class MyPageAdapter constructor(
     inner class OnClickChangeListener : CompoundButton.OnCheckedChangeListener {
         private lateinit var binding: MyPagePersonalInfoItemBinding
         private var abstractInfo: AbstractInfo? = null
-        private var position = -1
-        fun setAbstractInfo(abstractInfo: AbstractInfo, position: Int) {
+        fun setAbstractInfo(abstractInfo: AbstractInfo) {
             this.abstractInfo = abstractInfo
-            this.position = position
         }
 
-        fun setBiding(binding: MyPagePersonalInfoItemBinding) {
+        fun setBinding(binding: MyPagePersonalInfoItemBinding) {
             this.binding = binding
         }
 

@@ -42,8 +42,8 @@ class EditInfoAdapter(
     private val inputHints: List<String>,
     myViewModel: MyViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val _inputInfo = myViewModel.data.inputInfo
-    private val _emergencyNumber = myViewModel.data.emergencyNumber
+    private val _inputInfo = myViewModel.inputData.inputInfo
+    private val _emergencyNumber = myViewModel.inputData.emergencyNumber
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {

@@ -51,12 +51,6 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
     ): View {
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
         _binding = FragmentInfoBinding.inflate(inflater, container, false)
-//        myViewModel = ViewModelProvider(
-//            requireActivity(), MyViewModelFactory(
-//                requireContext()
-//            )
-//        ).get(MyViewModel::class.java)
-
         return binding.root
     }
 
@@ -104,15 +98,15 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
                 binding.progressBar3.visibility = View.INVISIBLE
                 showMessage(requireContext(), "保存成功")
-                myViewModel.fromSaveInfo = true
+                myViewModel.fetchAbstractInfo(true)
                 findNavController().navigateUp()
             }
         }
         when (item.itemId) {
             R.id.save -> {
-                if (myViewModel.data.inputInfo[InputHint.REAL_NAME] == ""
-                    || myViewModel.data.inputInfo[InputHint.BIRTHDATE] == ""
-                    || myViewModel.data.inputInfo[InputHint.PHONE].length != 11
+                if (myViewModel.inputData.inputInfo[InputHint.REAL_NAME] == ""
+                    || myViewModel.inputData.inputInfo[InputHint.BIRTHDATE] == ""
+                    || myViewModel.inputData.inputInfo[InputHint.PHONE].length != 11
                 ) {
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle("请确认输入是否完整")

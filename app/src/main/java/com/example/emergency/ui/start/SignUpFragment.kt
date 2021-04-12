@@ -72,6 +72,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             // 下一步由一个变量记录阶段，在某一个阶段完成时，则 step + 1
             with(buttonNextStep) {
                 isEnabled = false
+                var phone = ""
                 setOnClickListener {
                     when (step) {
                         0 -> {
@@ -82,7 +83,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                         }
                         1 -> {
                             binding.progressBar2.visibility = View.VISIBLE
-                            val phone = signUpPhoneText.text.toString().trim()
+                            phone = signUpPhoneText.text.toString().trim()
                             val code = signUpCodeText.text.toString().trim()
                             isEnabled = false
                             launch {
@@ -93,7 +94,6 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                                         findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                     } else { // 新用户
                                         checkCodeToSignUpOrLogin(phone, code)
-                                        saveUser(phone)
                                         showMessage(requireContext(), "注册成功")
                                         // 转变视图
                                         changeViewToSetPwd()
@@ -113,9 +113,11 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                         2 -> {
                             binding.progressBar2.visibility = View.VISIBLE
                             isEnabled = false
+                            val userName = signUpUsernameText.text.toString().trim()
                             val pwd = signUpPasswordText.text.toString().trim()
                             launch {
                                 try {
+                                    saveUser(phone, userName)
                                     setUserPassword(pwd)
                                     showMessage(requireContext(), "设置密码成功")
                                     findNavController().navigate(R.id.action_signUpFragment_to_emergency)
@@ -252,10 +254,11 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
 
 
     // 保存用户
-    private suspend fun saveUser(phone: String) =
+    private suspend fun saveUser(phone: String, name: String) =
         withContext(Dispatchers.IO) {
             val newUser = AVObject("UserSignUp")
-            newUser.put("phone", phone)
+            newUser.put("name", name)
+            newUser.put("phone", "+86$phone")
             newUser.save()
         }
 
@@ -266,7 +269,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
             signUpCodeLayout.visibility = View.GONE
             buttonGetCode.visibility = View.GONE
             signUpPhoneLayout.visibility = View.GONE
-//            signUpUsername.visibility = View.VISIBLE
+            signUpUsername.visibility = View.VISIBLE
             signUpPasswordLayout.visibility = View.VISIBLE
             signUpPasswordVerifyLayout.visibility = View.VISIBLE
         }

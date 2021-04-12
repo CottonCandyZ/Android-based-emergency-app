@@ -6,6 +6,7 @@ import cn.leancloud.AVUser
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.data.entity.Info
 import com.example.emergency.data.entity.InfoWithEmergencyContact
+import com.example.emergency.data.entity.User
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
@@ -148,5 +149,20 @@ class WebService @Inject constructor() {
         val updateItem = AVObject.createWithoutData("Info", id)
         updateItem.put("chosen", toggle)
         updateItem.save()
+    }
+
+    suspend fun getCurrentUser(): User? = withContext(Dispatchers.IO) {
+        val query = AVQuery<AVObject>("UserSignUp")
+        val phone = AVUser.getCurrentUser().mobilePhoneNumber
+        query.whereEqualTo("phone", phone)
+        val result = query.find()
+        var user: User? = null
+        result.forEach {
+            user = User(
+                phone = phone,
+                name = it.getString("name")
+            )
+        }
+        return@withContext user
     }
 }

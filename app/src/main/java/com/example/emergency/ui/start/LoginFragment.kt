@@ -61,6 +61,7 @@ class LoginFragment : BaseFragment() {
             loginPasswordText.addTextChangedListener(watcher)
             buttonLogin.setOnClickListener {
                 progressBar.visibility = VISIBLE
+                buttonLogin.isEnabled = false
                 val phone = loginPhoneNumberText.text.toString().trim()
                 val pwd = loginPasswordText.text.toString().trim()
 
@@ -75,6 +76,7 @@ class LoginFragment : BaseFragment() {
 
                         override fun onError(e: Throwable) {
                             progressBar.visibility = View.INVISIBLE
+                            buttonLogin.isEnabled = true
                             showMessage(requireContext(), getErrorMessage(e))
                         }
 

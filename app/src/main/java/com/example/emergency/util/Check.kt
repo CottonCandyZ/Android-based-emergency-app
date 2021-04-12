@@ -6,6 +6,7 @@ import cn.leancloud.AVException
 
 
 const val ID_NOT_FOUND_ERROR = "ID not found"
+const val USER_NOT_EXIST = "user not exist"
 fun getErrorMessage(e: Throwable): String {
     return when (val code = AVException(e.cause!!).code) {
         210 -> "用户名和密码不匹配"

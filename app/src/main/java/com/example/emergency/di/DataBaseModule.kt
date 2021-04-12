@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.emergency.data.local.AppDatabase
 import com.example.emergency.data.local.dao.EmergencyContactDao
 import com.example.emergency.data.local.dao.InfoDao
+import com.example.emergency.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,11 @@ class DataBaseModule {
     @Provides
     fun provideEmergencyDao(appDatabase: AppDatabase): EmergencyContactDao {
         return appDatabase.emergencyContactDao()
+    }
+
+    @Provides
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
     }
 
     @Provides

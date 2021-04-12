@@ -34,9 +34,11 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpUsernameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/signUp_user_name_hint" />
+                android:hint="@string/signUp_user_name_hint"
+                android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
