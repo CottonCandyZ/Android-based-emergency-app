@@ -55,6 +55,7 @@ class MyViewModel @Inject constructor(
     // 我的页面数据
     private val _abstractInfo = MutableLiveData<Resource<List<AbstractInfo>>>()
     val abstractInfo: LiveData<Resource<List<AbstractInfo>>> = _abstractInfo
+    var shouldUpdate = true
 
 
     private val _infoState = MutableLiveData<InfoState>()
@@ -142,6 +143,8 @@ class MyViewModel @Inject constructor(
     fun updateAbstractInfo(abstractInfo: AbstractInfo) {
         viewModelScope.launch {
             infoRepository.updateItemChosen(abstractInfo)
+            shouldUpdate = false
+            _abstractInfo.value = infoRepository.getAbstractInfo(false)
         }
 
     }

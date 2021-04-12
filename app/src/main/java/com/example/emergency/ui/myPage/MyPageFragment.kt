@@ -51,10 +51,6 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val myPageAdapter = MyPageAdapter(myViewModel)
-        // 刷新呼救人列表
-        launch {
-            myViewModel.fetchAbstractInfo(false)
-        }
         with(binding) {
             button.setOnClickListener {
                 launch {
@@ -95,6 +91,10 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
 
             // 呼救人列表
             myViewModel.abstractInfo.observe(viewLifecycleOwner) {
+                if (!myViewModel.shouldUpdate) {
+                    myViewModel.shouldUpdate = true
+                    return@observe
+                }
                 if (it.succeeded) {
                     myPageAdapter.submitList(it.data)
                 } else {
