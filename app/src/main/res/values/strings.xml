@@ -44,4 +44,9 @@
     <string name="info_relationship">关系</string>
     <string name="info_top_bar_button_edit">编辑</string>
     <string name="info_top_bar_button_delete">删除</string>
+    <string name="settings">设置</string>
+    <string name="change_password_save">保存</string>
+    <string name="change_password_hint">新密码</string>
+    <string name="change_password_confirm_hint">确认密码</string>
+    <string name="my_page_add_hint">添加呼救人</string>
 </resources>

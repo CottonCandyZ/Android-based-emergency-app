@@ -11,25 +11,32 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import cn.leancloud.AVUser
 import com.example.emergency.R
+import com.example.emergency.data.remote.WebService
 import com.example.emergency.databinding.FragmentLoginBinding
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.getErrorMessage
 import com.example.emergency.util.showMessage
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class LoginFragment : BaseFragment() {
+@AndroidEntryPoint
+class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
 
     override var bottomNavigationViewVisibility = false
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var webService: WebService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,25 +71,18 @@ class LoginFragment : BaseFragment() {
                 buttonLogin.isEnabled = false
                 val phone = loginPhoneNumberText.text.toString().trim()
                 val pwd = loginPasswordText.text.toString().trim()
-
-                AVUser.logIn("+86$phone", pwd)
-                    .subscribe(object : Observer<AVUser> {
-                        override fun onSubscribe(d: Disposable) {}
-
-                        override fun onNext(t: AVUser) {
-                            showMessage(requireContext(), "欢迎回来")
-                            findNavController().navigate(R.id.action_loginFragment_to_emergency)
-                        }
-
-                        override fun onError(e: Throwable) {
-                            progressBar.visibility = View.INVISIBLE
-                            buttonLogin.isEnabled = true
-                            showMessage(requireContext(), getErrorMessage(e))
-                        }
-
-                        override fun onComplete() {}
-                    })
-
+                launch {
+                    try {
+                        webService.logIn("+86$phone", pwd)
+                    } catch (e: Exception) {
+                        progressBar.visibility = View.INVISIBLE
+                        buttonLogin.isEnabled = true
+                        showMessage(requireContext(), getErrorMessage(e))
+                        return@launch
+                    }
+                    showMessage(requireContext(), "欢迎回来")
+                    findNavController().navigate(R.id.action_loginFragment_to_emergency)
+                }
             }
         }
     }

@@ -81,8 +81,6 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
             }
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

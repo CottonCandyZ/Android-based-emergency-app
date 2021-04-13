@@ -1,9 +1,7 @@
 package com.example.emergency.ui.myPage
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -48,8 +46,23 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.my_page_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.settings -> {
+                findNavController().navigate(R.id.action_user_to_mySettingsFragment)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         val myPageAdapter = MyPageAdapter(myViewModel)
         with(binding) {
             button.setOnClickListener {

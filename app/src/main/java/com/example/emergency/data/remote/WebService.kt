@@ -3,6 +3,8 @@ package com.example.emergency.data.remote
 import cn.leancloud.AVObject
 import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
+import cn.leancloud.sms.AVSMS
+import cn.leancloud.sms.AVSMSOption
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.data.entity.Info
 import com.example.emergency.data.entity.InfoWithEmergencyContact
@@ -165,4 +167,55 @@ class WebService @Inject constructor() {
         }
         return@withContext user
     }
+
+    // 判断用户是否已注册
+    suspend fun judgeUserIfExist(phone: String) = withContext(Dispatchers.IO) {
+        val query = AVQuery<AVObject>("UserSignUp")
+        query.whereEqualTo("phone", "+86$phone")
+        return@withContext query.count() == 1
+    }
+
+
+    // 发送验证码
+    suspend fun sendCodeForSignUp(phone: String) =
+        withContext(Dispatchers.IO) {
+            val option = AVSMSOption()
+            // 未提供函数
+            AVSMS.requestSMSCodeInBackground(
+                "+86$phone",
+                option
+            ).blockingSubscribe()
+        }
+
+
+    // 检测登陆或注册验证码是否正确
+    suspend fun checkCodeToSignUpOrLogin(phone: String, code: String) =
+        withContext(Dispatchers.IO) {
+            AVUser.signUpOrLoginByMobilePhone("+86$phone", code)
+        }
+
+
+    // 为用户设置密码
+    suspend fun setUserPassword(pwd: String) =
+        withContext(Dispatchers.IO) {
+            val user = AVUser.getCurrentUser()
+            user.password = pwd
+            user.save()
+            AVUser.logIn(user.mobilePhoneNumber, pwd).blockingSubscribe()
+        }
+
+    suspend fun logIn(phone: String, pwd: String) = withContext(Dispatchers.IO) {
+        AVUser.logIn(phone, pwd).blockingSubscribe()
+    }
+
+    // 保存用户
+    suspend fun saveUser(phone: String, name: String) =
+        withContext(Dispatchers.IO) {
+            val newUser = AVObject("UserSignUp")
+            newUser.put("name", name)
+            newUser.put("phone", "+86$phone")
+            newUser.save()
+        }
+
+
 }

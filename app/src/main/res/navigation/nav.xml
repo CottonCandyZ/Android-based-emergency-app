@@ -83,7 +83,39 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_user_to_mySettingsFragment"
+            app:destination="@id/mySettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/mySettingsFragment"
+        android:name="com.example.emergency.ui.settings.MySettingsFragment"
+        android:label="设置">
+
+        <action
+            android:id="@+id/action_mySettingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/mySettingsFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/action_mySettingsFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.emergency.ui.settings.ChangePasswordFragment"
+        android:label="修改密码"
+        tools:layout="@layout/fragment_change_password" />
 
 
 </navigation>

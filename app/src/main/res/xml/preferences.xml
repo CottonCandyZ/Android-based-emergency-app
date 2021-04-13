@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        app:key="changePassword"
+        app:title="修改密码"
+        app:summary="修改此登陆用户的密码" />
+    <Preference
+        app:key="logOut"
+        app:title="登出"
+        app:summary="登出并退回到登陆页面" />
+
+</PreferenceScreen>

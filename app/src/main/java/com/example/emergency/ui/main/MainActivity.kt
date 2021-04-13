@@ -26,19 +26,12 @@ class MainActivity : AppCompatActivity() {
         // enable dataBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar
-
 
         val host =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = host.navController
-
         setUpBottomNavigation()
-
-
-        // 设置返回按钮
     }
-
 
     private fun setUpBottomNavigation() {
         val barConfiguration =
@@ -50,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         )
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
     }
-
 
     // 点击屏幕外侧以取消焦点
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

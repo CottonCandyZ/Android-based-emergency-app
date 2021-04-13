@@ -9,22 +9,21 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import cn.leancloud.AVObject
-import cn.leancloud.AVQuery
-import cn.leancloud.AVUser
-import cn.leancloud.sms.AVSMS
-import cn.leancloud.sms.AVSMSOption
 import com.example.emergency.R
+import com.example.emergency.data.remote.WebService
 import com.example.emergency.databinding.FragmentSignUpBinding
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.getErrorMessage
 import com.example.emergency.util.showMessage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 
 /**
  * A simple [Fragment] subclass.
  */
+@AndroidEntryPoint
 class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
     override var bottomNavigationViewVisibility = false
 
@@ -33,6 +32,9 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
 
     private lateinit var myCountDownTimer: CountDownTimer
     private var step = 0
+
+    @Inject
+    lateinit var webService: WebService
 
 
     override fun onCreateView(
@@ -88,12 +90,12 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                             isEnabled = false
                             launch {
                                 try {
-                                    if (judgeUserIfExist(phone)) { // 若是老用户
-                                        checkCodeToSignUpOrLogin(phone, code)
+                                    if (webService.judgeUserIfExist(phone)) { // 若是老用户
+                                        webService.checkCodeToSignUpOrLogin(phone, code)
                                         showMessage(requireContext(), "已注册，登陆成功")
                                         findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                     } else { // 新用户
-                                        checkCodeToSignUpOrLogin(phone, code)
+                                        webService.checkCodeToSignUpOrLogin(phone, code)
                                         showMessage(requireContext(), "注册成功")
                                         // 转变视图
                                         changeViewToSetPwd()
@@ -117,8 +119,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                             val pwd = signUpPasswordText.text.toString().trim()
                             launch {
                                 try {
-                                    saveUser(phone, userName)
-                                    setUserPassword(pwd)
+                                    webService.saveUser(phone, userName)
+                                    webService.setUserPassword(pwd)
                                     showMessage(requireContext(), "设置密码成功")
                                     findNavController().navigate(R.id.action_signUpFragment_to_emergency)
                                 } catch (e: Exception) {
@@ -159,7 +161,7 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                 val phone = signUpPhoneText.text.toString().trim()
                 launch {
                     try {
-                        sendCodeForSignUp(phone)
+                        webService.sendCodeForSignUp(phone)
                     } catch (e: Exception) {
                         showMessage(requireContext(), getErrorMessage(e))
                     }
@@ -188,15 +190,16 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
             }
 
+            var passwordIsIdentical = false
             // 验证两次输入的密码是否一致
             with(signUpPasswordVerifyText) {
                 doOnTextChanged { text, _, _, _ ->
                     if (text.toString().trim() != binding.signUpPasswordText.text.toString()
                             .trim()
                     ) {
-                        buttonNextStep.isEnabled = false
+                        passwordIsIdentical = false
                     } else {
-                        buttonNextStep.isEnabled = true
+                        passwordIsIdentical = true
                         signUpPasswordVerifyLayout.error = null
                     }
 
@@ -212,55 +215,20 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
             }
 
+            with(signUpUsernameText) {
+                doOnTextChanged { text, _, _, _ ->
+                    buttonNextStep.isEnabled =
+                        !(text.toString().trim().isEmpty() && !passwordIsIdentical)
+                }
+                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus && text.toString().trim().isEmpty()) {
+                        signUpUsername.error = "请输入用户名"
+                    }
+                }
+            }
         }
     }
 
-    // 以下是网络请求，全走 IO 线程
-
-    // 判断用户是否已注册
-    private suspend fun judgeUserIfExist(phone: String) = withContext(Dispatchers.IO) {
-        val query = AVQuery<AVObject>("UserSignUp")
-        query.whereEqualTo("phone", phone)
-        return@withContext query.count() == 1
-    }
-
-
-    // 发送验证码
-    private suspend fun sendCodeForSignUp(phone: String) =
-        withContext(Dispatchers.IO) {
-            val option = AVSMSOption()
-            // 未提供函数
-            AVSMS.requestSMSCodeInBackground(
-                "+86$phone",
-                option
-            ).blockingSubscribe()
-        }
-
-
-    // 检测登陆或注册验证码是否正确
-    private suspend fun checkCodeToSignUpOrLogin(phone: String, code: String) =
-        withContext(Dispatchers.IO) {
-            AVUser.signUpOrLoginByMobilePhone("+86$phone", code)
-        }
-
-
-    // 为用户设置密码
-    private suspend fun setUserPassword(pwd: String) =
-        withContext(Dispatchers.IO) {
-            val user = AVUser.getCurrentUser()
-            user.password = pwd
-            user.save()
-        }
-
-
-    // 保存用户
-    private suspend fun saveUser(phone: String, name: String) =
-        withContext(Dispatchers.IO) {
-            val newUser = AVObject("UserSignUp")
-            newUser.put("name", name)
-            newUser.put("phone", "+86$phone")
-            newUser.save()
-        }
 
     // 设置密码界面
     private fun changeViewToSetPwd() {
