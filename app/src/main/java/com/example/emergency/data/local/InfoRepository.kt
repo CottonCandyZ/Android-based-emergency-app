@@ -83,13 +83,14 @@ class InfoRepository @Inject constructor(
         infoDao.deleteById(infoWithEmergencyContact.info.id)
     }
 
-    suspend fun updateItemChosen(abstractInfo: AbstractInfo) {
+    suspend fun updateItemChosen(abstractInfo: AbstractInfo): Boolean {
         try {
             webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
         } catch (e: Exception) {
-            infoDao.updateAbstractInfo(abstractInfo)
+            return false
         }
         infoDao.updateAbstractInfo(abstractInfo)
+        return true
     }
 
 

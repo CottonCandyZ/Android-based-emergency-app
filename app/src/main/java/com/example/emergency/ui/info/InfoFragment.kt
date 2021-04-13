@@ -179,6 +179,9 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                         it.message == ID_NOT_FOUND_ERROR -> {
                             findNavController().navigateUp()
                             showMessage(requireContext(), "数据似乎已经被删除了")
+                            launch {
+                                myViewModel.fetchAbstractInfo(true)
+                            }
                         }
                         else -> {
                             showMessage(requireContext(), it.message!!)

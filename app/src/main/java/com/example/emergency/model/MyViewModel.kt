@@ -142,9 +142,12 @@ class MyViewModel @Inject constructor(
 
     fun updateAbstractInfo(abstractInfo: AbstractInfo) {
         viewModelScope.launch {
-            infoRepository.updateItemChosen(abstractInfo)
-            shouldUpdate = false
-            _abstractInfo.value = infoRepository.getAbstractInfo(false)
+            shouldUpdate = !infoRepository.updateItemChosen(abstractInfo)
+            if (shouldUpdate) {
+                _abstractInfo.value =
+                    Resource.Error("该项似乎已被删除", infoRepository.getAbstractInfo(true).data)
+            }
+            _abstractInfo.value = infoRepository.getAbstractInfo(true)
         }
 
     }

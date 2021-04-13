@@ -8,7 +8,8 @@ import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentEmergencyBinding
 import com.example.emergency.util.BaseFragment
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 
 /**
  * A simple [Fragment] subclass.
@@ -47,14 +48,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.buttonEmergency.setOnClickListener {
-            launch {
-                wait()
-                setHasOptionsMenu(true)
-            }
-        }
-    }
 
-    private suspend fun wait() = withContext(Dispatchers.IO) {
-        Thread.sleep(5000)
+        }
     }
 }

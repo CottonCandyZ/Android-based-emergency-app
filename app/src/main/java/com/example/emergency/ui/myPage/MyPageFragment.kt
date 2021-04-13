@@ -65,14 +65,6 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         setHasOptionsMenu(true)
         val myPageAdapter = MyPageAdapter(myViewModel)
         with(binding) {
-            button.setOnClickListener {
-                launch {
-                    logOut.clean()
-                }
-                AVUser.logOut()
-                findNavController().navigate(R.id.action_user_to_loginFragment)
-            }
-
             with(myPageRecyclerView) {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = myPageAdapter
