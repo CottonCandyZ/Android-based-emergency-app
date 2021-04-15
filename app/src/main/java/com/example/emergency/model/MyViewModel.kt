@@ -1,4 +1,4 @@
-package com.example.emergency.ui
+package com.example.emergency.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,7 +34,8 @@ class MyViewModel @Inject constructor(
     lateinit var inputData: InputData
     private lateinit var emergencyContactsCopy: ArrayList<EmergencyContact>
     private lateinit var infoWithEmergencyContact: InfoWithEmergencyContact
-
+    private var _lastCheckedInfo = MutableLiveData<AbstractInfo>()
+    val lastCheckedInfo: LiveData<AbstractInfo> = _lastCheckedInfo
 
     private val _showInfo = MutableLiveData<Resource<InputData>>()
     val showInfo: LiveData<Resource<InputData>> = _showInfo
@@ -66,6 +67,7 @@ class MyViewModel @Inject constructor(
         viewModelScope.launch {
             _user.value = userRepository.getCurrentUser()
             fetchAbstractInfo(true)
+            _lastCheckedInfo.value = abstractInfo.value?.data!!.first { it.chosen }
         }
     }
 
@@ -140,16 +142,22 @@ class MyViewModel @Inject constructor(
     }
 
 
-    fun updateAbstractInfo(abstractInfo: AbstractInfo) {
+    fun updateAbstractInfo(update: AbstractInfo) {
         viewModelScope.launch {
-            shouldUpdate = !infoRepository.updateItemChosen(abstractInfo)
-            if (shouldUpdate) {
-                _abstractInfo.value =
-                    Resource.Error("该项似乎已被删除", infoRepository.getAbstractInfo(true).data)
-            }
-            _abstractInfo.value = infoRepository.getAbstractInfo(true)
-        }
+            val remove = lastCheckedInfo.value!!.copy()
+            remove.chosen = false
+            infoRepository.updateItemChosen(remove, update)
 
+
+//            shouldUpdate = !(infoRepository.updateItemChosen(remove) && infoRepository.updateItemChosen(update))
+//            if (shouldUpdate) {
+//                _abstractInfo.value =
+//                    Resource.Error("该项似乎已被删除", infoRepository.getAbstractInfo(true).data)
+//            }
+//            shouldUpdate = false
+            fetchAbstractInfo(true)
+        }
+        _lastCheckedInfo.value = update
     }
 
     suspend fun save() {
@@ -162,7 +170,8 @@ class MyViewModel @Inject constructor(
         val weight =
             if (inputInfo[InputHint.WEIGHT] == "") 0 else inputInfo[InputHint.WEIGHT].toInt()
         // 如果是新创建的，则给到
-        val chosen = if (saveFromId) infoWithEmergencyContact.info.chosen else false
+        val chosen =
+            if (saveFromId) infoWithEmergencyContact.info.chosen else abstractInfo.value!!.data!!.isEmpty()
         val info = Info(
             id = infoId,
             realName = inputInfo[InputHint.REAL_NAME],
@@ -192,6 +201,7 @@ class MyViewModel @Inject constructor(
             save,
             saveFromId
         )
+
     }
 }
 

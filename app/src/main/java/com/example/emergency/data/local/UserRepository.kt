@@ -17,9 +17,9 @@ class UserRepository @Inject constructor(
         try {
             user = webService.getCurrentUser() ?: return Resource.Error(USER_NOT_EXIST)
         } catch (e: Exception) {
-            return Resource.Error(getErrorMessage(e), userDao.getUserByPhone()[0])
+            return Resource.Error(getErrorMessage(e), userDao.getUser()[0])
         }
         userDao.insertUser(user)
-        return Resource.Success(userDao.getUserByPhone()[0])
+        return Resource.Success(userDao.getUser()[0])
     }
 }

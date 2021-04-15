@@ -5,10 +5,7 @@ import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
 import cn.leancloud.sms.AVSMS
 import cn.leancloud.sms.AVSMSOption
-import com.example.emergency.data.entity.EmergencyContact
-import com.example.emergency.data.entity.Info
-import com.example.emergency.data.entity.InfoWithEmergencyContact
-import com.example.emergency.data.entity.User
+import com.example.emergency.data.entity.*
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
@@ -147,10 +144,13 @@ class WebService @Inject constructor() {
         deleteItem.delete()
     }
 
-    suspend fun updateInfoChosen(id: String, toggle: Boolean) = withContext(Dispatchers.IO) {
-        val updateItem = AVObject.createWithoutData("Info", id)
-        updateItem.put("chosen", toggle)
-        updateItem.save()
+    suspend fun updateInfoChosen(removeId: String, updateId: String) = withContext(Dispatchers.IO) {
+        val removeItem = AVObject.createWithoutData("Info", removeId)
+        val updateItem = AVObject.createWithoutData("Info", updateId)
+        removeItem.put("chosen", false)
+        updateItem.put("chosen", true)
+        AVObject.saveAll(listOf(removeItem, updateItem))
+
     }
 
     suspend fun getCurrentUser(): User? = withContext(Dispatchers.IO) {
@@ -216,6 +216,5 @@ class WebService @Inject constructor() {
             newUser.put("phone", "+86$phone")
             newUser.save()
         }
-
 
 }

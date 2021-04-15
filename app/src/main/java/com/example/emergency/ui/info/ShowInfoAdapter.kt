@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.InfoEmergencyShowItemBinding
 import com.example.emergency.databinding.InfoShowItemBinding
-import com.example.emergency.ui.INPUT_ARRAY_SIZE
-import com.example.emergency.ui.MyViewModel
+import com.example.emergency.model.INPUT_ARRAY_SIZE
+import com.example.emergency.model.MyViewModel
 
 
 enum class ShowLayoutType {

@@ -15,8 +15,8 @@ import cn.leancloud.AVException
 import com.example.emergency.R
 import com.example.emergency.data.succeeded
 import com.example.emergency.databinding.FragmentInfoBinding
-import com.example.emergency.ui.InfoState
-import com.example.emergency.ui.MyViewModel
+import com.example.emergency.model.InfoState
+import com.example.emergency.model.MyViewModel
 import com.example.emergency.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope

@@ -2,6 +2,7 @@ package com.example.emergency.data.local
 
 import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.AbstractInfo
+import com.example.emergency.data.entity.Info
 import com.example.emergency.data.entity.InfoWithEmergencyContact
 import com.example.emergency.data.local.dao.EmergencyContactDao
 import com.example.emergency.data.local.dao.InfoDao
@@ -65,14 +66,14 @@ class InfoRepository @Inject constructor(
     suspend fun saveInfoWithEmergencyContact(
         infoWithEmergencyContact: InfoWithEmergencyContact,
         saveById: Boolean
-    ) {
+    ): String {
         val infoId = webService.saveInfo(infoWithEmergencyContact.info, saveById)
         infoWithEmergencyContact.emergencyContacts.forEach {
             it.infoId = infoId
             webService.saveEmergencyContact(it, saveById)
         }
+        return infoId
     }
-
 
     suspend fun deleteInfoWithEmergencyContact(infoWithEmergencyContact: InfoWithEmergencyContact) {
         webService.deleteInfo(infoWithEmergencyContact.info.id)
@@ -83,14 +84,25 @@ class InfoRepository @Inject constructor(
         infoDao.deleteById(infoWithEmergencyContact.info.id)
     }
 
-    suspend fun updateItemChosen(abstractInfo: AbstractInfo): Boolean {
+    suspend fun updateItemChosen(remove: AbstractInfo, update: AbstractInfo): Boolean {
         try {
-            webService.updateInfoChosen(abstractInfo.id, abstractInfo.chosen)
+            webService.updateInfoChosen(remove.id, update.id)
         } catch (e: Exception) {
             return false
         }
-        infoDao.updateAbstractInfo(abstractInfo)
+//        infoDao.updateAbstractInfo(remove)
+//        infoDao.updateAbstractInfo(update)
         return true
+    }
+
+    suspend fun getEmergencyChosen(): Info? {
+        val result = infoDao.getChosen()
+        return if (result.isNotEmpty()) {
+            infoDao.getChosen()[0]
+        } else {
+            null
+        }
+
     }
 
 

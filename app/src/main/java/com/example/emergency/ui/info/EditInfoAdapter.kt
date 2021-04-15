@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
-import com.example.emergency.ui.INPUT_ARRAY_SIZE
-import com.example.emergency.ui.MyViewModel
+import com.example.emergency.model.INPUT_ARRAY_SIZE
+import com.example.emergency.model.MyViewModel
 import com.example.emergency.ui.info.viewholder.*
 
 

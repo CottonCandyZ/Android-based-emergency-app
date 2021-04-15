@@ -15,7 +15,7 @@ interface UserDao {
     suspend fun deleteUser(vararg user: User)
 
     @Query("SELECT * FROM user")
-    suspend fun getUserByPhone(): List<User>
+    suspend fun getUser(): List<User>
 
     // 删除全部
     @Query("DELETE FROM user")

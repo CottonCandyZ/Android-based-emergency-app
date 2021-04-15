@@ -12,8 +12,8 @@ import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.data.succeeded
 import com.example.emergency.databinding.FragmentMyPageBinding
-import com.example.emergency.ui.InfoState
-import com.example.emergency.ui.MyViewModel
+import com.example.emergency.model.InfoState
+import com.example.emergency.model.MyViewModel
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.LogOut
 import com.example.emergency.util.USER_NOT_EXIST
@@ -92,6 +92,10 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                         setUser(it.data!!.name, it.data.phone)
                     }
                 }
+            }
+
+            myViewModel.lastCheckedInfo.observe(viewLifecycleOwner) {
+                emergencyChosen.text = it.realName
             }
 
             // 呼救人列表
