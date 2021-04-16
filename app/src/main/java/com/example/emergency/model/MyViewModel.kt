@@ -1,9 +1,15 @@
 package com.example.emergency.model
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amap.api.location.AMapLocation
+import com.amap.api.location.AMapLocationClient
+import com.amap.api.location.AMapLocationClientOption
+import com.amap.api.location.AMapLocationListener
 import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.*
 import com.example.emergency.data.local.InfoRepository
@@ -12,7 +18,10 @@ import com.example.emergency.data.succeeded
 import com.example.emergency.ui.info.InputHint
 import com.example.emergency.util.ID_NOT_FOUND_ERROR
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,10 +34,16 @@ enum class InfoState {
     SHOW, NEW, EDIT
 }
 
+enum class STATUS {
+    INIT, CALLING, CANCEL, GET_LOCATION
+}
+
+
 @HiltViewModel
 class MyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    @ApplicationContext applicationContext: Context
 ) : ViewModel() {
     // 用于保存填入的信息
     lateinit var inputData: InputData
@@ -62,12 +77,15 @@ class MyViewModel @Inject constructor(
     private val _infoState = MutableLiveData<InfoState>()
     val infoState: LiveData<InfoState> = _infoState
 
+
     // 第一次进入页面时需要从远程获取数据
     init {
         viewModelScope.launch {
             _user.value = userRepository.getCurrentUser()
             fetchAbstractInfo(true)
             _lastCheckedInfo.value = abstractInfo.value?.data!!.first { it.chosen }
+            mLocationClient.setLocationListener(aMapLocationListener)
+            setState(STATUS.INIT)
         }
     }
 
@@ -158,6 +176,9 @@ class MyViewModel @Inject constructor(
             fetchAbstractInfo(true)
         }
         _lastCheckedInfo.value = update
+        if (status.value == STATUS.INIT) {
+            setState(STATUS.INIT)
+        }
     }
 
     suspend fun save() {
@@ -201,8 +222,103 @@ class MyViewModel @Inject constructor(
             save,
             saveFromId
         )
-
     }
+
+    private val _status = MutableLiveData(STATUS.INIT)
+    val status: LiveData<STATUS> = _status
+
+    private val _currentText = MutableLiveData<String>()
+    val currentText: LiveData<String> = _currentText
+
+    private var mLocationClient = AMapLocationClient(applicationContext)
+    private var aMapLocationListener = AMapLocationListener {
+        if (it != null) {
+            if (it.errorCode == 0) {
+                _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
+                        "获取位置完成"
+                location = it
+                setState(STATUS.CALLING)
+            } else {
+                Log.e(
+                    "AMapError",
+                    "location Error, ErrCode: ${it.errorCode}, errInfo: ${it.errorInfo}"
+                )
+            }
+        }
+    }
+
+    private lateinit var location: AMapLocation
+
+
+    fun setState(status: STATUS) {
+        when (status) {
+            STATUS.INIT -> {
+                viewModelScope.launch {
+                    if (lastCheckedInfo.value == null) {
+                        _currentText.value = "请添加呼救人"
+                    } else {
+                        _currentText.value = "点击为${lastCheckedInfo.value!!.realName}呼救"
+                    }
+                }
+            }
+            STATUS.GET_LOCATION -> {
+                if (lastCheckedInfo.value == null) {
+                    return
+                }
+                viewModelScope.launch {
+                    _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
+                            "获取位置中..."
+                    getCurrentLocation()
+                }
+            }
+            STATUS.CALLING -> {
+                viewModelScope.launch {
+                    _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
+                            "创建呼救中..."
+                    submit()
+                    _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
+                            "呼救已提交，等待回应..."
+
+                }
+
+            }
+            STATUS.CANCEL -> {
+                mLocationClient.stopLocation()
+                _currentText.value = "已取消，再次点击以呼救"
+            }
+        }
+        _status.value = status
+    }
+
+    private suspend fun submit() {
+        val call = Call(
+            locationCoordinate = "${location.latitude} ${location.longitude}",
+            locationName = location.address,
+            patientName = lastCheckedInfo.value!!.realName,
+            patientId = lastCheckedInfo.value!!.id,  // 待修改
+        )
+        infoRepository.submitOneCall(call)
+    }
+
+    private suspend fun getCurrentLocation() =
+        withContext(Dispatchers.IO) {
+            val mLocationOption = AMapLocationClientOption()
+            val option = AMapLocationClientOption()
+            option.locationPurpose = AMapLocationClientOption.AMapLocationPurpose.SignIn
+            mLocationClient.setLocationOption(option)
+            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+            mLocationClient.stopLocation()
+            mLocationClient.startLocation()
+            // 定位模式：高精度
+            mLocationOption.locationMode = AMapLocationClientOption.AMapLocationMode.Hight_Accuracy
+            // 仅获取一次位置
+            mLocationOption.isOnceLocationLatest = true
+            // 请求超时时间 ms
+            mLocationOption.httpTimeOut = 20000
+            mLocationOption.isMockEnable = true
+            mLocationClient.setLocationOption(option)
+            mLocationClient.startLocation()
+        }
 }
 
 class InputData(

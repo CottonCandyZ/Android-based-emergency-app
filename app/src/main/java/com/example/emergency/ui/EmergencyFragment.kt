@@ -9,11 +9,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
-import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentEmergencyBinding
-import com.example.emergency.model.EmergencyViewModel
+import com.example.emergency.model.MyViewModel
 import com.example.emergency.model.STATUS
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showMessage
@@ -29,7 +27,8 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentEmergencyBinding? = null
     private val binding get() = _binding!!
 
-    private val emergencyViewModel: EmergencyViewModel by activityViewModels()
+
+    private val myViewModel: MyViewModel by activityViewModels()
 
     private var permissionResult = true
 
@@ -53,9 +52,6 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if (AVUser.getCurrentUser() == null) {
-            findNavController().navigate(R.id.action_emergency_to_loginFragment)
-        }
         _binding = FragmentEmergencyBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -63,7 +59,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.cancel -> {
-                emergencyViewModel.setState(STATUS.CANCEL)
+                myViewModel.setState(STATUS.CANCEL)
                 setHasOptionsMenu(false)
             }
         }
@@ -74,9 +70,8 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermission()
-
-        if (emergencyViewModel.status.value == STATUS.CANCEL) {
-            emergencyViewModel.setState(STATUS.INIT)
+        if (myViewModel.status.value == STATUS.CANCEL) {
+            myViewModel.setState(STATUS.INIT)
         }
 
         with(binding) {
@@ -85,28 +80,19 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                     return@setOnClickListener
                 }
 
-                if (emergencyViewModel.status.value == STATUS.CALLING) {
+                if (myViewModel.status.value != STATUS.INIT && myViewModel.status.value != STATUS.CANCEL) {
                     return@setOnClickListener
                 }
-                emergencyViewModel.setState(STATUS.CALLING)
+                myViewModel.setState(STATUS.GET_LOCATION)
             }
-            emergencyViewModel.currentText.observe(viewLifecycleOwner) {
+            myViewModel.currentText.observe(viewLifecycleOwner) {
                 emergencyHint.text = it
             }
 
 
-            emergencyViewModel.status.observe(viewLifecycleOwner) {
-                @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-                when (it) {
-                    STATUS.INIT -> {
-                        emergencyViewModel.refresh()
-                    }
-                    STATUS.CALLING -> {
-                        setHasOptionsMenu(true)
-                    }
-                    STATUS.CANCEL -> {
-
-                    }
+            myViewModel.status.observe(viewLifecycleOwner) {
+                if (it == STATUS.CALLING || it == STATUS.GET_LOCATION) {
+                    setHasOptionsMenu(true)
                 }
             }
         }

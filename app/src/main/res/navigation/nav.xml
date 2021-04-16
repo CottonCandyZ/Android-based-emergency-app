@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
     android:label="完善个人信息"
-    app:startDestination="@id/emergency">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -51,11 +51,6 @@
         android:label="呼救"
         tools:layout="@layout/fragment_emergency">
         <action
-            android:id="@+id/action_emergency_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/emergency"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_emergency_to_informationFragment"
             app:destination="@id/informationFragment" />
     </fragment>
@@ -99,7 +94,7 @@
         <action
             android:id="@+id/action_mySettingsFragment_to_loginFragment"
             app:destination="@id/loginFragment"
-            app:popUpTo="@id/mySettingsFragment"
+            app:popUpTo="@id/emergency"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />

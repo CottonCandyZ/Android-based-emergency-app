@@ -32,6 +32,7 @@
         <entry key="app/src/main/res/drawable/ic_phone_icon_24.xml" value="0.3765625" />
         <entry key="app/src/main/res/drawable/ic_pill_icon_24.xml" value="0.3765625" />
         <entry key="app/src/main/res/drawable/ic_weight.xml" value="0.19074074074074074" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.23333333333333334" />
         <entry key="app/src/main/res/layout/add_emergency_person.xml" value="0.34074074074074073" />
         <entry key="app/src/main/res/layout/fragment_change_passoword.xml" value="0.3548717948717949" />
         <entry key="app/src/main/res/layout/fragment_change_password.xml" value="0.2015625" />

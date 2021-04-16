@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.data.remote.WebService
 import com.example.emergency.databinding.FragmentLoginBinding
@@ -42,6 +43,9 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (AVUser.getCurrentUser() != null) {
+            findNavController().navigate(R.id.action_loginFragment_to_emergency)
+        }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root

@@ -217,4 +217,16 @@ class WebService @Inject constructor() {
             newUser.save()
         }
 
+    suspend fun submitOneCall(call: Call) = withContext(Dispatchers.IO) {
+        val submit = AVObject("Call")
+        submit.put("callerAccountId", AVUser.getCurrentUser().objectId)
+        submit.put("callerAccount", AVUser.getCurrentUser().mobilePhoneNumber)
+        Call::class.declaredMemberProperties
+            .forEach {
+                submit.put(it.name, it.get(call))
+            }
+        submit.save()
+
+    }
+
 }

@@ -2,7 +2,7 @@ package com.example.emergency.data.local
 
 import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.AbstractInfo
-import com.example.emergency.data.entity.Info
+import com.example.emergency.data.entity.Call
 import com.example.emergency.data.entity.InfoWithEmergencyContact
 import com.example.emergency.data.local.dao.EmergencyContactDao
 import com.example.emergency.data.local.dao.InfoDao
@@ -95,14 +95,8 @@ class InfoRepository @Inject constructor(
         return true
     }
 
-    suspend fun getEmergencyChosen(): Info? {
-        val result = infoDao.getChosen()
-        return if (result.isNotEmpty()) {
-            infoDao.getChosen()[0]
-        } else {
-            null
-        }
-
+    suspend fun submitOneCall(call: Call) {
+        webService.submitOneCall(call)
     }
 
 

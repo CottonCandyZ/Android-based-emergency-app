@@ -35,9 +35,6 @@ interface InfoDao {
     @Query("DELETE FROM personal_info")
     suspend fun nukeTable()
 
-    @Query("SELECT * FROM personal_info WHERE chosen = 1")
-    suspend fun getChosen(): List<Info>
-
 //    @ExperimentalCoroutinesApi
 //    suspend fun getAbstractInfoDistinctUntilChanged() = getAbstractInfo().distinctUntilChanged()
 
