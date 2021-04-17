@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.InfoEmergencyContactItemBinding
 import com.example.emergency.model.INPUT_ARRAY_SIZE
-import com.example.emergency.model.MyViewModel
+import com.example.emergency.model.InfoViewModel
 import com.example.emergency.ui.info.viewholder.*
 
 
@@ -40,10 +40,10 @@ class EditInfoAdapter(
     private val inputType: (Int) -> Int,
     private val icon: (Int) -> Int,
     private val inputHints: List<String>,
-    myViewModel: MyViewModel
+    infoViewModel: InfoViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val _inputInfo = myViewModel.inputData.inputInfo
-    private val _emergencyNumber = myViewModel.inputData.emergencyNumber
+    private val _inputInfo = infoViewModel.inputData.inputInfo
+    private val _emergencyNumber = infoViewModel.inputData.emergencyNumber
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {

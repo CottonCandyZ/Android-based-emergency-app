@@ -8,7 +8,6 @@ import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.databinding.InfoEmergencyShowItemBinding
 import com.example.emergency.databinding.InfoShowItemBinding
 import com.example.emergency.model.INPUT_ARRAY_SIZE
-import com.example.emergency.model.MyViewModel
 
 
 enum class ShowLayoutType {
@@ -16,13 +15,11 @@ enum class ShowLayoutType {
 }
 
 class ShowInfoAdapter constructor(
-    private val myViewModel: MyViewModel,
     private val hints: List<String>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var _infoList: Array<String> = arrayOf()
     private var _emergencyNumberList: List<EmergencyContact> = listOf()
-    private var title = 0
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -105,7 +102,7 @@ class ShowInfoAdapter constructor(
             is InfoViewHolder -> {
 
                 val text =
-                    if (_infoList[position] == "" || _infoList[position] == "1970/01/01") "尚未填写" else _infoList[position]
+                    if (_infoList[position] == "") "尚未填写" else _infoList[position]
                 holder.bind(hints[position], text)
             }
             is TitleViewHolder -> holder.bind("紧急联系人")

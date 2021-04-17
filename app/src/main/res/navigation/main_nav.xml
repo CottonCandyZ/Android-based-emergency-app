@@ -4,41 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
     android:label="完善个人信息"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/emergency">
 
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.example.emergency.ui.start.LoginFragment"
-        android:label="@string/login_top_bar_title"
-        tools:layout="@layout/fragment_login">
-        <action
-            android:id="@+id/action_loginFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_loginFragment_to_emergency"
-            app:destination="@id/emergency"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
-    </fragment>
-    <fragment
-        android:id="@+id/signUpFragment"
-        android:name="com.example.emergency.ui.start.SignUpFragment"
-        android:label="@string/sign_up_top_bar_title"
-        tools:layout="@layout/fragment_sign_up">
-        <action
-            android:id="@+id/action_signUpFragment_to_emergency"
-            app:destination="@id/emergency"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
-    </fragment>
     <fragment
         android:id="@+id/informationFragment"
         android:name="com.example.emergency.ui.info.InfoFragment"
@@ -49,11 +16,7 @@
         android:id="@+id/emergency"
         android:name="com.example.emergency.ui.EmergencyFragment"
         android:label="呼救"
-        tools:layout="@layout/fragment_emergency">
-        <action
-            android:id="@+id/action_emergency_to_informationFragment"
-            app:destination="@id/informationFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_emergency" />
     <fragment
         android:id="@+id/history"
         android:name="com.example.emergency.ui.history.HistoryFragment"
@@ -64,13 +27,6 @@
         android:name="com.example.emergency.ui.myPage.MyPageFragment"
         android:label="用户"
         tools:layout="@layout/fragment_my_page">
-        <action
-            android:id="@+id/action_user_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/user"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
         <action
             android:id="@+id/action_user_to_informationFragment"
             app:destination="@id/informationFragment"
@@ -91,13 +47,6 @@
         android:name="com.example.emergency.ui.settings.MySettingsFragment"
         android:label="设置">
 
-        <action
-            android:id="@+id/action_mySettingsFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/emergency"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
         <action
             android:id="@+id/action_mySettingsFragment_to_changePasswordFragment"
             app:destination="@id/changePasswordFragment"

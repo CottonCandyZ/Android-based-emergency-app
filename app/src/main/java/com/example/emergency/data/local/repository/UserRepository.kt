@@ -1,25 +1,27 @@
 package com.example.emergency.data.local.repository
 
-import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.User
 import com.example.emergency.data.local.dao.UserDao
 import com.example.emergency.data.remote.WebService
-import com.example.emergency.util.USER_NOT_EXIST
-import com.example.emergency.util.getErrorMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val userDao: UserDao,
     private val webService: WebService,
 ) {
-    suspend fun getCurrentUser(): Resource<User> {
-        val user: User?
-        try {
-            user = webService.getCurrentUser() ?: return Resource.Error(USER_NOT_EXIST)
-        } catch (e: Exception) {
-            return Resource.Error(getErrorMessage(e), userDao.getUser()[0])
+    fun getUser(): Flow<List<User>> {
+        return userDao.getUser()
+    }
+
+    suspend fun refresh() {
+        withContext(Dispatchers.IO) {
+            val user = webService.getCurrentUser()
+            if (user != null) {
+                userDao.insertUser(user)
+            }
         }
-        userDao.insertUser(user)
-        return Resource.Success(userDao.getUser()[0])
     }
 }

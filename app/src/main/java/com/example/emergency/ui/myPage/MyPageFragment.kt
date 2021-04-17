@@ -1,28 +1,23 @@
 package com.example.emergency.ui.myPage
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import cn.leancloud.AVUser
 import com.example.emergency.R
-import com.example.emergency.data.succeeded
 import com.example.emergency.databinding.FragmentMyPageBinding
-import com.example.emergency.model.InfoState
-import com.example.emergency.model.MyViewModel
+import com.example.emergency.model.MyPageViewModel
+import com.example.emergency.model.STATUS
+import com.example.emergency.ui.activity.LoginActivity
 import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.LogOut
-import com.example.emergency.util.USER_NOT_EXIST
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 /**
@@ -32,10 +27,7 @@ import javax.inject.Inject
 class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
-    private val myViewModel: MyViewModel by activityViewModels()
-
-    @Inject
-    lateinit var logOut: LogOut
+    private val myPageViewModel: MyPageViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,65 +55,55 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        val myPageAdapter = MyPageAdapter(myViewModel)
+        val myPageAdapter = MyPageAdapter(myPageViewModel)
         with(binding) {
+            myPageViewModel.status.observe(viewLifecycleOwner) {
+                when (it) {
+                    STATUS.MyPage.USER_NOT_FOUND -> {
+                        showMessage(requireContext(), "已登陆用户不存在")
+                        startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                        requireActivity().finish()
+                    }
+                    STATUS.MyPage.REFRESH_COMPLETE -> {
+                        swipRefresh.isRefreshing = false
+                    }
+                    STATUS.MyPage.REFRESH_ERROR -> {
+                        swipRefresh.isRefreshing = false
+                        showMessage(requireContext(), myPageViewModel.errorMessage)
+                    }
+                    null -> {
+                    }
+                }
+            }
             with(myPageRecyclerView) {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = myPageAdapter
             }
 
-            // 用户信息
-            fun setUser(name: String, phone: String) {
-                userName.text = name
-                userPhoneNumber.text = phone
-            }
-            myViewModel.user.observe(viewLifecycleOwner) {
-                when {
-                    it.succeeded -> {
-                        setUser(it.data!!.name, it.data.phone)
-                    }
-                    it.message == USER_NOT_EXIST -> {
-                        showMessage(requireContext(), "已登陆用户不存在")
-                        launch {
-                            logOut.clean()
-                            AVUser.logOut()
-                        }
-                    }
-                    else -> {
-                        showMessage(requireContext(), it.message!!)
-                        setUser(it.data!!.name, it.data.phone)
-                    }
-                }
-            }
-
-            myViewModel.lastCheckedInfo.observe(viewLifecycleOwner) {
-                emergencyChosen.text = it.realName
+            myPageViewModel.user.observe(viewLifecycleOwner) {
+                userName.text = it.name
+                userPhoneNumber.text = it.phone
             }
 
             // 呼救人列表
-            myViewModel.abstractInfo.observe(viewLifecycleOwner) {
-                if (!myViewModel.shouldUpdate) {
-                    myViewModel.shouldUpdate = true
-                    return@observe
-                }
-                if (it.succeeded) {
-                    myPageAdapter.submitList(it.data)
-                } else {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                }
+            myPageViewModel.abstractInfoList.observe(viewLifecycleOwner) {
+                myPageAdapter.submitList(it)
             }
 
             addInformation.setOnClickListener {
-                myViewModel.changeInfoTitle("添加呼救人信息")
-                myViewModel.changeInfoState(InfoState.NEW)
-                findNavController().navigate(R.id.action_user_to_informationFragment)
-            }
-            swipRefresh.setOnRefreshListener {
-                launch {
-                    myViewModel.fetchAbstractInfo(true)
-                    swipRefresh.isRefreshing = false
+                Bundle().apply {
+                    putSerializable("INFO_STATUS", STATUS.Info.NEW)
+                    findNavController().navigate(R.id.action_user_to_informationFragment, this)
                 }
+            }
 
+            myPageViewModel.currentChosen.observe(viewLifecycleOwner) {
+                emergencyChosen.text = it
+            }
+
+
+            swipRefresh.setOnRefreshListener {
+                myPageViewModel.refreshInfo()
             }
         }
     }

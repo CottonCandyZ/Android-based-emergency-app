@@ -1,5 +1,6 @@
 package com.example.emergency.ui.myPage
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.emergency.R
 import com.example.emergency.data.entity.AbstractInfo
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
-import com.example.emergency.model.InfoState
-import com.example.emergency.model.MyViewModel
+import com.example.emergency.model.MyPageViewModel
+import com.example.emergency.model.STATUS
 import com.example.emergency.ui.myPage.MyPageAdapter.MyViewHolder.Companion.isChecked
 import com.example.emergency.ui.myPage.MyPageAdapter.MyViewHolder.Companion.setCheck
 
 
-class MyPageAdapter constructor(
-    private val myViewModel: MyViewModel
-) :
+class MyPageAdapter(private val myPageViewModel: MyPageViewModel) :
     ListAdapter<AbstractInfo, MyPageAdapter.MyViewHolder>(DIFFCALLBACK) {
 
     class MyViewHolder(
@@ -109,20 +108,20 @@ class MyPageAdapter constructor(
     }
 
     private fun showDetail(abstractInfo: AbstractInfo, binding: MyPagePersonalInfoItemBinding) {
-        myViewModel.showInfoId = abstractInfo.id
-        myViewModel.changeInfoTitle("${abstractInfo.realName}的信息")
-        myViewModel.changeInfoState(InfoState.SHOW)
-        binding.root.findNavController().navigate(R.id.action_user_to_informationFragment)
+        Bundle().apply {
+            putString("INFO_ID", abstractInfo.id)
+            putString("INFO_NAME", abstractInfo.realName)
+            putSerializable("INFO_STATUS", STATUS.Info.SHOW)
+            binding.root.findNavController().navigate(R.id.action_user_to_informationFragment, this)
+        }
     }
 
     inner class OnClickListener : View.OnClickListener {
         private lateinit var binding: MyPagePersonalInfoItemBinding
         private var abstractInfo: AbstractInfo? = null
-//        private var position = -1
 
         fun setAbstractInfo(abstractInfo: AbstractInfo) {
             this.abstractInfo = abstractInfo
-//            this.position = position
         }
 
         fun setBinding(binding: MyPagePersonalInfoItemBinding) {
@@ -136,7 +135,7 @@ class MyPageAdapter constructor(
                 binding.checkIcon.setCheck(true)
                 val change = abstractInfo!!.copy()
                 change.chosen = true
-                myViewModel.updateAbstractInfo(change)
+                myPageViewModel.updateChosen(change)
             }
         }
     }

@@ -1,23 +1,22 @@
 package com.example.emergency.ui.start
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentLoginBinding
 import com.example.emergency.model.LoginViewModel
 import com.example.emergency.model.STATUS
-import com.example.emergency.util.BaseFragment
+import com.example.emergency.ui.activity.MainActivity
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -28,10 +27,7 @@ import kotlinx.coroutines.MainScope
  * A simple [Fragment] subclass.
  */
 @AndroidEntryPoint
-class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
-
-    override var bottomNavigationViewVisibility = false
-
+class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
@@ -41,9 +37,6 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if (AVUser.getCurrentUser() != null) {
-            findNavController().navigate(R.id.action_loginFragment_to_emergency)
-        }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
@@ -59,7 +52,7 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
             buttonLogin.isEnabled = false
             with(loginPhoneNumberText) {
                 addTextChangedListener(watcher)
-                onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
                     if (!hasFocus) {
                         if (text.toString().length != 11)
                             binding.loginPhoneLayout
@@ -72,7 +65,8 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
                 when (it) {
                     STATUS.Login.SUCCESS -> {
                         showMessage(requireContext(), "欢迎回来")
-                        findNavController().navigate(R.id.action_loginFragment_to_emergency)
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
+                        requireActivity().finish()
                     }
                     STATUS.Login.ERROR -> {
                         progressBar.visibility = View.INVISIBLE

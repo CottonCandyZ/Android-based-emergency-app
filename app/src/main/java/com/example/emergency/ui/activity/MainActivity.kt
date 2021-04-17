@@ -1,6 +1,7 @@
-package com.example.emergency.ui.main
+package com.example.emergency.ui.activity
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
@@ -12,17 +13,24 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if (AVUser.currentUser() == null) {
+            startActivity(
+                Intent(this, LoginActivity::class.java)
+            )
+            finish()
+        }
 
         // enable dataBinding
         binding = ActivityMainBinding.inflate(layoutInflater)

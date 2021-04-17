@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.emergency.ui.main.MainActivity
+import com.example.emergency.ui.activity.MainActivity
 
 //@AndroidEntryPoint
 abstract class BaseFragment : Fragment() {

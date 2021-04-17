@@ -6,10 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 用于申请调用A-GPS模块 -->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
@@ -22,11 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Emergency">
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="c2fd1c1b6375229b572c7b3361176be9" />
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,8 +30,19 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="c2fd1c1b6375229b572c7b3361176be9" />
+
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:exported="true">
+
+        </activity>
+
         <service android:name="cn.leancloud.push.PushService" />
         <service android:name="com.amap.api.location.APSService" />
+
         <receiver android:name="cn.leancloud.push.AVBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -45,4 +51,5 @@
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>

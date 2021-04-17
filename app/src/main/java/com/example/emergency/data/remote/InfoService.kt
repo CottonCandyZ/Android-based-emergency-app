@@ -1,0 +1,126 @@
+package com.example.emergency.data.remote
+
+import cn.leancloud.AVObject
+import cn.leancloud.AVQuery
+import cn.leancloud.AVUser
+import cn.leancloud.livequery.AVLiveQuery
+import com.example.emergency.data.entity.EmergencyContact
+import com.example.emergency.data.entity.Info
+import com.example.emergency.util.convertAVObjectToEmergencyContact
+import com.example.emergency.util.convertAVObjectToInfo
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.reflect.full.declaredMemberProperties
+
+@Singleton
+class InfoService @Inject constructor() {
+    val infoLiveQuery: AVLiveQuery
+    val emergencyLiveQuery: AVLiveQuery
+
+    init {
+        var query = AVQuery<AVObject>("Info")
+        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        infoLiveQuery = AVLiveQuery.initWithQuery(query)
+        query = AVQuery<AVObject>("EmergencyContact")
+        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        emergencyLiveQuery = AVLiveQuery.initWithQuery(query)
+    }
+
+    fun getInfo(): List<Info> {
+        val query = AVQuery<AVObject>("Info")
+        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        val infoResult = query.find()
+        val resultList: ArrayList<Info> = arrayListOf()
+        infoResult.forEach {
+            resultList.add(convertAVObjectToInfo(it))
+        }
+        return resultList
+    }
+
+    fun getEmergencyContact(): List<EmergencyContact> {
+        val query = AVQuery<AVObject>("EmergencyContact")
+        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        val result = query.find()
+        val resultList: ArrayList<EmergencyContact> = arrayListOf()
+        result.forEach {
+            resultList.add(convertAVObjectToEmergencyContact(it))
+        }
+        return resultList
+    }
+
+    fun deleteEmergencyContact(id: String) {
+        val deleteItem = AVObject.createWithoutData("EmergencyContact", id)
+        deleteItem.delete()
+    }
+
+    suspend fun saveInfo(info: Info, saveById: Boolean): String =
+        withContext(Dispatchers.IO) {
+            val remoteInfo = AVObject("Info")
+            remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
+            Info::class.declaredMemberProperties
+                .forEach {
+                    if (it.name != "id") {
+                        remoteInfo.put(it.name, it.get(info))
+                    }
+                }
+            if (saveById) {
+                remoteInfo.objectId = info.id
+            }
+            var id = ""
+            remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
+                override fun onSubscribe(d: Disposable) {
+                }
+
+                override fun onNext(t: AVObject) {
+                    id = t.objectId
+                }
+
+                override fun onError(e: Throwable) {
+                    throw e
+                }
+
+                override fun onComplete() {
+                }
+            })
+            return@withContext id
+        }
+
+    fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) {
+        val remoteEmergencyContact = AVObject("EmergencyContact")
+        remoteEmergencyContact.put("userId", AVUser.getCurrentUser().objectId)
+        EmergencyContact::class.declaredMemberProperties
+            .forEach {
+                if (it.name != "id") {
+                    remoteEmergencyContact.put(it.name, it.get(emergencyContact))
+                }
+            }
+        if (saveById) {
+            remoteEmergencyContact.objectId = emergencyContact.id
+        }
+        remoteEmergencyContact.save()
+    }
+
+    fun deleteInfo(id: String) {
+        val deleteItem = AVObject.createWithoutData("Info", id)
+        deleteItem.delete()
+    }
+
+
+    fun updateInfoChosen(removeId: String, updateId: String) {
+        val removeItem = AVObject.createWithoutData("Info", removeId)
+        val updateItem = AVObject.createWithoutData("Info", updateId)
+        removeItem.put("chosen", false)
+        updateItem.put("chosen", true)
+        AVObject.saveAll(listOf(removeItem, updateItem))
+    }
+
+    fun updateInfoChosenWithOutRemove(updateId: String) {
+        val updateItem = AVObject.createWithoutData("Info", updateId)
+        updateItem.put("chosen", true)
+        updateItem.save()
+    }
+}

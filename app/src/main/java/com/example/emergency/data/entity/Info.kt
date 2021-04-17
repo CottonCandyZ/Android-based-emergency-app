@@ -1,7 +1,7 @@
 package com.example.emergency.data.entity
 
 import androidx.room.*
-import java.sql.Date
+import java.util.*
 
 data class AbstractInfo(
     val id: String,
@@ -16,7 +16,7 @@ data class Info(
     @PrimaryKey val id: String = "",
     val realName: String = "",
     val sex: String = "",
-    val birthdate: Date = Date(0),
+    val birthdate: Date,
     val phone: String = "",
     val weight: Int = 0,
     val bloodType: String = "",

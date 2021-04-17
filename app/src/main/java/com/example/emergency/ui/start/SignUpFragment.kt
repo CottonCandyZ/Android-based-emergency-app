@@ -1,6 +1,7 @@
 package com.example.emergency.ui.start
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
@@ -11,12 +12,11 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentSignUpBinding
 import com.example.emergency.model.STATUS
 import com.example.emergency.model.SignUpViewModel
-import com.example.emergency.util.BaseFragment
+import com.example.emergency.ui.activity.MainActivity
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +27,7 @@ import kotlinx.coroutines.MainScope
  * A simple [Fragment] subclass.
  */
 @AndroidEntryPoint
-class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
-    override var bottomNavigationViewVisibility = false
+class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
     private lateinit var myCountDownTimer: CountDownTimer
@@ -95,7 +94,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                     }
                     STATUS.SignUp.OLD_UER_LOGIN -> {
                         showMessage(requireContext(), "已注册，登陆成功")
-                        findNavController().navigate(R.id.action_signUpFragment_to_emergency)
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
+                        requireActivity().finish()
                     }
                     STATUS.SignUp.NEW_USER -> {
                         showMessage(requireContext(), "验证码正确")
@@ -104,7 +104,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                     }
                     STATUS.SignUp.SAVE_USER_SUCCESS -> {
                         showMessage(requireContext(), "注册成功")
-                        findNavController().navigate(R.id.action_signUpFragment_to_emergency)
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
+                        requireActivity().finish()
                     }
                     STATUS.SignUp.SIGN_UP_ERROR -> {
                         // 如果出现错误，用户需要可再次请求
@@ -205,22 +206,8 @@ class SignUpFragment : BaseFragment(), CoroutineScope by MainScope() {
                 override fun afterTextChanged(p0: Editable?) {}
             }
 
-            with(signUpPasswordText) {
-                addTextChangedListener(watcher)
-            }
-
-            with(signUpPasswordVerifyText) {
-                addTextChangedListener(watcher)
-                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus && text.toString()
-                            .trim() != binding.signUpPasswordText.text.toString()
-                            .trim()
-                    ) {
-                        signUpPasswordVerifyLayout
-                            .error = getString(R.string.password_not_unanimous)
-                    }
-                }
-            }
+            signUpPasswordText.addTextChangedListener(watcher)
+            signUpPasswordVerifyText.addTextChangedListener(watcher)
 
             with(signUpUsernameText) {
                 addTextChangedListener(watcher)

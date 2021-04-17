@@ -49,4 +49,5 @@
     <string name="change_password_hint">新密码</string>
     <string name="change_password_confirm_hint">确认密码</string>
     <string name="my_page_add_hint">添加呼救人</string>
+    <string name="my_page_chosen_hint">已选择呼救人</string>
 </resources>

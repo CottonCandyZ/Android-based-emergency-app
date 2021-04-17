@@ -1,5 +1,6 @@
 package com.example.emergency.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -8,7 +9,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import cn.leancloud.AVUser
 import com.example.emergency.R
-import com.example.emergency.ui.main.MainActivity
+import com.example.emergency.ui.activity.LoginActivity
+import com.example.emergency.ui.activity.MainActivity
 import com.example.emergency.util.LogOut
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +38,8 @@ class MySettingsFragment : PreferenceFragmentCompat(), CoroutineScope by MainSco
                     logOut.clean()
                 }
                 AVUser.logOut()
-                findNavController().navigate(R.id.action_mySettingsFragment_to_loginFragment)
+                startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                requireActivity().finish()
             }
             builder.setNegativeButton("取消") { _, _ -> }
             builder.create().show()

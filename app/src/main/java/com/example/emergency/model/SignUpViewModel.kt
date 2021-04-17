@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.emergency.data.local.repository.SignUpRepository
+import com.example.emergency.data.local.repository.UserRepository
 import com.example.emergency.util.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpRepository: SignUpRepository
+    private val signUpRepository: SignUpRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _status = MutableLiveData(STATUS.SignUp.INIT)
     val status: LiveData<STATUS.SignUp> = _status
@@ -31,6 +33,8 @@ class SignUpViewModel @Inject constructor(
             try {
                 if (signUpRepository.judgeUserIfExist(phone)) {
                     signUpRepository.checkCodeToSignUpOrLogin(phone, code)
+                    // 刷新当前数据库存储的用户信息
+                    userRepository.refresh()
                     setStatus(STATUS.SignUp.OLD_UER_LOGIN)
                 } else {
                     signUpRepository.checkCodeToSignUpOrLogin(phone, code)
@@ -48,6 +52,8 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signUpRepository.saveUser(phone, userName, pwd)
+                // 刷新当前数据库存储的用户信息
+                userRepository.refresh()
                 setStatus(STATUS.SignUp.SAVE_USER_SUCCESS)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
