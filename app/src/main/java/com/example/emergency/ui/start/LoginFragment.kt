@@ -10,19 +10,18 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import cn.leancloud.AVUser
 import com.example.emergency.R
-import com.example.emergency.data.remote.WebService
 import com.example.emergency.databinding.FragmentLoginBinding
+import com.example.emergency.model.LoginViewModel
+import com.example.emergency.model.STATUS
 import com.example.emergency.util.BaseFragment
-import com.example.emergency.util.getErrorMessage
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 /**
@@ -36,8 +35,7 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    @Inject
-    lateinit var webService: WebService
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,23 +68,27 @@ class LoginFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
             }
             loginPasswordText.addTextChangedListener(watcher)
+            loginViewModel.status.observe(viewLifecycleOwner) {
+                when (it) {
+                    STATUS.Login.SUCCESS -> {
+                        showMessage(requireContext(), "欢迎回来")
+                        findNavController().navigate(R.id.action_loginFragment_to_emergency)
+                    }
+                    STATUS.Login.ERROR -> {
+                        progressBar.visibility = View.INVISIBLE
+                        buttonLogin.isEnabled = true
+                        showMessage(requireContext(), loginViewModel.errorMessage)
+                    }
+                    null -> {
+                    }
+                }
+            }
             buttonLogin.setOnClickListener {
                 progressBar.visibility = VISIBLE
                 buttonLogin.isEnabled = false
                 val phone = loginPhoneNumberText.text.toString().trim()
                 val pwd = loginPasswordText.text.toString().trim()
-                launch {
-                    try {
-                        webService.logIn("+86$phone", pwd)
-                    } catch (e: Exception) {
-                        progressBar.visibility = View.INVISIBLE
-                        buttonLogin.isEnabled = true
-                        showMessage(requireContext(), getErrorMessage(e))
-                        return@launch
-                    }
-                    showMessage(requireContext(), "欢迎回来")
-                    findNavController().navigate(R.id.action_loginFragment_to_emergency)
-                }
+                loginViewModel.login(phone, pwd)
             }
         }
     }

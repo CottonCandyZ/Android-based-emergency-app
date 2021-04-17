@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentEmergencyBinding
+import com.example.emergency.model.CALL_STATUS
 import com.example.emergency.model.MyViewModel
-import com.example.emergency.model.STATUS
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,7 +59,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.cancel -> {
-                myViewModel.setState(STATUS.CANCEL)
+                myViewModel.setState(CALL_STATUS.CANCEL)
                 setHasOptionsMenu(false)
             }
         }
@@ -70,8 +70,8 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermission()
-        if (myViewModel.status.value == STATUS.CANCEL) {
-            myViewModel.setState(STATUS.INIT)
+        if (myViewModel.CallStatus.value == CALL_STATUS.CANCEL) {
+            myViewModel.setState(CALL_STATUS.INIT)
         }
 
         with(binding) {
@@ -80,18 +80,18 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                     return@setOnClickListener
                 }
 
-                if (myViewModel.status.value != STATUS.INIT && myViewModel.status.value != STATUS.CANCEL) {
+                if (myViewModel.CallStatus.value != CALL_STATUS.INIT && myViewModel.CallStatus.value != CALL_STATUS.CANCEL) {
                     return@setOnClickListener
                 }
-                myViewModel.setState(STATUS.GET_LOCATION)
+                myViewModel.setState(CALL_STATUS.GET_LOCATION)
             }
             myViewModel.currentText.observe(viewLifecycleOwner) {
                 emergencyHint.text = it
             }
 
 
-            myViewModel.status.observe(viewLifecycleOwner) {
-                if (it == STATUS.CALLING || it == STATUS.GET_LOCATION) {
+            myViewModel.CallStatus.observe(viewLifecycleOwner) {
+                if (it == CALL_STATUS.CALLING || it == CALL_STATUS.GET_LOCATION) {
                     setHasOptionsMenu(true)
                 }
             }

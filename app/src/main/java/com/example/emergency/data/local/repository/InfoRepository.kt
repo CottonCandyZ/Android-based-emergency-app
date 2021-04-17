@@ -1,4 +1,4 @@
-package com.example.emergency.data.local
+package com.example.emergency.data.local.repository
 
 import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.AbstractInfo

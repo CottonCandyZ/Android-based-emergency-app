@@ -12,8 +12,8 @@ import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.location.AMapLocationListener
 import com.example.emergency.data.Resource
 import com.example.emergency.data.entity.*
-import com.example.emergency.data.local.InfoRepository
-import com.example.emergency.data.local.UserRepository
+import com.example.emergency.data.local.repository.InfoRepository
+import com.example.emergency.data.local.repository.UserRepository
 import com.example.emergency.data.succeeded
 import com.example.emergency.ui.info.InputHint
 import com.example.emergency.util.ID_NOT_FOUND_ERROR
@@ -34,7 +34,7 @@ enum class InfoState {
     SHOW, NEW, EDIT
 }
 
-enum class STATUS {
+enum class CALL_STATUS {
     INIT, CALLING, CANCEL, GET_LOCATION
 }
 
@@ -85,7 +85,7 @@ class MyViewModel @Inject constructor(
             fetchAbstractInfo(true)
             _lastCheckedInfo.value = abstractInfo.value?.data!!.first { it.chosen }
             mLocationClient.setLocationListener(aMapLocationListener)
-            setState(STATUS.INIT)
+            setState(CALL_STATUS.INIT)
         }
     }
 
@@ -176,8 +176,8 @@ class MyViewModel @Inject constructor(
             fetchAbstractInfo(true)
         }
         _lastCheckedInfo.value = update
-        if (status.value == STATUS.INIT) {
-            setState(STATUS.INIT)
+        if (CallStatus.value == CALL_STATUS.INIT) {
+            setState(CALL_STATUS.INIT)
         }
     }
 
@@ -224,8 +224,8 @@ class MyViewModel @Inject constructor(
         )
     }
 
-    private val _status = MutableLiveData(STATUS.INIT)
-    val status: LiveData<STATUS> = _status
+    private val _status = MutableLiveData(CALL_STATUS.INIT)
+    val CallStatus: LiveData<CALL_STATUS> = _status
 
     private val _currentText = MutableLiveData<String>()
     val currentText: LiveData<String> = _currentText
@@ -237,7 +237,7 @@ class MyViewModel @Inject constructor(
                 _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
                         "获取位置完成"
                 location = it
-                setState(STATUS.CALLING)
+                setState(CALL_STATUS.CALLING)
             } else {
                 Log.e(
                     "AMapError",
@@ -250,9 +250,9 @@ class MyViewModel @Inject constructor(
     private lateinit var location: AMapLocation
 
 
-    fun setState(status: STATUS) {
-        when (status) {
-            STATUS.INIT -> {
+    fun setState(CallStatus: CALL_STATUS) {
+        when (CallStatus) {
+            CALL_STATUS.INIT -> {
                 viewModelScope.launch {
                     if (lastCheckedInfo.value == null) {
                         _currentText.value = "请添加呼救人"
@@ -261,7 +261,7 @@ class MyViewModel @Inject constructor(
                     }
                 }
             }
-            STATUS.GET_LOCATION -> {
+            CALL_STATUS.GET_LOCATION -> {
                 if (lastCheckedInfo.value == null) {
                     return
                 }
@@ -271,7 +271,7 @@ class MyViewModel @Inject constructor(
                     getCurrentLocation()
                 }
             }
-            STATUS.CALLING -> {
+            CALL_STATUS.CALLING -> {
                 viewModelScope.launch {
                     _currentText.value = "正在为${lastCheckedInfo.value!!.realName}呼救\n" +
                             "创建呼救中..."
@@ -282,12 +282,12 @@ class MyViewModel @Inject constructor(
                 }
 
             }
-            STATUS.CANCEL -> {
+            CALL_STATUS.CANCEL -> {
                 mLocationClient.stopLocation()
                 _currentText.value = "已取消，再次点击以呼救"
             }
         }
-        _status.value = status
+        _status.value = CallStatus
     }
 
     private suspend fun submit() {
