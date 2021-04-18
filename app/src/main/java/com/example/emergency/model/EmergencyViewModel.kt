@@ -13,7 +13,9 @@ import com.amap.api.location.AMapLocationListener
 import com.example.emergency.data.entity.Call
 import com.example.emergency.data.entity.Info
 import com.example.emergency.data.local.repository.EmergencyRepository
+import com.example.emergency.data.local.repository.HistoryRepository
 import com.example.emergency.data.local.repository.InfoRepository
+import com.example.emergency.data.local.repository.LiveQueryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +29,8 @@ import javax.inject.Inject
 class EmergencyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
     private val emergencyRepository: EmergencyRepository,
+    private val historyRepository: HistoryRepository,
+    private val liveQueryRepository: LiveQueryRepository,
     @ApplicationContext applicationContext: Context
 ) : ViewModel() {
 
@@ -59,6 +63,9 @@ class EmergencyViewModel @Inject constructor(
         mLocationClient.setLocationListener(aMapLocationListener)
         viewModelScope.launch {
             infoRepository.refreshInfo()
+        }
+        viewModelScope.launch {
+            historyRepository.refreshHistory()
         }
         viewModelScope.launch {
             infoRepository.getCurrentChosen().collect {

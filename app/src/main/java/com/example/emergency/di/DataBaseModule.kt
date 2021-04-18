@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.emergency.data.local.AppDatabase
 import com.example.emergency.data.local.dao.EmergencyContactDao
+import com.example.emergency.data.local.dao.HistoryDao
 import com.example.emergency.data.local.dao.InfoDao
 import com.example.emergency.data.local.dao.UserDao
 import dagger.Module
@@ -29,6 +30,11 @@ class DataBaseModule {
     @Provides
     fun provideUserDao(appDatabase: AppDatabase): UserDao {
         return appDatabase.userDao()
+    }
+
+    @Provides
+    fun provideHistoryDao(appDatabase: AppDatabase): HistoryDao {
+        return appDatabase.historyDao()
     }
 
     @Provides

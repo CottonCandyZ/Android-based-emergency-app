@@ -75,7 +75,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipRefresh"
+        android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingTop="8dp"

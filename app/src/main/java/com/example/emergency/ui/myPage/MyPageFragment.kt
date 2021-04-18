@@ -65,10 +65,10 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                         requireActivity().finish()
                     }
                     STATUS.MyPage.REFRESH_COMPLETE -> {
-                        swipRefresh.isRefreshing = false
+                        swipeRefresh.isRefreshing = false
                     }
                     STATUS.MyPage.REFRESH_ERROR -> {
-                        swipRefresh.isRefreshing = false
+                        swipeRefresh.isRefreshing = false
                         showMessage(requireContext(), myPageViewModel.errorMessage)
                     }
                     null -> {
@@ -102,7 +102,7 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
 
 
-            swipRefresh.setOnRefreshListener {
+            swipeRefresh.setOnRefreshListener {
                 myPageViewModel.refreshInfo()
             }
         }

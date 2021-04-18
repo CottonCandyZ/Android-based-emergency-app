@@ -5,8 +5,6 @@ import android.widget.Toast
 import cn.leancloud.AVException
 
 
-const val ID_NOT_FOUND_ERROR = "ID not found"
-const val USER_NOT_EXIST = "user not exist"
 fun getErrorMessage(e: Throwable): String {
     return when (val code = AVException(e.cause!!).code) {
         206 -> "似乎已退出登陆"

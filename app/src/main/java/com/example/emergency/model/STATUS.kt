@@ -21,4 +21,8 @@ class STATUS {
     enum class Call {
         INIT, CALLING, CANCEL, GET_LOCATION
     }
+
+    enum class History {
+        REFRESH_COMPLETE, REFRESH_ERROR
+    }
 }
