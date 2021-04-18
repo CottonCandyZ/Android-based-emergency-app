@@ -1,5 +1,6 @@
 package com.example.emergency.ui.history
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -25,6 +26,17 @@ class HistoryAdapter : ListAdapter<History, HistoryAdapter.MyViewHolder>(DIFFCAL
                 responseTime.text =
                     if (history.responseTime == null) "尚未处理" else convertDateToString(history.responseTime)
                 status.text = history.status
+                when (history.status) {
+                    "呼救中" -> {
+                        status.setTextColor(Color.RED)
+                    }
+                    "已取消" -> {
+                        status.setTextColor(Color.GRAY)
+                    }
+                    "已处理" -> {
+                        status.setTextColor(Color.BLUE)
+                    }
+                }
             }
 
         }

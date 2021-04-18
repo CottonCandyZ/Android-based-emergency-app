@@ -80,17 +80,17 @@ class InfoViewModel @Inject constructor(
             info.run {
                 with(InputHint) {
                     inputInfo[REAL_NAME] = realName
-                    inputInfo[SEX] = sex
+                    inputInfo[SEX] = sex ?: ""
                     inputInfo[BIRTHDATE] =
                         SimpleDateFormat("yyyy/MM/dd", Locale.CHINA).format(birthdate)
                     inputInfo[PHONE] = phone
                     inputInfo[WEIGHT] = weight.toString()
-                    inputInfo[BLOOD_TYPE] = bloodType
-                    inputInfo[MEDICAL_CONDITIONS] = medicalConditions
-                    inputInfo[MEDICAL_NOTES] = medicalConditions
-                    inputInfo[ALLERGY] = allergy
-                    inputInfo[MEDICATIONS] = medications
-                    inputInfo[ADDRESS] = address
+                    inputInfo[BLOOD_TYPE] = bloodType ?: ""
+                    inputInfo[MEDICAL_CONDITIONS] = medicalConditions ?: ""
+                    inputInfo[MEDICAL_NOTES] = medicalConditions ?: ""
+                    inputInfo[ALLERGY] = allergy ?: ""
+                    inputInfo[MEDICATIONS] = medications ?: ""
+                    inputInfo[ADDRESS] = address ?: ""
                 }
             }
             val emergencyContacts = infoWithEmergencyContact.emergencyContacts
@@ -114,8 +114,6 @@ class InfoViewModel @Inject constructor(
             infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
             _status.value = STATUS.Info.DELETE_SUCCESS
         }
-
-
     }
 
     fun save() {

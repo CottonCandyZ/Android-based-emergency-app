@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -16,6 +17,7 @@ import androidx.navigation.ui.NavigationUI
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.ActivityMainBinding
+import com.example.emergency.model.EmergencyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private val emergencyViewModel: EmergencyViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (AVUser.currentUser() == null) {
@@ -40,6 +44,12 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = host.navController
         setUpBottomNavigation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        emergencyViewModel.refresh()
+        emergencyViewModel.initLiveData()
     }
 
     private fun setUpBottomNavigation() {
@@ -80,8 +90,15 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         navController.navigateUp()
         return super.onSupportNavigateUp()
     }
+
+    override fun onPause() {
+        super.onPause()
+        emergencyViewModel.unsubscribe()
+    }
+
 }

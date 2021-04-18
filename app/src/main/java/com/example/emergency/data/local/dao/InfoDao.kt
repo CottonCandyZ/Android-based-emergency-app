@@ -39,12 +39,4 @@ interface InfoDao {
 
     @Query("SELECT id FROM personal_info WHERE chosen != 1")
     fun getNotChosen(): List<String>
-
-
-//    // 查询某行是否超时
-//    @Query("SELECT id FROM personal_info WHERE lastUpdate < :remoteUpdate")
-//    suspend fun getAbstractUpdateInfo(remoteUpdate: Long): List<Int>
-
-//    @Query("SELECT MAX(id) FROM personal_info")
-//    suspend fun getMaxId():Int
 }

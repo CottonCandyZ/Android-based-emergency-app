@@ -13,25 +13,25 @@ data class AbstractInfo(
 
 @Entity(tableName = "personal_info")
 data class Info(
-    @PrimaryKey val id: String = "",
-    val realName: String = "",
-    val sex: String = "",
+    @PrimaryKey val id: String,
+    val realName: String,
+    val sex: String?,
     val birthdate: Date,
-    val phone: String = "",
-    val weight: Int = 0,
-    val bloodType: String = "",
-    val medicalConditions: String = "",
-    val medicalNotes: String = "",
-    val allergy: String = "",
-    val medications: String = "",
-    val address: String = "",
+    val phone: String,
+    val weight: Int?,
+    val bloodType: String?,
+    val medicalConditions: String?,
+    val medicalNotes: String?,
+    val allergy: String?,
+    val medications: String?,
+    val address: String?,
     val chosen: Boolean,
 )
 
 @Entity(tableName = "emergency_contact")
 data class EmergencyContact(
     @PrimaryKey val id: String = "",
-    var infoId: String = "", // 这里和唯一的 info id 绑定
+    var infoId: String? = null, // 这里和唯一的 info id 绑定
     var relationship: String = "",
     var phone: String = "",
 )

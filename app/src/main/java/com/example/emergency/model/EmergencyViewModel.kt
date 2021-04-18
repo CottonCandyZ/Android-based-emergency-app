@@ -61,24 +61,36 @@ class EmergencyViewModel @Inject constructor(
 
     init {
         mLocationClient.setLocationListener(aMapLocationListener)
+        refresh()
+        initLiveData()
+        viewModelScope.launch {
+            infoRepository.getCurrentChosen().collect {
+                if (it.isEmpty()) {
+                    _currentText.value = "请添加呼救人"
+                } else {
+                    chosen = it[0]
+                    _currentText.value = "点击为${chosen.realName}呼救"
+                }
+                setState(STATUS.Call.INIT)
+            }
+        }
+    }
+
+    fun initLiveData() {
+        liveQueryRepository.init()
+    }
+
+    fun unsubscribe() {
+        liveQueryRepository.unsubscribe()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
             infoRepository.refreshInfo()
         }
         viewModelScope.launch {
             historyRepository.refreshHistory()
         }
-        viewModelScope.launch {
-            infoRepository.getCurrentChosen().collect {
-                if (it.isEmpty()) {
-                    _currentText.value = "请添加呼救人"
-                    setState(STATUS.Call.INIT)
-                } else {
-                    chosen = it[0]
-                    _currentText.value = "点击为${chosen.realName}呼救"
-                }
-            }
-        }
-
     }
 
 

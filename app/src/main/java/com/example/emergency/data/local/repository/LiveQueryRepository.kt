@@ -21,8 +21,8 @@ import javax.inject.Singleton
 
 @Singleton
 class LiveQueryRepository @Inject constructor(
-    historyService: HistoryService,
-    infoService: InfoService,
+    private val historyService: HistoryService,
+    private val infoService: InfoService,
     private val historyDao: HistoryDao,
     private val infoDao: InfoDao,
     private val emergencyContactDao: EmergencyContactDao
@@ -98,7 +98,7 @@ class LiveQueryRepository @Inject constructor(
 
     }
 
-    init {
+    fun init() {
         infoService.infoLiveQuery.setEventHandler(infoAVLiveQueryEventHandler)
         infoService.emergencyLiveQuery.setEventHandler(emergencyContactAVLiveQueryEventHandler)
         historyService.historyLiveQuery.setEventHandler(historyAVLiveQueryEventHandler)
@@ -119,6 +119,26 @@ class LiveQueryRepository @Inject constructor(
                         }
                     })
                 }
+            }
+        })
+    }
+
+    fun unsubscribe() {
+        infoService.infoLiveQuery.unsubscribeInBackground(object : AVLiveQuerySubscribeCallback() {
+            override fun done(e: AVException?) {
+                infoService.emergencyLiveQuery.unsubscribeInBackground(object :
+                    AVLiveQuerySubscribeCallback() {
+                    override fun done(e: AVException?) {
+                        if (e == null) {
+                            historyService.historyLiveQuery.unsubscribeInBackground(object :
+                                AVLiveQuerySubscribeCallback() {
+                                override fun done(e: AVException?) {
+
+                                }
+                            })
+                        }
+                    }
+                })
             }
 
         })

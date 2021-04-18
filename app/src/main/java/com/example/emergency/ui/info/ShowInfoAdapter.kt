@@ -10,13 +10,12 @@ import com.example.emergency.databinding.InfoShowItemBinding
 import com.example.emergency.model.INPUT_ARRAY_SIZE
 
 
-enum class ShowLayoutType {
-    INFO, EMERGENCY_NUMBER, TITLE
-}
-
 class ShowInfoAdapter constructor(
     private val hints: List<String>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    enum class ShowLayoutType {
+        INFO, EMERGENCY_NUMBER, TITLE
+    }
 
     private var _infoList: Array<String> = arrayOf()
     private var _emergencyNumberList: List<EmergencyContact> = listOf()
@@ -102,7 +101,7 @@ class ShowInfoAdapter constructor(
             is InfoViewHolder -> {
 
                 val text =
-                    if (_infoList[position] == "") "尚未填写" else _infoList[position]
+                    if (_infoList[position] == "" || _infoList[position] == "0") "尚未填写" else _infoList[position]
                 holder.bind(hints[position], text)
             }
             is TitleViewHolder -> holder.bind("紧急联系人")
@@ -114,5 +113,5 @@ class ShowInfoAdapter constructor(
     }
 
     override fun getItemCount(): Int =
-        _infoList.size + _emergencyNumberList.size + if (_emergencyNumberList.size == 0) 0 else 1
+        _infoList.size + _emergencyNumberList.size + if (_emergencyNumberList.isEmpty()) 0 else 1
 }
