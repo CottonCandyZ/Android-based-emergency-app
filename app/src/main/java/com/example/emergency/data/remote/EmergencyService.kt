@@ -1,6 +1,8 @@
 package com.example.emergency.data.remote
 
+import cn.leancloud.AVInstallation
 import cn.leancloud.AVObject
+import cn.leancloud.AVPush
 import cn.leancloud.AVUser
 import com.example.emergency.data.entity.Call
 import com.example.emergency.data.entity.Location
@@ -36,6 +38,13 @@ class EmergencyService @Inject constructor() {
             override fun onComplete() {
             }
         })
+        val pushQuery = AVInstallation.getQuery()
+        pushQuery.whereEqualTo("channels", "emergency")
+        val push = AVPush()
+        push.setQuery(pushQuery)
+        push.setMessage("有新的呼救")
+        push.setPushToAndroid(true)
+        push.sendInBackground().blockingSubscribe()
         return id!!
     }
 

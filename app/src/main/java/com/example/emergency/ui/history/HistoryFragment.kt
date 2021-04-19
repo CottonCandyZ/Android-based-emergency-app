@@ -68,6 +68,7 @@ class HistoryFragment : BaseFragment() {
 
 
             historyViewModel.historyList.observe(viewLifecycleOwner) {
+                recyclerView.smoothScrollToPosition(0)
                 historyAdapter.submitList(it)
             }
 

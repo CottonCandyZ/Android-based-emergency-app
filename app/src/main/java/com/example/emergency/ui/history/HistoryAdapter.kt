@@ -41,7 +41,7 @@ class HistoryAdapter : ListAdapter<History, HistoryAdapter.MyViewHolder>(DIFFCAL
 
         }
 
-        fun convertDateToString(date: Date): String {
+        private fun convertDateToString(date: Date): String {
             val format = "yyyy.MM.dd 'at' HH:mm:ss"
             return SimpleDateFormat(format, Locale.CHINA).format(date.time)
         }
