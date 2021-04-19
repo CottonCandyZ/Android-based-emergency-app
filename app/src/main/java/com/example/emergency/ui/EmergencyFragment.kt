@@ -59,7 +59,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.cancel -> {
-                emergencyViewModel.setState(STATUS.Call.CANCEL)
+                emergencyViewModel.setStatus(STATUS.Call.CANCEL)
                 setHasOptionsMenu(false)
             }
         }
@@ -76,13 +76,17 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 if (!checkPermission()) {
                     return@setOnClickListener
                 }
+                if (emergencyViewModel.getStatus() == STATUS.Call.ERROR) {
+                    showMessage(requireContext(), "请检查网络连接")
+                }
 
                 if (emergencyViewModel.getStatus() != STATUS.Call.INIT &&
-                    emergencyViewModel.getStatus() != STATUS.Call.CANCEL
+                    emergencyViewModel.getStatus() != STATUS.Call.CANCEL &&
+                    emergencyViewModel.getStatus() != STATUS.Call.COMPLETE
                 ) {
                     return@setOnClickListener
                 }
-                emergencyViewModel.setState(STATUS.Call.GET_LOCATION)
+                emergencyViewModel.setStatus(STATUS.Call.CALLING)
             }
             emergencyViewModel.currentText.observe(viewLifecycleOwner) {
                 emergencyHint.text = it

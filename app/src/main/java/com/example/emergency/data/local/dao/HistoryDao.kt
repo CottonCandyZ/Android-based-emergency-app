@@ -22,4 +22,7 @@ interface HistoryDao {
     @Query("SELECT * FROM history ORDER BY ID DESC")
     fun getHistory(): Flow<List<History>>
 
+    @Query("SELECT * FROM history WHERE id = :id")
+    fun getStatus(id: String): Flow<List<History>>
+
 }

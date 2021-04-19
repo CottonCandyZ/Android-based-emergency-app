@@ -20,7 +20,7 @@ class HistoryAdapter : ListAdapter<History, HistoryAdapter.MyViewHolder>(DIFFCAL
         fun bind(history: History) {
             with(binding) {
                 patientName.text = history.patientName
-                locationName.text = history.locationName
+                locationName.text = history.locationName ?: "尚未提交"
                 createTime.text = convertDateToString(history.createTime)
                 handler.text = history.handler ?: "尚未处理"
                 responseTime.text =

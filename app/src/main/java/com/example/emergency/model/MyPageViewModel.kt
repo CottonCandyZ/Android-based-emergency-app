@@ -22,6 +22,7 @@ class MyPageViewModel @Inject constructor(
     logOut: LogOut
 ) : ViewModel() {
     val abstractInfoList = infoRepository.getAbstractInfo().asLiveData()
+
     private val _status = MutableLiveData<STATUS.MyPage>()
     val status: LiveData<STATUS.MyPage> = _status
     lateinit var errorMessage: String
@@ -63,7 +64,6 @@ class MyPageViewModel @Inject constructor(
     fun updateChosen(chosen: AbstractInfo) {
         viewModelScope.launch {
             infoRepository.updateItemChosen(lastChosen.id, chosen.id)
-//            _currentChosen.value = chosen.realName
         }
     }
 

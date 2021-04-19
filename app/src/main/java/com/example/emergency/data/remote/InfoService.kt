@@ -10,8 +10,6 @@ import com.example.emergency.util.convertAVObjectToEmergencyContact
 import com.example.emergency.util.convertAVObjectToInfo
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.full.declaredMemberProperties
@@ -57,36 +55,35 @@ class InfoService @Inject constructor() {
         deleteItem.delete()
     }
 
-    suspend fun saveInfo(info: Info, saveById: Boolean): String =
-        withContext(Dispatchers.IO) {
-            val remoteInfo = AVObject("Info")
-            remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
-            Info::class.declaredMemberProperties
-                .forEach {
-                    if (it.name != "id") {
-                        remoteInfo.put(it.name, it.get(info))
-                    }
+    fun saveInfo(info: Info, saveById: Boolean): String {
+        val remoteInfo = AVObject("Info")
+        remoteInfo.put("userId", AVUser.getCurrentUser().objectId)
+        Info::class.declaredMemberProperties
+            .forEach {
+                if (it.name != "id") {
+                    remoteInfo.put(it.name, it.get(info))
                 }
-            if (saveById) {
-                remoteInfo.objectId = info.id
             }
-            var id = ""
-            remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
-                override fun onSubscribe(d: Disposable) {
-                }
+        if (saveById) {
+            remoteInfo.objectId = info.id
+        }
+        var id = ""
+        remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
+            override fun onSubscribe(d: Disposable) {
+            }
 
-                override fun onNext(t: AVObject) {
-                    id = t.objectId
-                }
+            override fun onNext(t: AVObject) {
+                id = t.objectId
+            }
 
-                override fun onError(e: Throwable) {
-                    throw e
-                }
+            override fun onError(e: Throwable) {
+                throw e
+            }
 
-                override fun onComplete() {
-                }
-            })
-            return@withContext id
+            override fun onComplete() {
+            }
+        })
+        return id
         }
 
     fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) {

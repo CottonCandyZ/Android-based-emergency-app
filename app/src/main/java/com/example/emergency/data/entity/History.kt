@@ -9,7 +9,7 @@ import java.util.*
 data class History(
     @PrimaryKey val id: String,
     val patientName: String,
-    val locationName: String,
+    val locationName: String?,
     val createTime: Date,
     val handler: String?,
     val responseTime: Date?,

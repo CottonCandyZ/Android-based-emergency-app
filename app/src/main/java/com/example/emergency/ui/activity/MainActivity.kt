@@ -18,6 +18,8 @@ import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.ActivityMainBinding
 import com.example.emergency.model.EmergencyViewModel
+import com.example.emergency.model.STATUS
+import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,6 +41,12 @@ class MainActivity : AppCompatActivity() {
         // enable dataBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        emergencyViewModel.status.observe(this) {
+            if (it == STATUS.Call.ERROR) {
+                showMessage(this, emergencyViewModel.errorMessage)
+            }
+        }
+
 
         val host =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
