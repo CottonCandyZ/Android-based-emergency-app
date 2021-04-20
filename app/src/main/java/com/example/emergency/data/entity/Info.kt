@@ -32,7 +32,7 @@ data class Info(
 data class EmergencyContact(
     @PrimaryKey val id: String = "",
     var infoId: String? = null, // 这里和唯一的 info id 绑定
-    var relationship: String = "",
+    var relationship: String = "家人",
     var phone: String = "",
 )
 

@@ -69,9 +69,6 @@ class InfoRepository @Inject constructor(
     suspend fun deleteInfoWithEmergencyContact(infoWithEmergencyContact: InfoWithEmergencyContact) {
         withContext(Dispatchers.IO) {
             infoService.deleteInfo(infoWithEmergencyContact.info.id)
-            infoWithEmergencyContact.emergencyContacts.forEach {
-                infoService.deleteEmergencyContact(it.id)
-            }
         }
 
     }

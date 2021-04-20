@@ -66,6 +66,13 @@ class LiveQueryRepository @Inject constructor(
             }
         }
 
+        override fun onObjectLeave(avObject: AVObject, updateKeyList: MutableList<String>?) {
+            super.onObjectLeave(avObject, updateKeyList)
+            MainScope().launch {
+                infoDao.deleteById(avObject.objectId)
+            }
+        }
+
         override fun onObjectDeleted(objectId: String) {
             super.onObjectDeleted(objectId)
             MainScope().launch {

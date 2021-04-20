@@ -200,7 +200,7 @@ class EditInfoAdapter(
             } else {
                 val empty =
                     _emergencyNumber.mapIndexed { index, it -> if (it.phone == "") index else null }
-                        .filterNotNull()[0]
+                        .filterNotNull().first()
                 _emergencyNumber[getIndex(position)] = EmergencyContact()
                 _emergencyNumber.removeAt(empty)
                 notifyItemRemoved(empty + INPUT_ARRAY_SIZE)

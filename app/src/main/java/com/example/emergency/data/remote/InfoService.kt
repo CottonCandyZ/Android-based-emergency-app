@@ -22,6 +22,7 @@ class InfoService @Inject constructor() {
     init {
         var query = AVQuery<AVObject>("Info")
         query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        query.whereEqualTo("isDeleted", false)
         infoLiveQuery = AVLiveQuery.initWithQuery(query)
         query = AVQuery<AVObject>("EmergencyContact")
         query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
@@ -31,6 +32,7 @@ class InfoService @Inject constructor() {
     fun getInfo(): List<Info> {
         val query = AVQuery<AVObject>("Info")
         query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
+        query.whereEqualTo("isDeleted", false)
         val infoResult = query.find()
         val resultList: ArrayList<Info> = arrayListOf()
         infoResult.forEach {
@@ -103,7 +105,8 @@ class InfoService @Inject constructor() {
 
     fun deleteInfo(id: String) {
         val deleteItem = AVObject.createWithoutData("Info", id)
-        deleteItem.delete()
+        deleteItem.put("isDeleted", true)
+        deleteItem.save()
     }
 
 
