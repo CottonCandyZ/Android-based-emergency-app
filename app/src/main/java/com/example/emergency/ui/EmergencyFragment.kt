@@ -94,7 +94,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
 
 
             emergencyViewModel.status.observe(viewLifecycleOwner) {
-                if (it == STATUS.Call.CALLING || it == STATUS.Call.GET_LOCATION) {
+                if (it == STATUS.Call.CALLING) {
                     setHasOptionsMenu(true)
                 } else {
                     setHasOptionsMenu(false)

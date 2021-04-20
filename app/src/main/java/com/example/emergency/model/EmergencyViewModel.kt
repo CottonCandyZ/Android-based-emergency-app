@@ -50,18 +50,21 @@ class EmergencyViewModel @Inject constructor(
 
     private lateinit var chosen: Info
 
-    private var locationGetSuccess = false
     private var checked = false
 
     private var job: Job? = null
+    private var location: AMapLocation? = null
+    private var locationSendSuccess = false
 
     private var aMapLocationListener = AMapLocationListener {
         if (it != null) {
             if (it.errorCode == 0) {
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "获取位置完成"
-                submitLocation(it)
-                locationGetSuccess = true
+                location = it
+                if (!locationSendSuccess) {
+                    submitLocation(it)
+                }
                 if (checked) {
                     setStatus(STATUS.Call.COMPLETE)
                 }
@@ -123,25 +126,17 @@ class EmergencyViewModel @Inject constructor(
         _status.value = status
         when (status) {
             STATUS.Call.INIT -> {
-                locationGetSuccess = false
+                locationSendSuccess = false
+                location = null
                 checked = false
                 callId = null
                 job?.cancel()
             }
-            // 获取位置
-            STATUS.Call.GET_LOCATION -> {
-                viewModelScope.launch {
-                    _currentText.value = "正在为${chosen.realName}呼救\n" +
-                            "获取位置中..."
-                    getCurrentLocation()
-                }
-            }
             STATUS.Call.CALLING -> {
-                viewModelScope.launch {
-                    _currentText.value = "正在为${chosen.realName}呼救\n" +
-                            "创建呼救中..."
-                    submitCall()
-                }
+                _currentText.value = "正在为${chosen.realName}呼救\n" +
+                        "创建呼救中..."
+                submitCall()
+                getCurrentLocation()
             }
             STATUS.Call.CANCEL -> {
                 mLocationClient.stopLocation()
@@ -196,14 +191,20 @@ class EmergencyViewModel @Inject constructor(
             )
             try {
                 callId = emergencyRepository.submitOneCall(call)
-                setStatus(STATUS.Call.GET_LOCATION) //前往位置获取
+                if (location != null && !locationSendSuccess) {
+                    submitLocation(location!!)
+                } else {
+                    _currentText.value = "正在为${chosen.realName}呼救\n" +
+                            "呼救已提交，正在等待位置获取"
+                }
                 job = viewModelScope.launch {
                     emergencyRepository.getStatus(callId!!).collect {
                         if (it.isNotEmpty()) {
                             if (it[0].status == "已处理") {
                                 checked = true
-                                if (!locationGetSuccess) {
-                                    _currentText.value = "位置尚未获取完成，正在获取"
+                                if (location == null) {
+                                    _currentText.value = "正在为${chosen.realName}呼救\n" +
+                                            "位置尚未获取完成，正在获取"
                                 } else {
                                     setStatus(STATUS.Call.COMPLETE)
                                 }
@@ -228,7 +229,9 @@ class EmergencyViewModel @Inject constructor(
                         coordinate = "${location.latitude} ${location.longitude}"
                     )
                 )
-                _currentText.value = "位置信息已提交, 等待处理..."
+                _currentText.value = "正在为${chosen.realName}呼救\n" +
+                        "位置信息已提交, 等待处理..."
+                locationSendSuccess = true
             } catch (e: Exception) {
                 _currentText.value = "位置信息提交失败，请检查网络连接"
             }

@@ -19,7 +19,7 @@ class STATUS {
     }
 
     enum class Call {
-        INIT, CALLING, CANCEL, GET_LOCATION, COMPLETE, ERROR
+        INIT, CALLING, CANCEL, COMPLETE, ERROR
     }
 
     enum class History {
