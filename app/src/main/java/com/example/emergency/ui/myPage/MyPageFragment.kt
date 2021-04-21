@@ -71,6 +71,12 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
                         swipeRefresh.isRefreshing = false
                         showMessage(requireContext(), myPageViewModel.errorMessage)
                     }
+                    STATUS.MyPage.CHOSEN_ERROR -> {
+                        showMessage(
+                            requireContext(), "${myPageViewModel.errorMessage}\n" +
+                                    "请尝试刷新后再试"
+                        )
+                    }
                     null -> {
                     }
                 }

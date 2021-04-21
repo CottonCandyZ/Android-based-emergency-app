@@ -52,7 +52,7 @@ class EmergencyViewModel @Inject constructor(
 
     private var checked = false
 
-    private var job: Job? = null
+    private var checkedJob: Job? = null
     private var location: AMapLocation? = null
     private var locationSendSuccess = false
 
@@ -130,7 +130,7 @@ class EmergencyViewModel @Inject constructor(
                 location = null
                 checked = false
                 callId = null
-                job?.cancel()
+                checkedJob?.cancel()
             }
             STATUS.Call.CALLING -> {
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
@@ -197,7 +197,7 @@ class EmergencyViewModel @Inject constructor(
                     _currentText.value = "正在为${chosen.realName}呼救\n" +
                             "呼救已提交，正在等待位置获取"
                 }
-                job = viewModelScope.launch {
+                checkedJob = viewModelScope.launch {
                     emergencyRepository.getStatus(callId!!).collect {
                         if (it.isNotEmpty()) {
                             if (it[0].status == "已处理") {

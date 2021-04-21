@@ -87,6 +87,9 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                     showMessage(requireContext(), "删除成功")
                     findNavController().navigateUp()
                 }
+                STATUS.Info.DELETE_ERROR -> {
+                    showMessage(requireContext(), "删除失败，${infoViewModel.errorMessage}")
+                }
 
 
                 null -> {

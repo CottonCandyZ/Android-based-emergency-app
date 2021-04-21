@@ -63,7 +63,13 @@ class MyPageViewModel @Inject constructor(
 
     fun updateChosen(chosen: AbstractInfo) {
         viewModelScope.launch {
-            infoRepository.updateItemChosen(lastChosen.id, chosen.id)
+            try {
+                infoRepository.updateItemChosen(lastChosen.id, chosen.id)
+            } catch (e: Exception) {
+                errorMessage = getErrorMessage(e)
+                _status.value = STATUS.MyPage.CHOSEN_ERROR
+            }
+
         }
     }
 

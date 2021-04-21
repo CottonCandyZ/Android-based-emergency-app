@@ -111,8 +111,15 @@ class InfoViewModel @Inject constructor(
                     infoRepository.updateInfoChosenWithOutRemove(notChosen[0])
                 }
             }
-            infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
-            _status.value = STATUS.Info.DELETE_SUCCESS
+            try {
+                infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
+                _status.value = STATUS.Info.DELETE_SUCCESS
+            } catch (e: Exception) {
+                errorMessage = getErrorMessage(e)
+                _status.value = STATUS.Info.DELETE_ERROR
+            }
+
+
         }
     }
 
