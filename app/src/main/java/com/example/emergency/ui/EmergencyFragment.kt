@@ -99,6 +99,9 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 } else {
                     setHasOptionsMenu(false)
                 }
+                if (it == STATUS.Call.ERROR) {
+                    showMessage(requireContext(), emergencyViewModel.errorMessage)
+                }
             }
         }
     }

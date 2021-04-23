@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -17,9 +16,6 @@ import androidx.navigation.ui.NavigationUI
 import cn.leancloud.AVUser
 import com.example.emergency.R
 import com.example.emergency.databinding.ActivityMainBinding
-import com.example.emergency.model.EmergencyViewModel
-import com.example.emergency.model.STATUS
-import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,7 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private val emergencyViewModel: EmergencyViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,11 +36,6 @@ class MainActivity : AppCompatActivity() {
         // enable dataBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        emergencyViewModel.status.observe(this) {
-            if (it == STATUS.Call.ERROR) {
-                showMessage(this, emergencyViewModel.errorMessage)
-            }
-        }
 
 
         val host =
@@ -97,11 +87,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         navController.navigateUp()
         return super.onSupportNavigateUp()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        emergencyViewModel.unsubscribe()
     }
 
 }

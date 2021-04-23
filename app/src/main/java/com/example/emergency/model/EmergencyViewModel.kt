@@ -100,7 +100,7 @@ class EmergencyViewModel @Inject constructor(
         liveQueryRepository.init()
     }
 
-    fun unsubscribe() {
+    private fun unsubscribe() {
         liveQueryRepository.unsubscribe()
     }
 
@@ -257,6 +257,11 @@ class EmergencyViewModel @Inject constructor(
         mLocationClient.setLocationOption(option)
         mLocationClient.stopLocation()
         mLocationClient.startLocation()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        unsubscribe()
     }
 
 }

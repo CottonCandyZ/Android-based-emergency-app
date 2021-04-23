@@ -147,7 +147,6 @@ class LiveQueryRepository @Inject constructor(
                     }
                 })
             }
-
         })
     }
 
