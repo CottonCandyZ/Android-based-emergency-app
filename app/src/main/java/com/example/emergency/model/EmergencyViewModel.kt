@@ -53,7 +53,12 @@ class EmergencyViewModel @Inject constructor(
     private var checked = false
 
     private var checkedJob: Job? = null
+    private var callSubmitJob: Job? = null
+    private var locationSubmitJob: Job? = null
+
+
     private var location: AMapLocation? = null
+
     private var locationSendSuccess = false
 
     private var aMapLocationListener = AMapLocationListener {
@@ -62,9 +67,15 @@ class EmergencyViewModel @Inject constructor(
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "获取位置完成"
                 location = it
-                if (!locationSendSuccess) {
-                    submitLocation(it)
+                if (getStatus() != STATUS.Call.CANCEL) {
+                    return@AMapLocationListener
                 }
+
+
+                if (!locationSendSuccess) {
+                    submitLocation()
+                }
+
                 if (checked) {
                     setStatus(STATUS.Call.COMPLETE)
                 }
@@ -131,6 +142,8 @@ class EmergencyViewModel @Inject constructor(
                 checked = false
                 callId = null
                 checkedJob?.cancel()
+                callSubmitJob = null
+                locationSubmitJob = null
             }
             STATUS.Call.CALLING -> {
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
@@ -140,16 +153,18 @@ class EmergencyViewModel @Inject constructor(
             }
             STATUS.Call.CANCEL -> {
                 mLocationClient.stopLocation()
+                locationSubmitJob?.cancel()
                 if (checked) {
                     _currentText.value = "取消提交失败，当前请求已处理\n" +
                             "点击以重新呼救"
                     setStatus(STATUS.Call.INIT)
                     return
                 }
-
-                if (callId != null) {
+                if (callSubmitJob != null) {
                     viewModelScope.launch {
                         try {
+                            checkedJob?.cancel()
+                            callSubmitJob?.cancel()
                             emergencyRepository.setStatus(callId!!, "已取消")
                             _currentText.value = "已取消，再次点击以呼救"
                             setStatus(STATUS.Call.INIT)
@@ -184,7 +199,7 @@ class EmergencyViewModel @Inject constructor(
     }
 
     private fun submitCall() {
-        viewModelScope.launch {
+        callSubmitJob = viewModelScope.launch {
             val call = Call(
                 patientName = chosen.realName,
                 patientId = chosen.id,  // 待修改
@@ -192,7 +207,7 @@ class EmergencyViewModel @Inject constructor(
             try {
                 callId = emergencyRepository.submitOneCall(call)
                 if (location != null && !locationSendSuccess) {
-                    submitLocation(location!!)
+                    submitLocation()
                 } else {
                     _currentText.value = "正在为${chosen.realName}呼救\n" +
                             "呼救已提交，正在等待位置获取"
@@ -219,21 +234,23 @@ class EmergencyViewModel @Inject constructor(
         }
     }
 
-    private fun submitLocation(location: AMapLocation) {
-        viewModelScope.launch {
+    private fun submitLocation() {
+        locationSubmitJob = viewModelScope.launch {
             try {
                 emergencyRepository.submitPosition(
                     callId!!,
                     Location(
-                        name = location.address,
-                        coordinate = "${location.latitude} ${location.longitude}"
+                        name = location!!.address,
+                        coordinate = "${location!!.latitude} ${location!!.longitude}"
                     )
                 )
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "位置信息已提交, 等待处理..."
                 locationSendSuccess = true
             } catch (e: Exception) {
-                _currentText.value = "位置信息提交失败，请检查网络连接"
+                _currentText.value = "位置信息提交失败，请检查网络连接\n" +
+                        "正在重试"
+                submitLocation()
             }
         }
     }
