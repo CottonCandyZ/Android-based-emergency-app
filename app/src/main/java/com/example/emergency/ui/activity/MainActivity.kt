@@ -54,11 +54,6 @@ class MainActivity : AppCompatActivity() {
         setUpBottomNavigation()
     }
 
-    override fun onResume() {
-        super.onResume()
-        emergencyViewModel.refresh()
-        emergencyViewModel.initLiveData()
-    }
 
     private fun setUpBottomNavigation() {
         val barConfiguration =
@@ -104,8 +99,8 @@ class MainActivity : AppCompatActivity() {
         return super.onSupportNavigateUp()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
         emergencyViewModel.unsubscribe()
     }
 

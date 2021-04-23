@@ -96,7 +96,7 @@ class EmergencyViewModel @Inject constructor(
     }
 
 
-    fun initLiveData() {
+    private fun initLiveData() {
         liveQueryRepository.init()
     }
 
@@ -104,7 +104,7 @@ class EmergencyViewModel @Inject constructor(
         liveQueryRepository.unsubscribe()
     }
 
-    fun refresh() {
+    private fun refresh() {
         viewModelScope.launch {
             try {
                 infoRepository.refreshInfo()
