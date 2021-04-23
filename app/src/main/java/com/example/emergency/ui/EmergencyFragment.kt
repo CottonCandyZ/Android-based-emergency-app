@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentEmergencyBinding
 import com.example.emergency.model.EmergencyViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,7 +59,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.cancel -> {
-                emergencyViewModel.setStatus(STATUS.Call.CANCEL)
+                emergencyViewModel.seState(STATE.Call.CANCEL)
                 setHasOptionsMenu(false)
             }
         }
@@ -76,30 +76,30 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 if (!checkPermission()) {
                     return@setOnClickListener
                 }
-                if (emergencyViewModel.getStatus() == STATUS.Call.ERROR) {
+                if (emergencyViewModel.getState() == STATE.Call.ERROR) {
                     showMessage(requireContext(), "请检查网络连接")
                 }
 
-                if (emergencyViewModel.getStatus() != STATUS.Call.INIT &&
-                    emergencyViewModel.getStatus() != STATUS.Call.CANCEL &&
-                    emergencyViewModel.getStatus() != STATUS.Call.COMPLETE
+                if (emergencyViewModel.getState() != STATE.Call.INIT &&
+                    emergencyViewModel.getState() != STATE.Call.CANCEL &&
+                    emergencyViewModel.getState() != STATE.Call.COMPLETE
                 ) {
                     return@setOnClickListener
                 }
-                emergencyViewModel.setStatus(STATUS.Call.CALLING)
+                emergencyViewModel.seState(STATE.Call.CALLING)
             }
             emergencyViewModel.currentText.observe(viewLifecycleOwner) {
                 emergencyHint.text = it
             }
 
 
-            emergencyViewModel.status.observe(viewLifecycleOwner) {
-                if (it == STATUS.Call.CALLING) {
+            emergencyViewModel.state.observe(viewLifecycleOwner) {
+                if (it == STATE.Call.CALLING) {
                     setHasOptionsMenu(true)
                 } else {
                     setHasOptionsMenu(false)
                 }
-                if (it == STATUS.Call.ERROR) {
+                if (it == STATE.Call.ERROR) {
                     showMessage(requireContext(), emergencyViewModel.errorMessage)
                 }
             }

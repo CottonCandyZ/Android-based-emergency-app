@@ -23,8 +23,8 @@ class MyPageViewModel @Inject constructor(
 ) : ViewModel() {
     val abstractInfoList = infoRepository.getAbstractInfo().asLiveData()
 
-    private val _status = MutableLiveData<STATUS.MyPage>()
-    val status: LiveData<STATUS.MyPage> = _status
+    private val _state = MutableLiveData<STATE.MyPage>()
+    val state: LiveData<STATE.MyPage> = _state
     lateinit var errorMessage: String
     private val _user = MutableLiveData<User>()
     val user: LiveData<User> = _user
@@ -42,7 +42,7 @@ class MyPageViewModel @Inject constructor(
                 if (it.isEmpty()) {
                     logOut.clean()
                     AVUser.logOut()
-                    _status.value = STATUS.MyPage.USER_NOT_FOUND
+                    _state.value = STATE.MyPage.USER_NOT_FOUND
                 } else {
                     _user.value = it[0]
                 }
@@ -67,7 +67,7 @@ class MyPageViewModel @Inject constructor(
                 infoRepository.updateItemChosen(lastChosen.id, chosen.id)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                _status.value = STATUS.MyPage.CHOSEN_ERROR
+                _state.value = STATE.MyPage.CHOSEN_ERROR
             }
 
         }
@@ -78,10 +78,10 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 infoRepository.refreshInfo()
-                _status.value = STATUS.MyPage.REFRESH_COMPLETE
+                _state.value = STATE.MyPage.REFRESH_COMPLETE
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                _status.value = STATUS.MyPage.REFRESH_ERROR
+                _state.value = STATE.MyPage.REFRESH_ERROR
             }
         }
     }

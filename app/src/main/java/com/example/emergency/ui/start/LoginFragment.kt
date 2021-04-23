@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentLoginBinding
 import com.example.emergency.model.LoginViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.ui.activity.MainActivity
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,14 +61,14 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
             loginPasswordText.addTextChangedListener(watcher)
-            loginViewModel.status.observe(viewLifecycleOwner) {
+            loginViewModel.state.observe(viewLifecycleOwner) {
                 when (it) {
-                    STATUS.Login.SUCCESS -> {
+                    STATE.Login.SUCCESS -> {
                         showMessage(requireContext(), "欢迎回来")
                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                         requireActivity().finish()
                     }
-                    STATUS.Login.ERROR -> {
+                    STATE.Login.ERROR -> {
                         progressBar.visibility = View.INVISIBLE
                         buttonLogin.isEnabled = true
                         showMessage(requireContext(), loginViewModel.errorMessage)

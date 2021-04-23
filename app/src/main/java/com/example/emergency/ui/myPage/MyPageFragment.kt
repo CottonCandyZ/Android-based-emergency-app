@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentMyPageBinding
 import com.example.emergency.model.MyPageViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.ui.activity.LoginActivity
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showMessage
@@ -57,21 +57,21 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
         setHasOptionsMenu(true)
         val myPageAdapter = MyPageAdapter(myPageViewModel)
         with(binding) {
-            myPageViewModel.status.observe(viewLifecycleOwner) {
+            myPageViewModel.state.observe(viewLifecycleOwner) {
                 when (it) {
-                    STATUS.MyPage.USER_NOT_FOUND -> {
+                    STATE.MyPage.USER_NOT_FOUND -> {
                         showMessage(requireContext(), "已登陆用户不存在")
                         startActivity(Intent(requireActivity(), LoginActivity::class.java))
                         requireActivity().finish()
                     }
-                    STATUS.MyPage.REFRESH_COMPLETE -> {
+                    STATE.MyPage.REFRESH_COMPLETE -> {
                         swipeRefresh.isRefreshing = false
                     }
-                    STATUS.MyPage.REFRESH_ERROR -> {
+                    STATE.MyPage.REFRESH_ERROR -> {
                         swipeRefresh.isRefreshing = false
                         showMessage(requireContext(), myPageViewModel.errorMessage)
                     }
-                    STATUS.MyPage.CHOSEN_ERROR -> {
+                    STATE.MyPage.CHOSEN_ERROR -> {
                         showMessage(
                             requireContext(), "${myPageViewModel.errorMessage}\n" +
                                     "请尝试刷新后再试"
@@ -98,7 +98,7 @@ class MyPageFragment : BaseFragment(), CoroutineScope by MainScope() {
 
             addInformation.setOnClickListener {
                 Bundle().apply {
-                    putSerializable("INFO_STATUS", STATUS.Info.NEW)
+                    putSerializable("INFO_STATUS", STATE.Info.NEW)
                     findNavController().navigate(R.id.action_user_to_informationFragment, this)
                 }
             }

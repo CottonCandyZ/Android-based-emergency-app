@@ -13,7 +13,7 @@ import com.example.emergency.R
 import com.example.emergency.data.entity.AbstractInfo
 import com.example.emergency.databinding.MyPagePersonalInfoItemBinding
 import com.example.emergency.model.MyPageViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.ui.myPage.MyPageAdapter.MyViewHolder.Companion.isChecked
 import com.example.emergency.ui.myPage.MyPageAdapter.MyViewHolder.Companion.setCheck
 
@@ -111,7 +111,7 @@ class MyPageAdapter(private val myPageViewModel: MyPageViewModel) :
         Bundle().apply {
             putString("INFO_ID", abstractInfo.id)
             putString("INFO_NAME", abstractInfo.realName)
-            putSerializable("INFO_STATUS", STATUS.Info.SHOW)
+            putSerializable("INFO_STATUS", STATE.Info.SHOW)
             binding.root.findNavController().navigate(R.id.action_user_to_informationFragment, this)
         }
     }

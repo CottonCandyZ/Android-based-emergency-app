@@ -36,8 +36,8 @@ class EmergencyViewModel @Inject constructor(
     @ApplicationContext applicationContext: Context
 ) : ViewModel() {
 
-    private val _status = MutableLiveData(STATUS.Call.INIT)
-    val status: LiveData<STATUS.Call> = _status
+    private val _state = MutableLiveData(STATE.Call.INIT)
+    val state: LiveData<STATE.Call> = _state
 
     private val _currentText = MutableLiveData<String>()
     val currentText: LiveData<String> = _currentText
@@ -67,7 +67,7 @@ class EmergencyViewModel @Inject constructor(
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "获取位置完成"
                 location = it
-                if (getStatus() != STATUS.Call.CANCEL) {
+                if (getState() != STATE.Call.CANCEL) {
                     return@AMapLocationListener
                 }
 
@@ -77,7 +77,7 @@ class EmergencyViewModel @Inject constructor(
                 }
 
                 if (checked) {
-                    setStatus(STATUS.Call.COMPLETE)
+                    seState(STATE.Call.COMPLETE)
                 }
             } else {
                 _currentText.value = "获取位置失败，尝试重新获取"
@@ -120,23 +120,23 @@ class EmergencyViewModel @Inject constructor(
             try {
                 infoRepository.refreshInfo()
                 historyRepository.refreshHistory()
-                setStatus(STATUS.Call.INIT)
+                seState(STATE.Call.INIT)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                setStatus(STATUS.Call.ERROR)
+                seState(STATE.Call.ERROR)
             }
 
         }
     }
 
-    fun getStatus(): STATUS.Call {
-        return status.value!!
+    fun getState(): STATE.Call {
+        return state.value!!
     }
 
-    fun setStatus(status: STATUS.Call) {
-        _status.value = status
-        when (status) {
-            STATUS.Call.INIT -> {
+    fun seState(state: STATE.Call) {
+        _state.value = state
+        when (state) {
+            STATE.Call.INIT -> {
                 locationSendSuccess = false
                 location = null
                 checked = false
@@ -145,19 +145,19 @@ class EmergencyViewModel @Inject constructor(
                 callSubmitJob = null
                 locationSubmitJob = null
             }
-            STATUS.Call.CALLING -> {
+            STATE.Call.CALLING -> {
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "创建呼救中..."
                 submitCall()
                 getCurrentLocation()
             }
-            STATUS.Call.CANCEL -> {
+            STATE.Call.CANCEL -> {
                 mLocationClient.stopLocation()
                 locationSubmitJob?.cancel()
                 if (checked) {
                     _currentText.value = "取消提交失败，当前请求已处理\n" +
                             "点击以重新呼救"
-                    setStatus(STATUS.Call.INIT)
+                    seState(STATE.Call.INIT)
                     return
                 }
                 if (callSubmitJob != null) {
@@ -167,31 +167,31 @@ class EmergencyViewModel @Inject constructor(
                             callSubmitJob?.cancel()
                             emergencyRepository.setStatus(callId!!, "已取消")
                             _currentText.value = "已取消，再次点击以呼救"
-                            setStatus(STATUS.Call.INIT)
+                            seState(STATE.Call.INIT)
                         } catch (e: Exception) {
                             _currentText.value = "取消失败，请检查网络连接"
                         }
                     }
                 } else {
                     _currentText.value = "已取消，再次点击以呼救"
-                    setStatus(STATUS.Call.INIT)
+                    seState(STATE.Call.INIT)
                 }
             }
-            STATUS.Call.COMPLETE -> {
+            STATE.Call.COMPLETE -> {
                 _currentText.value = "呼叫已处理，点击以重新呼救"
-                setStatus(STATUS.Call.INIT)
+                seState(STATE.Call.INIT)
             }
-            STATUS.Call.ERROR -> {
+            STATE.Call.ERROR -> {
                 viewModelScope.launch {
                     try {
                         delay(5000) // 每五秒重试连接
                         infoRepository.refreshInfo()
                         historyRepository.refreshHistory()
                         initLiveData()
-                        setStatus(STATUS.Call.INIT)
+                        seState(STATE.Call.INIT)
                     } catch (e: Exception) {
                         errorMessage = getErrorMessage(e)
-                        setStatus(STATUS.Call.ERROR)
+                        seState(STATE.Call.ERROR)
                     }
                 }
             }
@@ -221,7 +221,7 @@ class EmergencyViewModel @Inject constructor(
                                     _currentText.value = "正在为${chosen.realName}呼救\n" +
                                             "位置尚未获取完成，正在获取"
                                 } else {
-                                    setStatus(STATUS.Call.COMPLETE)
+                                    seState(STATE.Call.COMPLETE)
                                 }
                             }
                         }
@@ -229,7 +229,7 @@ class EmergencyViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _currentText.value = "呼救提交失败，请检查网络连接"
-                setStatus(STATUS.Call.INIT)
+                seState(STATE.Call.INIT)
             }
         }
     }

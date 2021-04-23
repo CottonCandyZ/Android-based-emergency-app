@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentInfoBinding
 import com.example.emergency.model.InfoViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.Hints
 import com.example.emergency.util.showMessage
@@ -57,37 +57,37 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
         val editMenuItem = menu.findItem(R.id.edit)
         val deleteMenuItem = menu.findItem(R.id.delete)
 
-        infoViewModel.status.observe(this) {
+        infoViewModel.state.observe(this) {
             when (it) {
-                STATUS.Info.SHOW -> {
+                STATE.Info.SHOW -> {
                     saveMenuItem.isVisible = false
                     editMenuItem.isVisible = true
                     deleteMenuItem.isVisible = true
                 }
-                STATUS.Info.NEW -> {
+                STATE.Info.NEW -> {
                     saveMenuItem.isVisible = true
                     editMenuItem.isVisible = false
                     deleteMenuItem.isVisible = false
                 }
-                STATUS.Info.EDIT -> {
+                STATE.Info.EDIT -> {
                     saveMenuItem.isVisible = true
                     deleteMenuItem.isVisible = false
                     editMenuItem.isVisible = false
                 }
-                STATUS.Info.SAVE_ERROR -> {
+                STATE.Info.SAVE_ERROR -> {
                     binding.progressBar3.visibility = View.INVISIBLE
                     saveMenuItem.isEnabled = true
                     showMessage(requireContext(), infoViewModel.errorMessage)
                 }
-                STATUS.Info.SAVE_SUCCESS -> {
+                STATE.Info.SAVE_SUCCESS -> {
                     showMessage(requireContext(), "保存成功")
                     findNavController().navigateUp()
                 }
-                STATUS.Info.DELETE_SUCCESS -> {
+                STATE.Info.DELETE_SUCCESS -> {
                     showMessage(requireContext(), "删除成功")
                     findNavController().navigateUp()
                 }
-                STATUS.Info.DELETE_ERROR -> {
+                STATE.Info.DELETE_ERROR -> {
                     showMessage(requireContext(), "删除失败，${infoViewModel.errorMessage}")
                 }
 
@@ -119,7 +119,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
             }
 
             R.id.edit -> {
-                infoViewModel.setStatus(STATUS.Info.EDIT)
+                infoViewModel.setStatus(STATE.Info.EDIT)
                 createEditView()
             }
 
@@ -139,7 +139,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        infoViewModel.setStatus(arguments?.get("INFO_STATUS") as STATUS.Info)
+        infoViewModel.setStatus(arguments?.get("INFO_STATUS") as STATE.Info)
         setHasOptionsMenu(true)
         infoViewModel.infoFragmentTitle.observe(viewLifecycleOwner) {
             (activity as AppCompatActivity).supportActionBar?.title = it
@@ -154,8 +154,8 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
 
 
 
-        when (infoViewModel.getStatus()) {
-            STATUS.Info.SHOW -> {
+        when (infoViewModel.getState()) {
+            STATE.Info.SHOW -> {
                 infoViewModel.setInfoFragmentTitle(arguments?.getString("INFO_NAME")!! + "的信息")
                 val showInfoAdapter = ShowInfoAdapter(hints.inputHints)
                 with(binding.infoRecyclerView) {
@@ -173,7 +173,7 @@ class InfoFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
                 infoViewModel.fetchInfo(arguments?.getString("INFO_ID")!!)
             }
-            STATUS.Info.NEW -> {
+            STATE.Info.NEW -> {
                 infoViewModel.setInfoFragmentTitle("添加新的呼救人")
                 createEditView()
             }

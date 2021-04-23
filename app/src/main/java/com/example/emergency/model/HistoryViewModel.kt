@@ -13,8 +13,8 @@ class HistoryViewModel @Inject constructor(
     private val historyRepository: HistoryRepository
 ) : ViewModel() {
 
-    private val _status = MutableLiveData<STATUS.History>()
-    val status: LiveData<STATUS.History> = _status
+    private val _state = MutableLiveData<STATE.History>()
+    val state: LiveData<STATE.History> = _state
     lateinit var errorMessage: String
 
     val historyList = historyRepository.getHistory().asLiveData()
@@ -24,10 +24,10 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 historyRepository.refreshHistory()
-                _status.value = STATUS.History.REFRESH_COMPLETE
+                _state.value = STATE.History.REFRESH_COMPLETE
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                _status.value = STATUS.History.REFRESH_ERROR
+                _state.value = STATE.History.REFRESH_ERROR
             }
 
         }

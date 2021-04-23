@@ -25,8 +25,8 @@ class InfoViewModel @Inject constructor(
 
     private val _showInfo = MutableLiveData<InputData>()
     val showInfo: LiveData<InputData> = _showInfo
-    private val _status = MutableLiveData<STATUS.Info>()
-    val status: LiveData<STATUS.Info> = _status
+    private val _state = MutableLiveData<STATE.Info>()
+    val state: LiveData<STATE.Info> = _state
     lateinit var errorMessage: String
 
     // 记录更改的差异性
@@ -46,26 +46,26 @@ class InfoViewModel @Inject constructor(
     }
 
 
-    fun setStatus(status: STATUS.Info) {
-        when (status) {
-            STATUS.Info.NEW -> {
+    fun setStatus(state: STATE.Info) {
+        when (state) {
+            STATE.Info.NEW -> {
                 inputData =
                     InputData(Array(INPUT_ARRAY_SIZE) { "" }, arrayListOf(EmergencyContact()))
             }
-            STATUS.Info.SHOW -> {
+            STATE.Info.SHOW -> {
                 inputData = InputData(Array(INPUT_ARRAY_SIZE) { "" }, arrayListOf())
             }
-            STATUS.Info.EDIT -> {
+            STATE.Info.EDIT -> {
                 inputData.emergencyNumber.add(EmergencyContact())
             }
             else -> {
             }
         }
-        _status.value = status
+        _state.value = state
     }
 
-    fun getStatus(): STATUS.Info {
-        return status.value!!
+    fun getState(): STATE.Info {
+        return state.value!!
     }
 
 
@@ -113,10 +113,10 @@ class InfoViewModel @Inject constructor(
             }
             try {
                 infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
-                _status.value = STATUS.Info.DELETE_SUCCESS
+                _state.value = STATE.Info.DELETE_SUCCESS
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                _status.value = STATUS.Info.DELETE_ERROR
+                _state.value = STATE.Info.DELETE_ERROR
             }
 
 
@@ -127,7 +127,7 @@ class InfoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // 判断 info 状态
-                val saveFromId = _status.value != STATUS.Info.NEW
+                val saveFromId = _state.value != STATE.Info.NEW
                 val infoId = if (saveFromId) infoWithEmergencyContact.info.id else ""
                 val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.CHINA)
 
@@ -174,10 +174,10 @@ class InfoViewModel @Inject constructor(
                     save,
                     saveFromId
                 )
-                setStatus(STATUS.Info.SAVE_SUCCESS)
+                setStatus(STATE.Info.SAVE_SUCCESS)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                setStatus(STATUS.Info.SAVE_ERROR)
+                setStatus(STATE.Info.SAVE_ERROR)
             }
         }
 

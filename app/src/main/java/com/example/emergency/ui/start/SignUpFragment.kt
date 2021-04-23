@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.emergency.R
 import com.example.emergency.databinding.FragmentSignUpBinding
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.model.SignUpViewModel
 import com.example.emergency.ui.activity.MainActivity
 import com.example.emergency.util.showMessage
@@ -71,50 +71,50 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
 
         with(binding) {
             // 观察状态
-            signUpViewModel.status.observe(viewLifecycleOwner) {
+            signUpViewModel.state.observe(viewLifecycleOwner) {
                 when (it) {
-                    STATUS.SignUp.INIT -> {
+                    STATE.SignUp.INIT -> {
                         signUpCodeLayout.visibility = View.GONE
                         buttonGetCode.visibility = View.GONE
                         buttonNextStep.isEnabled = false
                     }
-                    STATUS.SignUp.CAN_ENTER_CODE -> {
+                    STATE.SignUp.CAN_ENTER_CODE -> {
                         signUpCodeLayout.visibility = View.VISIBLE
                         buttonGetCode.visibility = View.VISIBLE
                         phone = signUpPhoneText.text.toString()
                     }
-                    STATUS.SignUp.SEND_CODE_SUCCESS -> {
+                    STATE.SignUp.SEND_CODE_SUCCESS -> {
                         showMessage(requireContext(), "发送成功")
                         myCountDownTimer.start()
                     }
-                    STATUS.SignUp.AFTER_ENTER_CODE -> {
+                    STATE.SignUp.AFTER_ENTER_CODE -> {
 
                         code = signUpCodeText.text.toString()
                         buttonNextStep.isEnabled = true
                     }
-                    STATUS.SignUp.OLD_UER_LOGIN -> {
+                    STATE.SignUp.OLD_UER_LOGIN -> {
                         showMessage(requireContext(), "已注册，登陆成功")
                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                         requireActivity().finish()
                     }
-                    STATUS.SignUp.NEW_USER -> {
+                    STATE.SignUp.NEW_USER -> {
                         showMessage(requireContext(), "验证码正确")
                         binding.progressBar2.visibility = View.INVISIBLE
                         changeViewToSetPwd()
                     }
-                    STATUS.SignUp.SAVE_USER_SUCCESS -> {
+                    STATE.SignUp.SAVE_USER_SUCCESS -> {
                         showMessage(requireContext(), "注册成功")
                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                         requireActivity().finish()
                     }
-                    STATUS.SignUp.SIGN_UP_ERROR -> {
+                    STATE.SignUp.SIGN_UP_ERROR -> {
                         // 如果出现错误，用户需要可再次请求
                         binding.buttonNextStep.isEnabled = true
                         // 给出错误提示
                         binding.progressBar2.visibility = View.INVISIBLE
                         showMessage(requireContext(), signUpViewModel.errorMessage)
                     }
-                    STATUS.SignUp.ERROR -> {
+                    STATE.SignUp.ERROR -> {
                         showMessage(requireContext(), signUpViewModel.errorMessage)
                     }
                     null -> {
@@ -126,9 +126,9 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
                 setOnClickListener {
                     isEnabled = false
                     binding.progressBar2.visibility = View.VISIBLE
-                    if (signUpViewModel.getStatus() == STATUS.SignUp.AFTER_ENTER_CODE) {
+                    if (signUpViewModel.getStatus() == STATE.SignUp.AFTER_ENTER_CODE) {
                         signUpViewModel.signUp(phone!!, code!!)
-                    } else if (signUpViewModel.getStatus() == STATUS.SignUp.NEW_USER) {
+                    } else if (signUpViewModel.getStatus() == STATE.SignUp.NEW_USER) {
                         signUpViewModel.saveUser(phone!!, userName!!, pwd!!)
                     }
                 }
@@ -138,11 +138,11 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
             with(signUpPhoneText) {
                 doOnTextChanged { text, _, _, _ ->
                     if (text.toString().trim().length != 11) {
-                        if (signUpViewModel.getStatus() != STATUS.SignUp.INIT) {
-                            signUpViewModel.setStatus(STATUS.SignUp.INIT)
+                        if (signUpViewModel.getStatus() != STATE.SignUp.INIT) {
+                            signUpViewModel.setStatus(STATE.SignUp.INIT)
                         }
                     } else {
-                        signUpViewModel.setStatus(STATUS.SignUp.CAN_ENTER_CODE)
+                        signUpViewModel.setStatus(STATE.SignUp.CAN_ENTER_CODE)
                         signUpPhoneLayout.error = null
                     }
                 }
@@ -165,7 +165,7 @@ class SignUpFragment : Fragment(), CoroutineScope by MainScope() {
                     if (text.toString().trim().length != 6) {
                         buttonNextStep.isEnabled = false
                     } else {
-                        signUpViewModel.setStatus(STATUS.SignUp.AFTER_ENTER_CODE)
+                        signUpViewModel.setStatus(STATE.SignUp.AFTER_ENTER_CODE)
                         signUpCodeLayout.error = null
                     }
 

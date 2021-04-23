@@ -16,16 +16,16 @@ class SignUpViewModel @Inject constructor(
     private val signUpRepository: SignUpRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
-    private val _status = MutableLiveData(STATUS.SignUp.INIT)
-    val status: LiveData<STATUS.SignUp> = _status
+    private val _state = MutableLiveData(STATE.SignUp.INIT)
+    val state: LiveData<STATE.SignUp> = _state
     lateinit var errorMessage: String
 
-    fun getStatus(): STATUS.SignUp {
-        return status.value!!
+    fun getStatus(): STATE.SignUp {
+        return state.value!!
     }
 
-    fun setStatus(status: STATUS.SignUp) {
-        _status.value = status
+    fun setStatus(state: STATE.SignUp) {
+        _state.value = state
     }
 
     fun signUp(phone: String, code: String) {
@@ -35,14 +35,14 @@ class SignUpViewModel @Inject constructor(
                     signUpRepository.checkCodeToSignUpOrLogin(phone, code)
                     // 刷新当前数据库存储的用户信息
                     userRepository.refresh()
-                    setStatus(STATUS.SignUp.OLD_UER_LOGIN)
+                    setStatus(STATE.SignUp.OLD_UER_LOGIN)
                 } else {
                     signUpRepository.checkCodeToSignUpOrLogin(phone, code)
-                    setStatus(STATUS.SignUp.NEW_USER)
+                    setStatus(STATE.SignUp.NEW_USER)
                 }
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                setStatus(STATUS.SignUp.SIGN_UP_ERROR)
+                setStatus(STATE.SignUp.SIGN_UP_ERROR)
             }
 
         }
@@ -54,10 +54,10 @@ class SignUpViewModel @Inject constructor(
                 signUpRepository.saveUser(phone, userName, pwd)
                 // 刷新当前数据库存储的用户信息
                 userRepository.refresh()
-                setStatus(STATUS.SignUp.SAVE_USER_SUCCESS)
+                setStatus(STATE.SignUp.SAVE_USER_SUCCESS)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                setStatus(STATUS.SignUp.SIGN_UP_ERROR)
+                setStatus(STATE.SignUp.SIGN_UP_ERROR)
             }
         }
     }
@@ -66,10 +66,10 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signUpRepository.sendCodeForSignUp(phone)
-                setStatus(STATUS.SignUp.SEND_CODE_SUCCESS)
+                setStatus(STATE.SignUp.SEND_CODE_SUCCESS)
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                setStatus(STATUS.SignUp.ERROR)
+                setStatus(STATE.SignUp.ERROR)
             }
         }
     }

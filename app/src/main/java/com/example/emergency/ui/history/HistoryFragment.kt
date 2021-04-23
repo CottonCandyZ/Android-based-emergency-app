@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.emergency.databinding.FragmentHistoryBinding
 import com.example.emergency.model.HistoryViewModel
-import com.example.emergency.model.STATUS
+import com.example.emergency.model.STATE
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.showMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,12 +51,12 @@ class HistoryFragment : BaseFragment() {
                     )
                 )
             }
-            historyViewModel.status.observe(viewLifecycleOwner) {
+            historyViewModel.state.observe(viewLifecycleOwner) {
                 when (it) {
-                    STATUS.History.REFRESH_COMPLETE -> {
+                    STATE.History.REFRESH_COMPLETE -> {
                         swipeRefresh.isRefreshing = false
                     }
-                    STATUS.History.REFRESH_ERROR -> {
+                    STATE.History.REFRESH_ERROR -> {
                         swipeRefresh.isRefreshing = false
                         showMessage(requireContext(), historyViewModel.errorMessage)
                     }

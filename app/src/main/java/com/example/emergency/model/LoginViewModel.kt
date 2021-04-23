@@ -17,8 +17,8 @@ class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    private val _status = MutableLiveData<STATUS.Login>()
-    val status: LiveData<STATUS.Login> = _status
+    private val _status = MutableLiveData<STATE.Login>()
+    val state: LiveData<STATE.Login> = _status
     lateinit var errorMessage: String
 
 
@@ -27,10 +27,10 @@ class LoginViewModel @Inject constructor(
             try {
                 loginRepository.makeLoginRequest("+86$phone", pwd)
                 userRepository.refresh()
-                _status.value = STATUS.Login.SUCCESS
+                _status.value = STATE.Login.SUCCESS
             } catch (e: Exception) {
                 errorMessage = getErrorMessage(e)
-                _status.value = STATUS.Login.ERROR
+                _status.value = STATE.Login.ERROR
             }
         }
     }
