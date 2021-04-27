@@ -67,7 +67,7 @@ class EmergencyViewModel @Inject constructor(
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
                         "获取位置完成"
                 location = it
-                if (getState() != STATE.Call.CANCEL) {
+                if (getState() == STATE.Call.CANCEL) {
                     return@AMapLocationListener
                 }
 
