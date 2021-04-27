@@ -84,7 +84,7 @@ class InfoViewModel @Inject constructor(
                     inputInfo[BIRTHDATE] =
                         SimpleDateFormat("yyyy/MM/dd", Locale.CHINA).format(birthdate)
                     inputInfo[PHONE] = phone
-                    inputInfo[WEIGHT] = weight.toString()
+                    inputInfo[WEIGHT] = if (weight == 0) "" else weight.toString()
                     inputInfo[BLOOD_TYPE] = bloodType ?: ""
                     inputInfo[MEDICAL_CONDITIONS] = medicalConditions ?: ""
                     inputInfo[MEDICAL_NOTES] = medicalConditions ?: ""
