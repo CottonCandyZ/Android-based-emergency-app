@@ -20,13 +20,14 @@ import com.example.emergency.data.local.repository.LiveQueryRepository
 import com.example.emergency.util.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+const val TAG = "hello"
 @HiltViewModel
 class EmergencyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
@@ -61,17 +62,15 @@ class EmergencyViewModel @Inject constructor(
 
     private var locationSendSuccess = false
 
-    private var aMapLocationListener = AMapLocationListener {
+    private var aMapLocationListener = AMapLocationListener { // 位置回调
         if (it != null) {
             if (it.errorCode == 0) {
-                _currentText.value = "正在为${chosen.realName}呼救\n" +
-                        "获取位置完成"
-                location = it
                 if (getState() == STATE.Call.CANCEL) {
                     return@AMapLocationListener
                 }
-
-
+                _currentText.value = "正在为${chosen.realName}呼救\n" +
+                        "获取位置完成"
+                location = it
                 if (!locationSendSuccess) {
                     submitLocation()
                 }
@@ -154,17 +153,16 @@ class EmergencyViewModel @Inject constructor(
             STATE.Call.CANCEL -> {
                 mLocationClient.stopLocation()
                 locationSubmitJob?.cancel()
-                if (checked) {
+                if (checked) { // 若请求已经被处理
                     _currentText.value = "取消提交失败，当前请求已处理\n" +
                             "点击以重新呼救"
                     seState(STATE.Call.INIT)
                     return
                 }
-                if (callSubmitJob != null) {
+                if (callId != null) { // 若已提交
                     viewModelScope.launch {
                         try {
                             checkedJob?.cancel()
-                            callSubmitJob?.cancel()
                             emergencyRepository.setStatus(callId!!, "已取消")
                             _currentText.value = "已取消，再次点击以呼救"
                             seState(STATE.Call.INIT)
@@ -172,7 +170,8 @@ class EmergencyViewModel @Inject constructor(
                             _currentText.value = "取消失败，请检查网络连接"
                         }
                     }
-                } else {
+                } else { // 若尚未提交
+                    callSubmitJob?.cancel()
                     _currentText.value = "已取消，再次点击以呼救"
                     seState(STATE.Call.INIT)
                 }
@@ -196,13 +195,14 @@ class EmergencyViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
-    private fun submitCall() {
+    private fun submitCall() { // 提交呼救
         callSubmitJob = viewModelScope.launch {
             val call = Call(
                 patientName = chosen.realName,
-                patientId = chosen.id,  // 待修改
+                patientId = chosen.id,
             )
             try {
                 callId = emergencyRepository.submitOneCall(call)
@@ -212,7 +212,10 @@ class EmergencyViewModel @Inject constructor(
                     _currentText.value = "正在为${chosen.realName}呼救\n" +
                             "呼救已提交，正在等待位置获取"
                 }
-                checkedJob = viewModelScope.launch {
+                checkedJob = viewModelScope.launch check@{ // 检查呼救状态
+                    if (callId == null) {
+                        return@check
+                    }
                     emergencyRepository.getStatus(callId!!).collect {
                         if (it.isNotEmpty()) {
                             if (it[0].status == "已处理") {
@@ -228,15 +231,20 @@ class EmergencyViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                _currentText.value = "呼救提交失败，请检查网络连接"
-                seState(STATE.Call.INIT)
+                if (e !is CancellationException) {
+                    _currentText.value = "呼救提交失败，请检查网络连接"
+                    seState(STATE.Call.INIT)
+                }
             }
         }
     }
 
-    private fun submitLocation() {
+    private fun submitLocation() { // 提交位置
         locationSubmitJob = viewModelScope.launch {
             try {
+                if (callId == null || location == null) {
+                    return@launch
+                }
                 emergencyRepository.submitPosition(
                     callId!!,
                     Location(
@@ -248,15 +256,18 @@ class EmergencyViewModel @Inject constructor(
                         "位置信息已提交, 等待处理..."
                 locationSendSuccess = true
             } catch (e: Exception) {
-                _currentText.value = "位置信息提交失败，请检查网络连接\n" +
-                        "正在重试"
-                submitLocation()
+                if (e !is CancellationException) {
+                    _currentText.value = "位置信息提交失败，请检查网络连接\n" +
+                            "正在重试"
+                    submitLocation()
+                }
+
             }
         }
     }
 
 
-    private fun getCurrentLocation() {
+    private fun getCurrentLocation() { // 获取位置
         val mLocationOption = AMapLocationClientOption()
         val option = AMapLocationClientOption()
         option.locationPurpose = AMapLocationClientOption.AMapLocationPurpose.SignIn

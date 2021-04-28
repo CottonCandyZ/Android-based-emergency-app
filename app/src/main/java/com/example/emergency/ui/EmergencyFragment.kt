@@ -73,18 +73,11 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
 
         with(binding) {
             buttonEmergency.setOnClickListener {
-                if (!checkPermission()) {
+                if (!checkPermission() || emergencyViewModel.getState() != STATE.Call.INIT) {
                     return@setOnClickListener
                 }
                 if (emergencyViewModel.getState() == STATE.Call.ERROR) {
                     showMessage(requireContext(), "请检查网络连接")
-                }
-
-                if (emergencyViewModel.getState() != STATE.Call.INIT &&
-                    emergencyViewModel.getState() != STATE.Call.CANCEL &&
-                    emergencyViewModel.getState() != STATE.Call.COMPLETE
-                ) {
-                    return@setOnClickListener
                 }
                 emergencyViewModel.seState(STATE.Call.CALLING)
             }
