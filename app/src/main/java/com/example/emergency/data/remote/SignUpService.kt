@@ -35,9 +35,10 @@ class SignUpService @Inject constructor() {
     // 为用户设置密码
     fun setUserPassword(pwd: String) {
         val user = AVUser.getCurrentUser()
+        val phone = user.mobilePhoneNumber
         user.password = pwd
         user.save()
-        AVUser.logIn(user.mobilePhoneNumber, pwd).blockingSubscribe()
+        AVUser.logIn(phone, pwd).blockingSubscribe()
     }
 
     // 保存用户

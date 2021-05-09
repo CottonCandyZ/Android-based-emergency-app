@@ -130,26 +130,6 @@ class LiveQueryRepository @Inject constructor(
         })
     }
 
-    fun unsubscribe() {
-        infoService.infoLiveQuery.unsubscribeInBackground(object : AVLiveQuerySubscribeCallback() {
-            override fun done(e: AVException?) {
-                infoService.emergencyLiveQuery.unsubscribeInBackground(object :
-                    AVLiveQuerySubscribeCallback() {
-                    override fun done(e: AVException?) {
-                        if (e == null) {
-                            historyService.historyLiveQuery.unsubscribeInBackground(object :
-                                AVLiveQuerySubscribeCallback() {
-                                override fun done(e: AVException?) {
-
-                                }
-                            })
-                        }
-                    }
-                })
-            }
-        })
-    }
-
     private suspend fun updateHistory(remote: AVObject) {
         withContext(Dispatchers.IO) {
             historyDao.insertHistory(

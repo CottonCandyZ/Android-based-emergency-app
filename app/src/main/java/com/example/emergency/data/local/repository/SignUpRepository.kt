@@ -32,4 +32,10 @@ class SignUpRepository @Inject constructor(
             signUpService.setUserPassword(pwd)
         }
     }
+
+    suspend fun changePassword(pwd: String) {
+        withContext(Dispatchers.IO) {
+            signUpService.setUserPassword(pwd)
+        }
+    }
 }

@@ -59,7 +59,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.cancel -> {
-                emergencyViewModel.seState(STATE.Call.CANCEL)
+                emergencyViewModel.setState(STATE.Call.CANCEL)
                 setHasOptionsMenu(false)
             }
         }
@@ -79,7 +79,7 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 if (emergencyViewModel.getState() == STATE.Call.ERROR) {
                     showMessage(requireContext(), "请检查网络连接")
                 }
-                emergencyViewModel.seState(STATE.Call.CALLING)
+                emergencyViewModel.setState(STATE.Call.CALLING)
             }
             emergencyViewModel.currentText.observe(viewLifecycleOwner) {
                 emergencyHint.text = it

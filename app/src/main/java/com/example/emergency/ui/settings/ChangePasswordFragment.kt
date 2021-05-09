@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.emergency.R
-import com.example.emergency.data.remote.SignUpService
+import com.example.emergency.data.local.repository.SignUpRepository
 import com.example.emergency.databinding.FragmentChangePasswordBinding
 import com.example.emergency.util.BaseFragment
 import com.example.emergency.util.getErrorMessage
@@ -31,7 +31,7 @@ class ChangePasswordFragment : BaseFragment(), CoroutineScope by MainScope() {
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var signUpService: SignUpService
+    lateinit var signUpRepository: SignUpRepository
 
 
     override fun onCreateView(
@@ -78,7 +78,7 @@ class ChangePasswordFragment : BaseFragment(), CoroutineScope by MainScope() {
 
                 launch {
                     try {
-                        signUpService.setUserPassword(
+                        signUpRepository.changePassword(
                             binding.newPasswordText.text.toString().trim()
                         )
                     } catch (e: Exception) {
