@@ -6,8 +6,6 @@ import cn.leancloud.AVPush
 import cn.leancloud.AVUser
 import com.example.emergency.data.entity.Call
 import com.example.emergency.data.entity.Location
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.full.declaredMemberProperties
@@ -24,20 +22,9 @@ class EmergencyService @Inject constructor() {
                 submit.put(it.name, it.get(call))
             }
         var id: String? = null
-        submit.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
-            override fun onSubscribe(d: Disposable) {
-            }
-
-            override fun onNext(t: AVObject) {
-                id = t.objectId
-            }
-
-            override fun onError(e: Throwable) {
-            }
-
-            override fun onComplete() {
-            }
-        })
+        submit.saveInBackground().blockingSubscribe {
+            id = it.objectId
+        }
         val pushQuery = AVInstallation.getQuery()
         pushQuery.whereEqualTo("channels", "emergency")
         val push = AVPush()

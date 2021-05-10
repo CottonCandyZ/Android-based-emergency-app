@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.leancloud.livequery.AVLiveQuery
+import cn.leancloud.livequery.AVLiveQueryConnectionHandler
 import com.amap.api.location.AMapLocation
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
@@ -64,7 +66,7 @@ class EmergencyViewModel @Inject constructor(
     private var aMapLocationListener = AMapLocationListener { // 位置回调
         if (it != null) {
             if (it.errorCode == 0) {
-                if (getState() == STATE.Call.CANCEL) {
+                if (getState() != STATE.Call.CALLING) {
                     return@AMapLocationListener
                 }
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
@@ -105,6 +107,18 @@ class EmergencyViewModel @Inject constructor(
                 }
             }
         }
+        AVLiveQuery.setConnectionHandler(object : AVLiveQueryConnectionHandler {
+            override fun onConnectionOpen() {
+                initLiveData()
+            }
+
+            override fun onConnectionClose() {
+            }
+
+            override fun onConnectionError(code: Int, reason: String?) {
+            }
+
+        })
     }
 
 

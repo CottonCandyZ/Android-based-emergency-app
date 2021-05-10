@@ -8,8 +8,6 @@ import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.data.entity.Info
 import com.example.emergency.util.convertAVObjectToEmergencyContact
 import com.example.emergency.util.convertAVObjectToInfo
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.full.declaredMemberProperties
@@ -70,23 +68,11 @@ class InfoService @Inject constructor() {
             remoteInfo.objectId = info.id
         }
         var id = ""
-        remoteInfo.saveInBackground().blockingSubscribe(object : Observer<AVObject> {
-            override fun onSubscribe(d: Disposable) {
-            }
-
-            override fun onNext(t: AVObject) {
-                id = t.objectId
-            }
-
-            override fun onError(e: Throwable) {
-                throw e
-            }
-
-            override fun onComplete() {
-            }
-        })
-        return id
+        remoteInfo.saveInBackground().blockingSubscribe {
+            id = it.objectId
         }
+        return id
+    }
 
     fun saveEmergencyContact(emergencyContact: EmergencyContact, saveById: Boolean) {
         val remoteEmergencyContact = AVObject("EmergencyContact")

@@ -28,87 +28,159 @@ class LiveQueryRepository @Inject constructor(
     private val emergencyContactDao: EmergencyContactDao
 ) {
 
-    private val historyAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
-        override fun onObjectCreated(avObject: AVObject) {
-            super.onObjectCreated(avObject)
-            MainScope().launch {
-                updateHistory(avObject)
-            }
+//    private val historyAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
+//        override fun onObjectCreated(avObject: AVObject) {
+//            super.onObjectCreated(avObject)
+//            MainScope().launch {
+//                updateHistory(avObject)
+//            }
+//
+//        }
+//
+//        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+//            super.onObjectUpdated(avObject, updateKeyList)
+//            MainScope().launch {
+//                updateHistory(avObject)
+//            }
+//        }
+//
+//        override fun onObjectDeleted(objectId: String) {
+//            super.onObjectDeleted(objectId)
+//            MainScope().launch {
+//                historyDao.deleteHistoryById(objectId)
+//            }
+//        }
+//    }
+//    private val infoAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
+//        override fun onObjectCreated(avObject: AVObject) {
+//            super.onObjectCreated(avObject)
+//            MainScope().launch {
+//                updateInfo(avObject)
+//            }
+//        }
+//
+//        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+//            super.onObjectUpdated(avObject, updateKeyList)
+//            MainScope().launch {
+//                updateInfo(avObject)
+//            }
+//        }
+//
+//        override fun onObjectLeave(avObject: AVObject, updateKeyList: MutableList<String>?) {
+//            super.onObjectLeave(avObject, updateKeyList)
+//            MainScope().launch {
+//                infoDao.deleteById(avObject.objectId)
+//            }
+//        }
+//
+//        override fun onObjectDeleted(objectId: String) {
+//            super.onObjectDeleted(objectId)
+//            MainScope().launch {
+//                infoDao.deleteById(objectId)
+//            }
+//        }
+//    }
 
-        }
-
-        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
-            super.onObjectUpdated(avObject, updateKeyList)
-            MainScope().launch {
-                updateHistory(avObject)
-            }
-        }
-
-        override fun onObjectDeleted(objectId: String) {
-            super.onObjectDeleted(objectId)
-            MainScope().launch {
-                historyDao.deleteHistoryById(objectId)
-            }
-        }
-    }
-    private val infoAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
-        override fun onObjectCreated(avObject: AVObject) {
-            super.onObjectCreated(avObject)
-            MainScope().launch {
-                updateInfo(avObject)
-            }
-        }
-
-        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
-            super.onObjectUpdated(avObject, updateKeyList)
-            MainScope().launch {
-                updateInfo(avObject)
-            }
-        }
-
-        override fun onObjectLeave(avObject: AVObject, updateKeyList: MutableList<String>?) {
-            super.onObjectLeave(avObject, updateKeyList)
-            MainScope().launch {
-                infoDao.deleteById(avObject.objectId)
-            }
-        }
-
-        override fun onObjectDeleted(objectId: String) {
-            super.onObjectDeleted(objectId)
-            MainScope().launch {
-                infoDao.deleteById(objectId)
-            }
-        }
-    }
-
-    private val emergencyContactAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
-        override fun onObjectCreated(avObject: AVObject) {
-            super.onObjectCreated(avObject)
-            MainScope().launch {
-                updateEmergencyContact(avObject)
-            }
-        }
-
-        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
-            super.onObjectUpdated(avObject, updateKeyList)
-            MainScope().launch {
-                updateEmergencyContact(avObject)
-            }
-        }
-
-        override fun onObjectDeleted(objectId: String) {
-            super.onObjectDeleted(objectId)
-            MainScope().launch {
-                emergencyContactDao.deleteById(objectId)
-            }
-        }
-
-    }
+//    private val emergencyContactAVLiveQueryEventHandler = object : AVLiveQueryEventHandler() {
+//        override fun onObjectCreated(avObject: AVObject) {
+//            super.onObjectCreated(avObject)
+//            MainScope().launch {
+//                updateEmergencyContact(avObject)
+//            }
+//        }
+//
+//        override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+//            super.onObjectUpdated(avObject, updateKeyList)
+//            MainScope().launch {
+//                updateEmergencyContact(avObject)
+//            }
+//        }
+//
+//        override fun onObjectDeleted(objectId: String) {
+//            super.onObjectDeleted(objectId)
+//            MainScope().launch {
+//                emergencyContactDao.deleteById(objectId)
+//            }
+//        }
+//
+//    }
 
     fun init() {
-        infoService.infoLiveQuery.setEventHandler(infoAVLiveQueryEventHandler)
-        infoService.emergencyLiveQuery.setEventHandler(emergencyContactAVLiveQueryEventHandler)
-        historyService.historyLiveQuery.setEventHandler(historyAVLiveQueryEventHandler)
+        infoService.infoLiveQuery.setEventHandler(object : AVLiveQueryEventHandler() {
+            override fun onObjectCreated(avObject: AVObject) {
+                super.onObjectCreated(avObject)
+                MainScope().launch {
+                    updateInfo(avObject)
+                }
+            }
+
+            override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+                super.onObjectUpdated(avObject, updateKeyList)
+                MainScope().launch {
+                    updateInfo(avObject)
+                }
+            }
+
+            override fun onObjectLeave(avObject: AVObject, updateKeyList: MutableList<String>?) {
+                super.onObjectLeave(avObject, updateKeyList)
+                MainScope().launch {
+                    infoDao.deleteById(avObject.objectId)
+                }
+            }
+
+            override fun onObjectDeleted(objectId: String) {
+                super.onObjectDeleted(objectId)
+                MainScope().launch {
+                    infoDao.deleteById(objectId)
+                }
+            }
+        })
+        infoService.emergencyLiveQuery.setEventHandler(object : AVLiveQueryEventHandler() {
+            override fun onObjectCreated(avObject: AVObject) {
+                super.onObjectCreated(avObject)
+                MainScope().launch {
+                    updateEmergencyContact(avObject)
+                }
+            }
+
+            override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+                super.onObjectUpdated(avObject, updateKeyList)
+                MainScope().launch {
+                    updateEmergencyContact(avObject)
+                }
+            }
+
+            override fun onObjectDeleted(objectId: String) {
+                super.onObjectDeleted(objectId)
+                MainScope().launch {
+                    emergencyContactDao.deleteById(objectId)
+                }
+            }
+
+        })
+        historyService.historyLiveQuery.setEventHandler(object : AVLiveQueryEventHandler() {
+            override fun onObjectCreated(avObject: AVObject) {
+                super.onObjectCreated(avObject)
+                MainScope().launch {
+                    updateHistory(avObject)
+                }
+
+            }
+
+            override fun onObjectUpdated(avObject: AVObject, updateKeyList: MutableList<String>?) {
+                super.onObjectUpdated(avObject, updateKeyList)
+                MainScope().launch {
+                    updateHistory(avObject)
+                }
+            }
+
+            override fun onObjectDeleted(objectId: String) {
+                super.onObjectDeleted(objectId)
+                MainScope().launch {
+                    historyDao.deleteHistoryById(objectId)
+                }
+            }
+        })
         infoService.infoLiveQuery.subscribeInBackground(object : AVLiveQuerySubscribeCallback() {
             override fun done(e: AVException?) {
                 if (e == null) {
@@ -129,6 +201,7 @@ class LiveQueryRepository @Inject constructor(
             }
         })
     }
+
 
     private suspend fun updateHistory(remote: AVObject) {
         withContext(Dispatchers.IO) {
