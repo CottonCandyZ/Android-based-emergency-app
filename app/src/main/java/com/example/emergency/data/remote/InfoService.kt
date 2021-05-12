@@ -3,7 +3,6 @@ package com.example.emergency.data.remote
 import cn.leancloud.AVObject
 import cn.leancloud.AVQuery
 import cn.leancloud.AVUser
-import cn.leancloud.livequery.AVLiveQuery
 import com.example.emergency.data.entity.EmergencyContact
 import com.example.emergency.data.entity.Info
 import com.example.emergency.util.convertAVObjectToEmergencyContact
@@ -14,18 +13,6 @@ import kotlin.reflect.full.declaredMemberProperties
 
 @Singleton
 class InfoService @Inject constructor() {
-    val infoLiveQuery: AVLiveQuery
-    val emergencyLiveQuery: AVLiveQuery
-
-    init {
-        var query = AVQuery<AVObject>("Info")
-        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
-        query.whereEqualTo("isDeleted", false)
-        infoLiveQuery = AVLiveQuery.initWithQuery(query)
-        query = AVQuery<AVObject>("EmergencyContact")
-        query.whereEqualTo("userId", AVUser.getCurrentUser().objectId)
-        emergencyLiveQuery = AVLiveQuery.initWithQuery(query)
-    }
 
     fun getInfo(): List<Info> {
         val query = AVQuery<AVObject>("Info")
