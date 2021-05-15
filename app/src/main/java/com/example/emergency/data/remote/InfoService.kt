@@ -83,12 +83,10 @@ class InfoService @Inject constructor() {
     }
 
 
-    fun updateInfoChosen(removeId: String, updateId: String) {
-        val removeItem = AVObject.createWithoutData("Info", removeId)
+    fun updateInfoChosen(updateId: String) {
         val updateItem = AVObject.createWithoutData("Info", updateId)
-        removeItem.put("chosen", false)
         updateItem.put("chosen", true)
-        AVObject.saveAll(listOf(removeItem, updateItem))
+        updateItem.save()
     }
 
     fun updateInfoChosenWithOutRemove(updateId: String) {

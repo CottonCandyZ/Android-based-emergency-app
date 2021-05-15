@@ -74,9 +74,9 @@ class InfoRepository @Inject constructor(
     }
 
 
-    suspend fun updateItemChosen(removeId: String, updateId: String) {
+    suspend fun updateItemChosen(updateId: String) {
         withContext(Dispatchers.IO) {
-            infoService.updateInfoChosen(removeId, updateId)
+            infoService.updateInfoChosen(updateId)
         }
     }
 
