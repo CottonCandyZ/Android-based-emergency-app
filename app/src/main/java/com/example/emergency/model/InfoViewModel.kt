@@ -105,12 +105,6 @@ class InfoViewModel @Inject constructor(
 
     fun deleteInfoWithEmergencyContact() {
         viewModelScope.launch {
-            val notChosen = infoRepository.getNotChosen()
-            if (infoWithEmergencyContact.info.chosen) {
-                if (notChosen.isNotEmpty()) {
-                    infoRepository.updateInfoChosenWithOutRemove(notChosen[0])
-                }
-            }
             try {
                 infoRepository.deleteInfoWithEmergencyContact(infoWithEmergencyContact)
                 _state.value = STATE.Info.DELETE_SUCCESS

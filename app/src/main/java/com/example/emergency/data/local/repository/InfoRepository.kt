@@ -25,8 +25,6 @@ class InfoRepository @Inject constructor(
             return@withContext infoDao.getInfoWithEmergencyContact(infoId)
         }
 
-
-
     suspend fun getInfoNumber(): Int =
         withContext(Dispatchers.IO) {
             return@withContext infoDao.getInfoNumber()
@@ -62,7 +60,6 @@ class InfoRepository @Inject constructor(
                 it.infoId = infoId
                 infoService.saveEmergencyContact(it, saveById)
             }
-
         }
     }
 
@@ -73,26 +70,13 @@ class InfoRepository @Inject constructor(
 
     }
 
-
     suspend fun updateItemChosen(updateId: String) {
         withContext(Dispatchers.IO) {
             infoService.updateInfoChosen(updateId)
         }
     }
 
-    suspend fun getNotChosen(): List<String> =
-        withContext(Dispatchers.IO) {
-            return@withContext infoDao.getNotChosen()
-        }
-
     fun getCurrentChosen(): Flow<List<Info>> {
         return infoDao.getCurrentChosen()
-    }
-
-
-    suspend fun updateInfoChosenWithOutRemove(updateId: String) {
-        withContext(Dispatchers.IO) {
-            infoService.updateInfoChosenWithOutRemove(updateId)
-        }
     }
 }

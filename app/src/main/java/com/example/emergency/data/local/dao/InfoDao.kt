@@ -36,7 +36,4 @@ interface InfoDao {
 
     @Query("SELECT * FROM personal_info WHERE chosen == 1")
     fun getCurrentChosen(): Flow<List<Info>>
-
-    @Query("SELECT id FROM personal_info WHERE chosen != 1")
-    fun getNotChosen(): List<String>
 }
