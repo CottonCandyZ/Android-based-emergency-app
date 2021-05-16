@@ -14,4 +14,5 @@ data class History(
     val handler: String?,
     val responseTime: Date?,
     val status: String,
+    val handlerPhone: String?
 )

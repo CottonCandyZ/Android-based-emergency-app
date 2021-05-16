@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class EmergencyViewModel @Inject constructor(
     private val infoRepository: InfoRepository,
@@ -51,6 +52,7 @@ class EmergencyViewModel @Inject constructor(
 
 
     private lateinit var chosen: Info
+    lateinit var handlerPhone: String
 
     private var checked = false
 
@@ -236,6 +238,7 @@ class EmergencyViewModel @Inject constructor(
                                     _currentText.value = "正在为${chosen.realName}呼救\n" +
                                             "位置尚未获取完成，正在获取"
                                 } else {
+                                    handlerPhone = it[0].handlerPhone!!
                                     setState(STATE.Call.COMPLETE)
                                 }
                             }

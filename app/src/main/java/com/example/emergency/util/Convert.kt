@@ -41,5 +41,6 @@ fun convertAVObjectToHistory(avObject: AVObject): History {
         handler = avObject.getString("handler"),
         responseTime = avObject.getDate("responseTime"),
         status = avObject.getString("status"),
+        handlerPhone = avObject.getString("handlerPhone")
     )
 }

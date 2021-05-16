@@ -1,7 +1,9 @@
 package com.example.emergency.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 
+
 /**
  * A simple [Fragment] subclass.
  */
@@ -33,12 +36,21 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     private var permissionResult = true
 
     // 初始化
-    private val requestPermissionLauncher =
+    private val requestLocationPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (!isGranted) {
                 showMessage(requireContext(), "请给予位置权限以使用紧急呼救")
+                permissionResult = false
+            }
+        }
+    private val requestCallPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (!isGranted) {
+                showMessage(requireContext(), "请给予电话权限以使用紧急呼救")
                 permissionResult = false
             }
         }
@@ -69,11 +81,11 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkPermission()
+        checkLocationPermission()
 
         with(binding) {
             buttonEmergency.setOnClickListener {
-                if (!checkPermission() || emergencyViewModel.getState() != STATE.Call.INIT) {
+                if (!checkLocationPermission() || !checkCallPermission() || emergencyViewModel.getState() != STATE.Call.INIT) {
                     return@setOnClickListener
                 }
                 if (emergencyViewModel.getState() == STATE.Call.ERROR) {
@@ -95,13 +107,21 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 if (it == STATE.Call.ERROR) {
                     showMessage(requireContext(), emergencyViewModel.errorMessage)
                 }
+                if (it == STATE.Call.COMPLETE) {
+                    val callIntent =
+                        Intent(
+                            Intent.ACTION_CALL,
+                            Uri.parse("tel:" + emergencyViewModel.handlerPhone)
+                        )
+                    startActivity(callIntent)
+                }
             }
         }
     }
 
 
     // 权限请求
-    private fun checkPermission(): Boolean {
+    private fun checkLocationPermission(): Boolean {
         when {
             ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -117,8 +137,32 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 builder.create().show()
             }
             else -> {
-                requestPermissionLauncher.launch(
+                requestLocationPermissionLauncher.launch(
                     Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+        }
+        return permissionResult
+    }
+
+    private fun checkCallPermission(): Boolean {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE) -> {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("需要电话权限以紧急呼救")
+                builder.setPositiveButton("确认") { _, _ ->
+                }
+                builder.create().show()
+            }
+            else -> {
+                requestCallPermissionLauncher.launch(
+                    Manifest.permission.CALL_PHONE
                 )
             }
         }
