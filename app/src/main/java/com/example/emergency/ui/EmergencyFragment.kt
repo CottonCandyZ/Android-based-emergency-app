@@ -108,17 +108,27 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                     showMessage(requireContext(), emergencyViewModel.errorMessage)
                 }
                 if (it == STATE.Call.COMPLETE) {
-                    val callIntent =
-                        Intent(
-                            Intent.ACTION_CALL,
-                            Uri.parse("tel:" + emergencyViewModel.handlerPhone)
-                        )
-                    startActivity(callIntent)
+                    callerButton.visibility = View.VISIBLE
+                    makeAPhoneCall()
+                } else {
+                    callerButton.visibility = View.INVISIBLE
                 }
+            }
+            callerButton.setOnClickListener {
+                makeAPhoneCall()
             }
         }
     }
 
+
+    private fun makeAPhoneCall() {
+        val callIntent =
+            Intent(
+                Intent.ACTION_CALL,
+                Uri.parse("tel:" + emergencyViewModel.handlerPhone)
+            )
+        startActivity(callIntent)
+    }
 
     // 权限请求
     private fun checkLocationPermission(): Boolean {
