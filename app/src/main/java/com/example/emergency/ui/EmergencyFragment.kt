@@ -82,10 +82,13 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkLocationPermission()
+        checkCallPermission()
 
         with(binding) {
             buttonEmergency.setOnClickListener {
-                if (!checkLocationPermission() || !checkCallPermission() || emergencyViewModel.getState() != STATE.Call.INIT) {
+                if (!checkLocationPermission() || !checkCallPermission() ||
+                    (emergencyViewModel.getState() != STATE.Call.INIT && emergencyViewModel.getState() != STATE.Call.COMPLETE)
+                ) {
                     return@setOnClickListener
                 }
                 if (emergencyViewModel.getState() == STATE.Call.ERROR) {
@@ -108,10 +111,10 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                     showMessage(requireContext(), emergencyViewModel.errorMessage)
                 }
                 if (it == STATE.Call.COMPLETE) {
-                    callerButton.visibility = View.VISIBLE
+                    callerButton.show()
                     makeAPhoneCall()
                 } else {
-                    callerButton.visibility = View.INVISIBLE
+                    callerButton.hide()
                 }
             }
             callerButton.setOnClickListener {

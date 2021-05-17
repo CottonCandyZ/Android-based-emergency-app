@@ -146,17 +146,21 @@ class EmergencyViewModel @Inject constructor(
         return state.value!!
     }
 
+    fun cleanup() {
+        locationSendSuccess = false
+        location = null
+        checked = false
+        callId = null
+        checkedJob?.cancel()
+        callSubmitJob = null
+        locationSubmitJob = null
+    }
+
     fun setState(state: STATE.Call) {
         _state.value = state
         when (state) {
             STATE.Call.INIT -> {
-                locationSendSuccess = false
-                location = null
-                checked = false
-                callId = null
-                checkedJob?.cancel()
-                callSubmitJob = null
-                locationSubmitJob = null
+                cleanup()
             }
             STATE.Call.CALLING -> {
                 _currentText.value = "正在为${chosen.realName}呼救\n" +
@@ -192,7 +196,7 @@ class EmergencyViewModel @Inject constructor(
             }
             STATE.Call.COMPLETE -> {
                 _currentText.value = "呼叫已处理，点击以重新呼救"
-                setState(STATE.Call.INIT)
+                cleanup()
             }
             STATE.Call.ERROR -> {
                 viewModelScope.launch {
