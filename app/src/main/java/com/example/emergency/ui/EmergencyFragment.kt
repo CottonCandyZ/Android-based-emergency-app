@@ -112,7 +112,10 @@ class EmergencyFragment : BaseFragment(), CoroutineScope by MainScope() {
                 }
                 if (it == STATE.Call.COMPLETE) {
                     callerButton.show()
-                    makeAPhoneCall()
+                    if (emergencyViewModel.makeAPhoneCall) {
+                        makeAPhoneCall()
+                        emergencyViewModel.makeAPhoneCall = false
+                    }
                 } else {
                     callerButton.hide()
                 }

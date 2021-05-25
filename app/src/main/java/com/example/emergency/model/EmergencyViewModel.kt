@@ -53,6 +53,7 @@ class EmergencyViewModel @Inject constructor(
 
     private lateinit var chosen: Info
     lateinit var handlerPhone: String
+    var makeAPhoneCall = false
 
     private var checked = false
 
@@ -146,7 +147,7 @@ class EmergencyViewModel @Inject constructor(
         return state.value!!
     }
 
-    fun cleanup() {
+    private fun cleanup() {
         locationSendSuccess = false
         location = null
         checked = false
@@ -243,6 +244,7 @@ class EmergencyViewModel @Inject constructor(
                                             "位置尚未获取完成，正在获取"
                                 } else {
                                     handlerPhone = it[0].handlerPhone!!
+                                    makeAPhoneCall = true
                                     setState(STATE.Call.COMPLETE)
                                 }
                             }
